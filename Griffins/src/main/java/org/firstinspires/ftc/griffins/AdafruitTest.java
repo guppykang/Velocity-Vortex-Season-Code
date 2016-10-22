@@ -43,7 +43,7 @@ public class AdafruitTest extends OpMode {
         parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelerationIntegrationAlgorithm = new GriffinAccelerationIntegrator();
-        //parameters.calibrationDataFile = "AdafruitIMUCalibration.json";
+        parameters.calibrationDataFile = "AdafruitIMUCalibration.json";
         parameters.loggingEnabled = true;
 
         imu.initialize(parameters);
@@ -57,7 +57,7 @@ public class AdafruitTest extends OpMode {
     public void loop() {
 
         if (gamepad1.a && !pressed) {
-            imu.startAccelerationIntegration(new Position(), new Velocity(), 50);
+            imu.startAccelerationIntegration(new Position(), new Velocity(), 100);
         }
 
         pressed = gamepad1.a;
@@ -188,13 +188,13 @@ public class AdafruitTest extends OpMode {
                     @Override
                     public String value() {
                         Position pos = imu.getPosition();
-                        return String.format(Locale.getDefault(), "x:%.2f, y%.2f, z:.2f", pos.x, pos.y, pos.z);
+                        return String.format(Locale.getDefault(), "x:%.2f, y%.2f, z:%.2f", pos.x, pos.y, pos.z);
                     }
                 }).addData("vel", new Func<String>() {
             @Override
             public String value() {
                 Velocity vel = imu.getVelocity();
-                return String.format(Locale.getDefault(), "x:%.2f, y%.2f, z:.2f", vel.xVeloc, vel.yVeloc, vel.zVeloc);
+                return String.format(Locale.getDefault(), "x:%.2f, y%.2f, z:%.2f", vel.xVeloc, vel.yVeloc, vel.zVeloc);
             }
         });
     }
