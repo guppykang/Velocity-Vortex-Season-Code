@@ -19,8 +19,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.NavUtil.plus;
  * Todo:
  * One you would actually want to use in a robot would, for example, likely
  * filter noise out the acceleration data or more sophisticated processing.
- * look up what and how to filter noise,
- * look at better methods for manual integration
+ * look up what and how to filter noise, -> low pass filter, averages a window to produce value at a point
+ * look at better methods for approximating the integral, -> currently uses trapezoid rule, try instead simpson's rule
  */
 
 public class GriffinAccelerationIntegrator implements BNO055IMU.AccelerationIntegrator {
