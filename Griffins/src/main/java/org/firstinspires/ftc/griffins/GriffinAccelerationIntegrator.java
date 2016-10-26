@@ -48,9 +48,7 @@ public class GriffinAccelerationIntegrator implements BNO055IMU.AccelerationInte
         this.velocity = initialVelocity;
         this.acceleration = null;
 
-        if (parameters.loggingEnabled) {
-            log = "";
-        }
+        log = "";
     }
 
     public Position getPosition() {
@@ -77,6 +75,9 @@ public class GriffinAccelerationIntegrator implements BNO055IMU.AccelerationInte
     public void update(Acceleration linearAcceleration) {
         // We should always be given a timestamp here
         if (linearAcceleration.acquisitionTime != 0) {
+
+            linearAcceleration = round(linearAcceleration);
+
             // We can only integrate if we have a previous acceleration to baseline from
             if (acceleration != null) {
                 Acceleration accelPrev = acceleration;
@@ -102,5 +103,14 @@ public class GriffinAccelerationIntegrator implements BNO055IMU.AccelerationInte
                 acceleration = linearAcceleration;
             }
         }
+    }
+
+    private Acceleration round(Acceleration acceleration) {
+        acceleration.xAccel = ((int) (acceleration.xAccel * 10 + 0.5)) / 10.0;
+        acceleration.yAccel = ((int) (acceleration.yAccel * 10 + 0.5)) / 10.0;
+        acceleration.zAccel = ((int) (acceleration.zAccel * 10 + 0.5)) / 10.0;
+
+
+        return acceleration;
     }
 }
