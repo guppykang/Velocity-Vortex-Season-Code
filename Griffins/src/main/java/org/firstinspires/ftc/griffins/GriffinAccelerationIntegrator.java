@@ -28,12 +28,13 @@ public class GriffinAccelerationIntegrator implements BNO055IMU.AccelerationInte
     // State
     //------------------------------------------------------------------------------------------
 
-    BNO055IMU.Parameters parameters;
-    Position position;
-    Velocity velocity;
-    Acceleration acceleration;
+    String log;
+    private BNO055IMU.Parameters parameters;
+    private Position position;
+    private Velocity velocity;
+    private Acceleration acceleration;
 
-    GriffinAccelerationIntegrator() {
+    public GriffinAccelerationIntegrator() {
         this.parameters = null;
         this.position = null;
         this.velocity = null;
@@ -46,6 +47,10 @@ public class GriffinAccelerationIntegrator implements BNO055IMU.AccelerationInte
         this.position = initialPosition;
         this.velocity = initialVelocity;
         this.acceleration = null;
+
+        if (parameters.loggingEnabled) {
+            log = "";
+        }
     }
 
     public Position getPosition() {
@@ -91,9 +96,11 @@ public class GriffinAccelerationIntegrator implements BNO055IMU.AccelerationInte
 
                 if (parameters.loggingEnabled) {
                     RobotLog.vv(parameters.loggingTag, "dt=%.3fs accel=%s vel=%s pos=%s", (acceleration.acquisitionTime - accelPrev.acquisitionTime) * 1e-9, acceleration, velocity, position);
+                    log += acceleration.acquisitionTime + ", " + acceleration.xAccel + "\n";
                 }
-            } else
+            } else {
                 acceleration = linearAcceleration;
+            }
         }
     }
 }

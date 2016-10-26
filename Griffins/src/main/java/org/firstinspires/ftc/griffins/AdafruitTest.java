@@ -3,6 +3,7 @@ package org.firstinspires.ftc.griffins;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
@@ -12,7 +13,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.firstinspires.ftc.robotcore.internal.AppUtil;
 
+import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,7 +35,9 @@ public class AdafruitTest extends OpMode {
     Acceleration algorithmAcceleration;
     Acceleration linearAcceleration;
     Acceleration overallAcceleration;
-    boolean pressed = false;
+    boolean pressedA = false;
+    private boolean pressedB = false;
+    private GriffinAccelerationIntegrator integrator;
 
     @Override
     public void init() {
@@ -42,7 +47,8 @@ public class AdafruitTest extends OpMode {
         BNO055IMU.Parameters parameters;
         parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelerationIntegrationAlgorithm = new GriffinAccelerationIntegrator();
+        integrator = new GriffinAccelerationIntegrator();
+        parameters.accelerationIntegrationAlgorithm = integrator;
         parameters.calibrationDataFile = "AdafruitIMUCalibration.json";
         parameters.loggingEnabled = true;
 
@@ -51,16 +57,25 @@ public class AdafruitTest extends OpMode {
         composeTelemetry();
         telemetry.log().add("Press A to (re)start acceleration integration in loop");
         telemetry.log().add("remember to hold the sensor still when (re)starting integration");
+        telemetry.log().add("Press B to write acceleration data");
     }
 
     @Override
     public void loop() {
 
-        if (gamepad1.a && !pressed) {
-            imu.startAccelerationIntegration(new Position(), new Velocity(), 100);
+        if (gamepad1.a && !pressedA) {
+            imu.startAccelerationIntegration(new Position(), new Velocity(), 50);
         }
 
-        pressed = gamepad1.a;
+        if (gamepad1.b && !pressedB) {
+            String filename = "AccelerometerData.csv";
+            File file = AppUtil.getInstance().getSettingsFile(filename);
+            ReadWriteFile.writeFile(file, integrator.log);
+            telemetry.log().add("saved to '%s'", filename);
+        }
+
+        pressedA = gamepad1.a;
+        pressedB = gamepad1.b;
     }
 
     void composeTelemetry() {
