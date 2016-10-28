@@ -23,7 +23,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.NavUtil.plus;
  * look at better methods for approximating the integral, -> currently uses trapezoid rule, try instead simpson's rule
  */
 
-public class GriffinAccelerationIntegrator implements BNO055IMU.AccelerationIntegrator {
+public class GriffinAccelerationIntegratorLowPass implements BNO055IMU.AccelerationIntegrator {
     //------------------------------------------------------------------------------------------
     // State
     //------------------------------------------------------------------------------------------
@@ -34,11 +34,18 @@ public class GriffinAccelerationIntegrator implements BNO055IMU.AccelerationInte
     private Velocity velocity;
     private Acceleration acceleration;
 
-    public GriffinAccelerationIntegrator() {
+    private LowPassFilter filterX;
+    private LowPassFilter filterY;
+    private LowPassFilter filterZ;
+
+    public GriffinAccelerationIntegratorLowPass() {
         this.parameters = null;
         this.position = null;
         this.velocity = null;
         this.acceleration = null;
+        this.filterX = null;
+        this.filterY = null;
+        this.filterZ = null;
     }
 
     @Override
@@ -48,7 +55,11 @@ public class GriffinAccelerationIntegrator implements BNO055IMU.AccelerationInte
         this.velocity = initialVelocity;
         this.acceleration = null;
 
-        log = "";
+        this.log = "";
+        int windowSize = 10;
+        this.filterX = new LowPassFilter(windowSize);
+        this.filterY = new LowPassFilter(windowSize);
+        this.filterZ = new LowPassFilter(windowSize);
     }
 
     public Position getPosition() {
@@ -76,27 +87,25 @@ public class GriffinAccelerationIntegrator implements BNO055IMU.AccelerationInte
         // We should always be given a timestamp here
         if (linearAcceleration.acquisitionTime != 0) {
 
-            linearAcceleration = round(linearAcceleration);
-
             // We can only integrate if we have a previous acceleration to baseline from
             if (acceleration != null) {
-                Acceleration accelPrev = acceleration;
-                Velocity velocityPrev = velocity;
+                Acceleration previousAcceleration = acceleration;
+                Velocity previousVelocity = velocity;
 
-                acceleration = linearAcceleration;
+                acceleration = processRawAcceleration(linearAcceleration);
 
-                if (accelPrev.acquisitionTime != 0) {
-                    Velocity deltaVelocity = meanIntegrate(acceleration, accelPrev);
+                if (previousAcceleration.acquisitionTime != 0) {
+                    Velocity deltaVelocity = meanIntegrate(acceleration, previousAcceleration);
                     velocity = plus(velocity, deltaVelocity);
                 }
 
-                if (velocityPrev.acquisitionTime != 0) {
-                    Position deltaPosition = meanIntegrate(velocity, velocityPrev);
+                if (previousVelocity.acquisitionTime != 0) {
+                    Position deltaPosition = meanIntegrate(velocity, previousVelocity);
                     position = plus(position, deltaPosition);
                 }
 
                 if (parameters.loggingEnabled) {
-                    RobotLog.vv(parameters.loggingTag, "dt=%.3fs accel=%s vel=%s pos=%s", (acceleration.acquisitionTime - accelPrev.acquisitionTime) * 1e-9, acceleration, velocity, position);
+                    RobotLog.vv(parameters.loggingTag, "dt=%.3fs accel=%s vel=%s pos=%s", (acceleration.acquisitionTime - previousAcceleration.acquisitionTime) * 1e-9, acceleration, velocity, position);
                     log += acceleration.acquisitionTime + ", " + acceleration.xAccel + ", " + acceleration.yAccel +
                             ", " + acceleration.zAccel + "\n";
                 }
@@ -106,12 +115,11 @@ public class GriffinAccelerationIntegrator implements BNO055IMU.AccelerationInte
         }
     }
 
-    private Acceleration round(Acceleration acceleration) {
-        acceleration.xAccel = ((int) (acceleration.xAccel * 10 + 0.5)) / 10.0;
-        acceleration.yAccel = ((int) (acceleration.yAccel * 10 + 0.5)) / 10.0;
-        acceleration.zAccel = ((int) (acceleration.zAccel * 10 + 0.5)) / 10.0;
+    private Acceleration processRawAcceleration(Acceleration linearAcceleration) {
+        linearAcceleration.xAccel = filterX.addValue(linearAcceleration.xAccel);
+        linearAcceleration.yAccel = filterY.addValue(linearAcceleration.yAccel);
+        linearAcceleration.zAccel = filterZ.addValue(linearAcceleration.zAccel);
 
-
-        return acceleration;
+        return linearAcceleration;
     }
 }
