@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.griffins;
 
 import com.qualcomm.hardware.adafruit.BNO055IMU;
-import com.qualcomm.hardware.adafruit.NaiveAccelerationIntegrator;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
@@ -12,14 +11,13 @@ import static org.firstinspires.ftc.robotcore.external.navigation.NavUtil.meanIn
 import static org.firstinspires.ftc.robotcore.external.navigation.NavUtil.plus;
 
 /**
- * Currently a copy of the {@link NaiveAccelerationIntegrator},
- * which provides a very naive implementation of
- * an acceleration integration algorithm. It just does the basic physics.
+ * Provides a naive implementation of an acceleration integration algorithm.
+ * It does the basic physics and runs a low pass filter on the data
  * <p/>
  * Todo:
  * One you would actually want to use in a robot would, for example, likely
- * filter noise out the acceleration data or more sophisticated processing.
- * look up what and how to filter noise, -> low pass filter, averages a window to produce value at a point
+ * filter noise out of the acceleration data or more sophisticated processing.
+ * look up what and how to filter noise,
  * look at better methods for approximating the integral, -> currently uses trapezoid rule, try instead simpson's rule
  */
 
@@ -28,12 +26,13 @@ public class GriffinAccelerationIntegratorLowPass implements BNO055IMU.Accelerat
     // State
     //------------------------------------------------------------------------------------------
 
+    public static final int FILTER_WINDOW_SIZE = 10;
+    public static final double ACCELERATION_THRESHOLD = 0.01;
     String log;
     private BNO055IMU.Parameters parameters;
     private Position position;
     private Velocity velocity;
     private Acceleration acceleration;
-
     private LowPassFilter filterX;
     private LowPassFilter filterY;
     private LowPassFilter filterZ;
@@ -56,10 +55,9 @@ public class GriffinAccelerationIntegratorLowPass implements BNO055IMU.Accelerat
         this.acceleration = null;
 
         this.log = "";
-        int windowSize = 10;
-        this.filterX = new LowPassFilter(windowSize);
-        this.filterY = new LowPassFilter(windowSize);
-        this.filterZ = new LowPassFilter(windowSize);
+        this.filterX = new LowPassFilter(FILTER_WINDOW_SIZE);
+        this.filterY = new LowPassFilter(FILTER_WINDOW_SIZE);
+        this.filterZ = new LowPassFilter(FILTER_WINDOW_SIZE);
     }
 
     public Position getPosition() {
@@ -120,6 +118,19 @@ public class GriffinAccelerationIntegratorLowPass implements BNO055IMU.Accelerat
         linearAcceleration.yAccel = filterY.addValue(linearAcceleration.yAccel);
         linearAcceleration.zAccel = filterZ.addValue(linearAcceleration.zAccel);
 
+        //linearAcceleration = thresholdAcceleration(linearAcceleration);
+
         return linearAcceleration;
+    }
+
+    private Acceleration thresholdAcceleration(Acceleration acceleration) {
+        if (acceleration.xAccel <= ACCELERATION_THRESHOLD && acceleration.xAccel >= -ACCELERATION_THRESHOLD)
+            acceleration.xAccel = 0;
+        if (acceleration.yAccel <= ACCELERATION_THRESHOLD && acceleration.yAccel >= -ACCELERATION_THRESHOLD)
+            acceleration.yAccel = 0;
+        if (acceleration.zAccel <= ACCELERATION_THRESHOLD && acceleration.zAccel >= -ACCELERATION_THRESHOLD)
+            acceleration.zAccel = 0;
+
+        return acceleration;
     }
 }
