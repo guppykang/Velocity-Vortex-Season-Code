@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.griffins;
+package org.firstinspires.ftc.griffins.Testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;

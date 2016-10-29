@@ -126,4 +126,8 @@ public class GriffinAccelerationIntegratorLowPass implements BNO055IMU.Accelerat
 
         return acceleration;
     }
+
+    public String getLog() {
+        return log;
+    }
 }

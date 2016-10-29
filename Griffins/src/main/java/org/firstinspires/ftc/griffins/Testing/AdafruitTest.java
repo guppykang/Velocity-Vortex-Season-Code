@@ -1,10 +1,11 @@
-package org.firstinspires.ftc.griffins;
+package org.firstinspires.ftc.griffins.Testing;
 
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
+import org.firstinspires.ftc.griffins.GriffinAccelerationIntegratorLowPass;
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -70,7 +71,7 @@ public class AdafruitTest extends OpMode {
         if (gamepad1.b && !pressedB) {
             String filename = "AccelerometerData.csv";
             File file = AppUtil.getInstance().getSettingsFile(filename);
-            ReadWriteFile.writeFile(file, integrator.log);
+            ReadWriteFile.writeFile(file, integrator.getLog());
             telemetry.log().add("saved to '%s'", filename);
         }
 

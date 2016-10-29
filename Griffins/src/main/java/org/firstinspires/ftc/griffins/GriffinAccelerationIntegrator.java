@@ -114,4 +114,8 @@ public class GriffinAccelerationIntegrator implements BNO055IMU.AccelerationInte
 
         return acceleration;
     }
+
+    public String getLog() {
+        return log;
+    }
 }
