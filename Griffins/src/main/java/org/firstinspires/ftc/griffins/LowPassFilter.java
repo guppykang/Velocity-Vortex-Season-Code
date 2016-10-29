@@ -5,6 +5,8 @@ import java.util.Queue;
 
 /**
  * Created by David on 10/27/2016.
+ * Implements a low pass filter
+ * on doubles
  */
 public class LowPassFilter {
 

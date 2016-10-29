@@ -76,7 +76,7 @@ public class GriffinAccelerationIntegrator implements BNO055IMU.AccelerationInte
         // We should always be given a timestamp here
         if (linearAcceleration.acquisitionTime != 0) {
 
-            linearAcceleration = round(linearAcceleration);
+            //linearAcceleration = round(linearAcceleration);
 
             // We can only integrate if we have a previous acceleration to baseline from
             if (acceleration != null) {

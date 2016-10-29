@@ -26,8 +26,8 @@ public class GriffinAccelerationIntegratorLowPass implements BNO055IMU.Accelerat
     // State
     //------------------------------------------------------------------------------------------
 
-    public static final int FILTER_WINDOW_SIZE = 10;
-    public static final double ACCELERATION_THRESHOLD = 0.01;
+    public static final int FILTER_WINDOW_SIZE = 15;
+    public static final double ACCELERATION_THRESHOLD = 0.1;
     String log;
     private BNO055IMU.Parameters parameters;
     private Position position;
@@ -64,17 +64,9 @@ public class GriffinAccelerationIntegratorLowPass implements BNO055IMU.Accelerat
         return this.position;
     }
 
-    //------------------------------------------------------------------------------------------
-    // Construction
-    //------------------------------------------------------------------------------------------
-
     public Velocity getVelocity() {
         return this.velocity;
     }
-
-    //------------------------------------------------------------------------------------------
-    // Operations
-    //------------------------------------------------------------------------------------------
 
     public Acceleration getAcceleration() {
         return this.acceleration;
@@ -84,13 +76,14 @@ public class GriffinAccelerationIntegratorLowPass implements BNO055IMU.Accelerat
     public void update(Acceleration linearAcceleration) {
         // We should always be given a timestamp here
         if (linearAcceleration.acquisitionTime != 0) {
+            Acceleration previousAcceleration = acceleration;
+            Velocity previousVelocity = velocity;
 
-            // We can only integrate if we have a previous acceleration to baseline from
-            if (acceleration != null) {
-                Acceleration previousAcceleration = acceleration;
-                Velocity previousVelocity = velocity;
+            acceleration = processRawAcceleration(linearAcceleration);
 
-                acceleration = processRawAcceleration(linearAcceleration);
+            // We can only integrate if we have a previous acceleration to baseline from,
+            // we only want to integrate when the filters are at capacity
+            if (acceleration != null && filterX.atCapacity() && filterY.atCapacity() && filterZ.atCapacity()) {
 
                 if (previousAcceleration.acquisitionTime != 0) {
                     Velocity deltaVelocity = meanIntegrate(acceleration, previousAcceleration);
@@ -118,7 +111,7 @@ public class GriffinAccelerationIntegratorLowPass implements BNO055IMU.Accelerat
         linearAcceleration.yAccel = filterY.addValue(linearAcceleration.yAccel);
         linearAcceleration.zAccel = filterZ.addValue(linearAcceleration.zAccel);
 
-        //linearAcceleration = thresholdAcceleration(linearAcceleration);
+        linearAcceleration = thresholdAcceleration(linearAcceleration);
 
         return linearAcceleration;
     }

@@ -37,7 +37,7 @@ public class AdafruitTest extends OpMode {
     Acceleration overallAcceleration;
     boolean pressedA = false;
     private boolean pressedB = false;
-    private GriffinAccelerationIntegrator integrator;
+    private GriffinAccelerationIntegratorLowPass integrator;
 
     @Override
     public void init() {
@@ -47,7 +47,7 @@ public class AdafruitTest extends OpMode {
         BNO055IMU.Parameters parameters;
         parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        integrator = new GriffinAccelerationIntegrator();
+        integrator = new GriffinAccelerationIntegratorLowPass();
         parameters.accelerationIntegrationAlgorithm = integrator;
         parameters.calibrationDataFile = "AdafruitIMUCalibration.json";
         parameters.loggingEnabled = true;
@@ -64,7 +64,7 @@ public class AdafruitTest extends OpMode {
     public void loop() {
 
         if (gamepad1.a && !pressedA) {
-            imu.startAccelerationIntegration(new Position(), new Velocity(), 50);
+            imu.startAccelerationIntegration(new Position(), new Velocity(), 10);
         }
 
         if (gamepad1.b && !pressedB) {
