@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  * Created by David on 1/1/2016.
  * <p/>
  * To control multiple motors at the same time
+ * Note that retaining
  */
 
 public class SyncedDcMotors implements DcMotor {
@@ -45,12 +46,25 @@ public class SyncedDcMotors implements DcMotor {
 
     @Override
     public String getDeviceName() {
-        return null;
+        String deviceName = "Synced DC Motors";
+        if (motors.length <= 3) {
+            deviceName += ":";
+            for (DcMotor motor :
+                    motors) {
+                deviceName += " " + motor.getDeviceName();
+            }
+        }
+        return deviceName;
     }
 
     @Override
     public String getConnectionInfo() {
         return null;
+    }
+
+    @Override
+    public int getVersion() {
+        return 1;
     }
 
     public void setDirection(DcMotor.Direction direction) {
@@ -72,19 +86,20 @@ public class SyncedDcMotors implements DcMotor {
     }
 
     @Override
-    public int getVersion() {
-        return 0;
-    }
-
-    @Override
     public void resetDeviceConfigurationForOpMode() {
-
+        for (DcMotor motor : motors) {
+            motor.resetDeviceConfigurationForOpMode();
+        }
     }
 
     @Override
     public void close() {
-
+        for (DcMotor motor : motors) {
+            motor.close();
+        }
     }
+
+
 
     @Override
     public Direction getDirection() {
@@ -124,7 +139,7 @@ public class SyncedDcMotors implements DcMotor {
 
     @Override
     public int getPortNumber() {
-        return 0;
+        return -1;
     }
 
     @Override
