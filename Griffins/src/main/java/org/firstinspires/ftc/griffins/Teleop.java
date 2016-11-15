@@ -21,17 +21,21 @@ public class Teleop extends OpMode {
         double left;
         double right;
         double shooterspeed;
+        double intake;
 
         left = -gamepad1.left_stick_y;
         right = -gamepad1.right_stick_y;
         shooterspeed = gamepad2.right_trigger;
+        intake = gamepad2.left_trigger;
         roboto.getLeftDrive().setPower(left);
         roboto.getRightDrive().setPower(right);
         roboto.getShooter().setPower(shooterspeed);
+        roboto.getIntake().setPower(intake);
 
         telemetry.addData("left stick speed", left);
         telemetry.addData("right stick speed", right);
         telemetry.addData("right trigger speed", shooterspeed);
+        telemetry.addData("intake speed", intake);
     }
 }
 
