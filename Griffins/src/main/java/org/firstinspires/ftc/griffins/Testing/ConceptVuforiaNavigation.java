@@ -57,29 +57,29 @@ import java.util.List;
  * This OpMode illustrates the basics of using the Vuforia localizer to determine
  * positioning and orientation of robot on the FTC field.
  * The code is structured as a LinearOpMode
- * <p/>
+ *
  * Vuforia uses the phone's camera to inspect it's surroundings, and attempt to locate target images.
- * <p/>
+ *
  * When images are located, Vuforia is able to determine the position and orientation of the
  * image relative to the camera.  This sample code than combines that information with a
  * knowledge of where the target images are on the field, to determine the location of the camera.
- * <p/>
+ *
  * This example assumes a "diamond" field configuration where the red and blue alliance stations
  * are adjacent on the corner of the field furthest from the audience.
  * From the Audience perspective, the Red driver station is on the right.
  * The two vision target are located on the two walls closest to the audience, facing in.
  * The Stones are on the RED side of the field, and the Chips are on the Blue side.
- * <p/>
+ *
  * A final calculation then uses the location of the camera on the robot to determine the
  * robot's location and orientation on the field.
  *
  * @see VuforiaLocalizer
  * @see VuforiaTrackableDefaultListener
  * see  ftc_app/doc/tutorial/FTC_FieldCoordinateSystemDefinition.pdf
- * <p/>
+ *
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
- * <p/>
+ *
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
@@ -99,7 +99,7 @@ public class ConceptVuforiaNavigation extends LinearOpMode {
     VuforiaLocalizer vuforia;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         /**
          * Start up Vuforia, telling it the id of the view that we wish to use as the parent for
          * the camera monitor feedback; if no camera monitor feedback is desired, use the parameterless
@@ -124,7 +124,7 @@ public class ConceptVuforiaNavigation extends LinearOpMode {
          * {@link Parameters} instance with which you initialize Vuforia.
          */
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
-        //parameters.vuforiaLicenseKey = "ATsODcD/////AAAAAVw2lR...d45oGpdljdOh5LuFB9nDNfckoxb8COxKSFX";
+        parameters.vuforiaLicenseKey = "ATsODcD/////AAAAAVw2lR...d45oGpdljdOh5LuFB9nDNfckoxb8COxKSFX";
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
 
@@ -320,7 +320,6 @@ public class ConceptVuforiaNavigation extends LinearOpMode {
                 telemetry.addData("Pos", "Unknown");
             }
             telemetry.update();
-            idle();
         }
     }
 

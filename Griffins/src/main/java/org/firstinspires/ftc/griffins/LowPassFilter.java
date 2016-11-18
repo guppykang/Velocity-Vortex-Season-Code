@@ -7,8 +7,9 @@ import java.util.Queue;
  * Created by David on 10/27/2016.
  * Implements a low pass filter
  * on doubles
+ * todo: create check for outliers in the data.
  */
-public class LowPassFilter {
+public class LowPassFilter extends Filter {
 
     private int capacity;
     private Queue<Double> values;
@@ -20,7 +21,7 @@ public class LowPassFilter {
         processedValue = 0;
     }
 
-    public double addValue(double newValue) {
+    public double processValue(double newValue) {
         values.add(newValue);
 
         if (values.size() > capacity) {
@@ -39,11 +40,11 @@ public class LowPassFilter {
         return processedValue;
     }
 
-    public boolean atCapacity() {
-        return values.size() == capacity;
-    }
-
     public double getProcessedValue() {
         return processedValue;
+    }
+
+    public boolean atCapacity() {
+        return values.size() == capacity;
     }
 }

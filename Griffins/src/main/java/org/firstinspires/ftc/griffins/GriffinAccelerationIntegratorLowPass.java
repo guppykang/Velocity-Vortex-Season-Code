@@ -33,9 +33,9 @@ public class GriffinAccelerationIntegratorLowPass implements BNO055IMU.Accelerat
     private Position position;
     private Velocity velocity;
     private Acceleration acceleration;
-    private LowPassFilter filterX;
-    private LowPassFilter filterY;
-    private LowPassFilter filterZ;
+    private Filter filterX;
+    private Filter filterY;
+    private Filter filterZ;
 
     public GriffinAccelerationIntegratorLowPass() {
         this.parameters = null;
@@ -107,9 +107,9 @@ public class GriffinAccelerationIntegratorLowPass implements BNO055IMU.Accelerat
     }
 
     private Acceleration processRawAcceleration(Acceleration linearAcceleration) {
-        linearAcceleration.xAccel = filterX.addValue(linearAcceleration.xAccel);
-        linearAcceleration.yAccel = filterY.addValue(linearAcceleration.yAccel);
-        linearAcceleration.zAccel = filterZ.addValue(linearAcceleration.zAccel);
+        linearAcceleration.xAccel = filterX.processValue(linearAcceleration.xAccel);
+        linearAcceleration.yAccel = filterY.processValue(linearAcceleration.yAccel);
+        linearAcceleration.zAccel = filterZ.processValue(linearAcceleration.zAccel);
 
         linearAcceleration = thresholdAcceleration(linearAcceleration);
 
