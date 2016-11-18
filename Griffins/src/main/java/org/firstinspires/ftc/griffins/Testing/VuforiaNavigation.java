@@ -34,8 +34,8 @@ package org.firstinspires.ftc.griffins.Testing;
 
 import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -49,9 +49,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This OpMode illustrates the basics of using the Vuforia localizer to determine
@@ -67,8 +64,8 @@ import java.util.List;
  * This example assumes a "diamond" field configuration where the red and blue alliance stations
  * are adjacent on the corner of the field furthest from the audience.
  * From the Audience perspective, the Red driver station is on the right.
- * The two vision target are located on the two walls closest to the audience, facing in.
- * The Stones are on the RED side of the field, and the Chips are on the Blue side.
+ * The four vision target are located on the two walls closest to the audience, facing in.
+ * The Gears and the Tools are on the RED side of the field, and the Wheels and the Legos are on the Blue side.
  *
  * A final calculation then uses the location of the camera on the robot to determine the
  * robot's location and orientation on the field.
@@ -77,15 +74,12 @@ import java.util.List;
  * @see VuforiaTrackableDefaultListener
  * see  ftc_app/doc/tutorial/FTC_FieldCoordinateSystemDefinition.pdf
  *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
- *
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
- * is explained below.
+ * is explained below.  David Has Licence Key
  */
 
 @Autonomous(name = "Concept: Vuforia Navigation", group = "Concept")
-@Disabled
+//@Disabled
 public class VuforiaNavigation extends LinearOpMode {
 
     public static final String TAG = "Vuforia Sample";
@@ -100,6 +94,8 @@ public class VuforiaNavigation extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        ElapsedTime vuforiaTimer = new ElapsedTime();
+
         /**
          * Start up Vuforia, telling it the id of the view that we wish to use as the parent for
          * the camera monitor feedback; if no camera monitor feedback is desired, use the parameterless
@@ -133,37 +129,44 @@ public class VuforiaNavigation extends LinearOpMode {
          * Load the data sets that for the trackable objects we wish to track. These particular data
          * sets are stored in the 'assets' part of our application (you'll see them in the Android
          * Studio 'Project' view over there on the left of the screen). You can make your own datasets
-         * with the Vuforia Target Manager: https://developer.vuforia.com/target-manager. PDFs for the
-         * example "StonesAndChips", datasets can be found in in this project in the
-         * documentation directory.
+         * with the Vuforia Target Manager: https://developer.vuforia.com/target-manager.
          */
         VuforiaTrackables visionTargets = this.vuforia.loadTrackablesFromAsset("FTC_2016-17");
-        VuforiaTrackable wheels = visionTargets.get(0);
-        wheels.setName("Target1");  // Stones
 
-        VuforiaTrackable tools = visionTargets.get(1);
-        tools.setName("Target2");  // Chips
+        VuforiaTrackable blueMidTarget = visionTargets.get(0);
+        blueMidTarget.setName("Blue Middle Target");  // Wheels
 
-        VuforiaTrackable legos = visionTargets.get(2);
-        legos.setName("Target3");
+        VuforiaTrackable redFarTarget = visionTargets.get(1);
+        redFarTarget.setName("Red Far Target");  // Tools
 
-        VuforiaTrackable gears = visionTargets.get(3);
-        gears.setName("Target4");
-        /** For convenience, gather together all the trackable objects in one easily-iterable collection */
-        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
-        allTrackables.addAll(visionTargets);
+        VuforiaTrackable blueFarTarget = visionTargets.get(2);
+        blueFarTarget.setName("Blue Far Target"); // Legos
+
+        VuforiaTrackable redMidTarget = visionTargets.get(3);
+        redMidTarget.setName("Red Middle Target"); // Gears
+
+
+        /** We don't need to do this, {@Link VuforiaTrackables} already extends List, we just iterate over it*/
+//        /** For convenience, gather together all the trackable objects in one easily-iterable collection */
+//        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
+//        allTrackables.addAll(visionTargets);
 
         /**
          * We use units of mm here because that's the recommended units of measurement for the
          * size values specified in the XML for the ImageTarget trackables in data sets. E.g.:
-         *      <ImageTarget name="stones" size="247 173"/>
+         *      <ImageTarget name="Wheels" size="254.000000 184.154922" />
          * You don't *have to* use mm here, but the units here and the units used in the XML
          * target configuration files *must* correspond for the math to work out correctly.
          */
         float mmPerInch = 25.4f;
-        float mmBotWidth = 18 * mmPerInch;            // ... or whatever is right for your robot
         float mmFTCFieldWidth = (12 * 12 - 2) * mmPerInch;   // the FTC field is ~11'10" center-to-center of the glass panels
+        float mmPhoneXSlide = 6.5f * mmPerInch;
+        float mmPhoneYSlide = 0f * mmPerInch; //check with nina/thomas
+        float mmPhoneZSlide = 4f * mmPerInch; //check with nina/thomas
 
+        float mmTargetHeight = (1.5f + 8.5f / 2f) * mmPerInch; // from the andymark setup guide, 1.5 inches up, 8.5 inch paper
+        float mmMidTargetSlide = 12f * mmPerInch; // 1/2 a 2ft tile over
+        float mmFarTargetSlide = 36 * mmPerInch;  // 3/2 a 2ft tile over
         /**
          * In order for localization to work, we need to tell the system where each target we
          * wish to use for navigation resides on the field, and we need to specify where on the robot
@@ -199,81 +202,89 @@ public class VuforiaNavigation extends LinearOpMode {
          *
          * </ol>
          *
-         * This example places the "stones" image on the perimeter wall to the Left
-         *  of the Red Driver station wall.  Similar to the Red Beacon Location on the Res-Q
-         *
-         * This example places the "chips" image on the perimeter wall to the Right
-         *  of the Blue Driver station.  Similar to the Blue Beacon Location on the Res-Q
-         *
          * See the doc folder of this project for a description of the field Axis conventions.
          *
          * Initially the target is conceptually lying at the origin of the field's coordinate system
          * (the center of the field), facing up.
          *
          * In this configuration, the target's coordinate system aligns with that of the field.
-         *
-         * In a real situation we'd also account for the vertical (Z) offset of the target,
-         * but for simplicity, we ignore that here; for a real robot, you'll want to fix that.
-         *
-         * To place the Stones Target on the Red Audience wall:
+         */
+
+        /*
+         * To place the Gears Target on the Red Audience wall:
          * - First we rotate it 90 around the field's X axis to flip it upright
-         * - Then we rotate it  90 around the field's Z access to face it away from the audience.
-         * - Finally, we translate it back along the X axis towards the red audience wall.
+         * - Then we rotate it 90 around the field's Z axis to face it away from the audience.
+         * - Next we translate it back along the X axis towards the red audience wall
+         * - Finally, we translate it up along the Z axis, and back along the Y axis.
          */
         OpenGLMatrix redMiddleTargetLocationOnField = OpenGLMatrix
                 /* Then we translate the target off to the RED WALL. Our translation here
                 is a negative translation in X.*/
-                .translation(-mmFTCFieldWidth / 2, 0 /*find value translated along wall*/, 0)
+                .translation(-mmFTCFieldWidth / 2, -mmMidTargetSlide, mmTargetHeight)
                 .multiplied(Orientation.getRotationMatrix(
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X, then 90 in Z */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
                         AngleUnit.DEGREES, 90, 90, 0));
-//        wheels.setLocation(redMiddleTargetLocationOnField);
+        redMidTarget.setLocation(redMiddleTargetLocationOnField);
 //        RobotLog.ii(TAG, "Red Target=%s", format(redMiddleTargetLocationOnField));
 
+        /*
+         * To place the Tools Target on the Red Audience wall:
+         * - First we rotate it 90 around the field's X axis to flip it upright
+         * - Then we rotate it 90 around the field's Z axis to face it away from the audience.
+         * - Next we translate it back along the X axis towards the red audience wall
+         * - Finally, we translate it up along the Z axis, and forward along the Y axis.
+         */
         OpenGLMatrix redFarTargetLocationOnField = OpenGLMatrix
                 /* Then we translate the target off to the RED WALL. Our translation here
                 is a negative translation in X.*/
-                .translation(-mmFTCFieldWidth / 2, 0 /*find value translated along wall*/, 0)
+                .translation(-mmFTCFieldWidth / 2, mmFarTargetSlide, mmTargetHeight)
                 .multiplied(Orientation.getRotationMatrix(
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X, then 90 in Z */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
                         AngleUnit.DEGREES, 90, 90, 0));
-//        gears.setLocation(redFarTargetLocationOnField);
+        redFarTarget.setLocation(redFarTargetLocationOnField);
 //        RobotLog.ii(TAG, "Red Target=%s", format(redFarTargetLocationOnField));
 
        /*
-        * To place the Stones Target on the Blue Audience wall:
+        * To place the Wheels Target on the Blue Audience wall:
         * - First we rotate it 90 around the field's X axis to flip it upright
-        * - Finally, we translate it along the Y axis towards the blue audience wall.
+        * - Then we translate it along the Y axis towards the blue audience wall.
+        * - Finally, we translate it up along the Z axis, and forward along the X axis.
         */
         OpenGLMatrix blueMiddleTargetLocationOnField = OpenGLMatrix
                 /* Then we translate the target off to the Blue Audience wall.
                 Our translation here is a positive translation in Y.*/
-                .translation(0/*find value translated along wall*/, mmFTCFieldWidth / 2, 0)
+                .translation(mmMidTargetSlide, mmFTCFieldWidth / 2, mmTargetHeight)
                 .multiplied(Orientation.getRotationMatrix(
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
                         AngleUnit.DEGREES, 90, 0, 0));
-//        tools.setLocation(blueMiddleTargetLocationOnField);
+        blueMidTarget.setLocation(blueMiddleTargetLocationOnField);
 //        RobotLog.ii(TAG, "Blue Target=%s", format(blueMiddleTargetLocationOnField));
 
+        /*
+        * To place the Legos Target on the Blue Audience wall:
+        * - First we rotate it 90 around the field's X axis to flip it upright
+        * - Then we translate it along the Y axis towards the blue audience wall.
+        * - Finally, we translate it up along the Z axis, and forward along the X axis.
+        */
         OpenGLMatrix blueFarTargetLocationOnField = OpenGLMatrix
                 /* Then we translate the target off to the Blue Audience wall.
                 Our translation here is a positive translation in Y.*/
-                .translation(0/*find value translated along wall*/, mmFTCFieldWidth / 2, 0)
+                .translation(-mmFarTargetSlide, mmFTCFieldWidth / 2, mmTargetHeight)
                 .multiplied(Orientation.getRotationMatrix(
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
                         AngleUnit.DEGREES, 90, 0, 0));
-//        legos.setLocation(blueFarTargetLocationOnField);
+        blueFarTarget.setLocation(blueFarTargetLocationOnField);
 //        RobotLog.ii(TAG, "Blue Target=%s", format(blueFarTargetLocationOnField));
 
         /**
          * Create a transformation matrix describing where the phone is on the robot. Here, we
-         * put the phone on the right hand side of the robot with the screen facing in (see our
-         * choice of BACK camera above) and in landscape mode. Starting from alignment between the
-         * robot's and phone's axes, this is a rotation of -90deg along the Y axis.
+         * put the phone on the right hand side of the robot with the screen facing out (see our
+         * choice of FRONT camera above) and in landscape mode. Starting from alignment between the
+         * robot's and phone's axes, this is a rotation of 90deg along the Y axis.
          *
          * When determining whether a rotation is positive or negative, consider yourself as looking
          * down the (positive) axis of rotation from the positive towards the origin. Positive rotations
@@ -282,7 +293,7 @@ public class VuforiaNavigation extends LinearOpMode {
          * plane) is then CCW, as one would normally expect from the usual classic 2D geometry.
          */
         OpenGLMatrix phoneLocationOnRobot = OpenGLMatrix
-                .translation(mmBotWidth / 2, 0, 0)
+                .translation(mmPhoneXSlide, mmPhoneYSlide, mmPhoneZSlide)
                 .multiplied(Orientation.getRotationMatrix(
                         AxesReference.EXTRINSIC, AxesOrder.YZY,
                         AngleUnit.DEGREES, 90, 0, 0));
@@ -293,10 +304,10 @@ public class VuforiaNavigation extends LinearOpMode {
          * listener is a {@link VuforiaTrackableDefaultListener} and can so safely cast because
          * we have not ourselves installed a listener of a different type.
          */
-        ((VuforiaTrackableDefaultListener) wheels.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
-        ((VuforiaTrackableDefaultListener) tools.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
-        ((VuforiaTrackableDefaultListener) gears.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
-        ((VuforiaTrackableDefaultListener) legos.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
+        ((VuforiaTrackableDefaultListener) blueMidTarget.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
+        ((VuforiaTrackableDefaultListener) redFarTarget.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
+        ((VuforiaTrackableDefaultListener) redMidTarget.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
+        ((VuforiaTrackableDefaultListener) blueFarTarget.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
 
         /**
          * A brief tutorial: here's how all the math is going to work:
@@ -319,6 +330,7 @@ public class VuforiaNavigation extends LinearOpMode {
 
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start tracking");
+        telemetry.log().add("Vuforia initialized in %.2f seconds", vuforiaTimer.seconds());
         telemetry.update();
         waitForStart();
 
@@ -326,31 +338,42 @@ public class VuforiaNavigation extends LinearOpMode {
         visionTargets.activate();
 
         while (opModeIsActive()) {
+            vuforiaTimer.reset();
 
-            for (VuforiaTrackable trackable : allTrackables) {
+            boolean isTargetVisible = false;
+
+            for (VuforiaTrackable trackable : visionTargets) {
                 /**
                  * getUpdatedRobotLocation() will return null if no new information is available since
                  * the last time that call was made, or if the trackable is not currently visible.
                  * getRobotLocation() will return null if the trackable is not currently visible.
                  */
-                telemetry.addData(trackable.getName(), ((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible() ? "Visible" : "Not Visible");    //
+                telemetry.addData(trackable.getName(), ((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible() ? "Visible" : "Not Visible");
+                isTargetVisible |= ((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible();
 
                 OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
                 if (robotLocationTransform != null) {
                     lastLocation = robotLocationTransform;
                 }
             }
+
             /**
              * Provide feedback as to where the robot was last located (if we know).
              */
+            if (!isTargetVisible) {
+                lastLocation = null;
+            }
             if (lastLocation != null) {
                 //  RobotLog.vv(TAG, "robot=%s", format(lastLocation));
                 telemetry.addData("Pos", format(lastLocation));
             } else {
                 telemetry.addData("Pos", "Unknown");
             }
+            telemetry.addData("Loop Time (ms)", vuforiaTimer.milliseconds());
             telemetry.update();
         }
+
+        visionTargets.deactivate();
     }
 
     /**
