@@ -56,6 +56,15 @@ public class RobotHardware {
     public static final double LOADER_ZERO_POWER = 0;
     public static final double LOADER_FULL_REVERSE_POWER = -2 / 3;
     public static final double LOADER_FULL_FORWARD_POWER = 2 / 3;
+    // The constants for shooting speeds
+    public static final double SHOOTER_SPEED = 0.9;
+
+    // The constants for motor encoders
+    public static final int NEVEREST_ENCODER_COUNT_PER_ROTATION = 28;
+    public static final int NEVEREST_40_ENCODER_COUNTS_PER_ROTATION = NEVEREST_ENCODER_COUNT_PER_ROTATION * 40;
+    public static final double ENCODER_COUNTS_PER_TURRET_REVOLUTION = NEVEREST_40_ENCODER_COUNTS_PER_ROTATION / 3;
+    public static final double ENCODER_COUNTS_PER_TURRET_DEGREE = ENCODER_COUNTS_PER_TURRET_REVOLUTION / 360;
+    public static final int TURRET_ENCODER_COUNT_REVOLUTION_LIMIT = (int) (ENCODER_COUNTS_PER_TURRET_DEGREE * 200);
 
     // The Vuforia License Key
     public static final String VUFORIA_LICENSE_KEY = "";
@@ -104,13 +113,13 @@ public class RobotHardware {
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         turretRotation = hardwareMap.get(DcMotor.class, TURRET_ROTATION_MOTOR);
-        turretRotation.setDirection(DcMotorSimple.Direction.FORWARD);
+        turretRotation.setDirection(DcMotorSimple.Direction.REVERSE);
         turretRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretRotation.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         buttonPusherServo = hardwareMap.get(Servo.class, BUTTON_PUSHER_SERVO);
         buttonPusherServo.setDirection(Servo.Direction.FORWARD);
-        buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
+        this.pushButton();
 
         leftTurretGuide = hardwareMap.get(Servo.class, LEFT_TURRET_GUIDE_SERVO);
         leftTurretGuide.setDirection(Servo.Direction.FORWARD);
