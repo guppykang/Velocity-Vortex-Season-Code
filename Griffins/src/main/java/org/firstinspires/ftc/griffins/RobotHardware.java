@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
@@ -47,6 +48,14 @@ public class RobotHardware {
     // The addresses for the color sensors, since we are using two, the default will be changed
     public static final I2cAddr LEFT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x3C);
     public static final I2cAddr RIGHT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x38);
+    // The constants for the button pusher positions
+    public static final double BUTTON_PUSHER_CENTER_POSITION = 0.5;
+    public static final double BUTTON_PUSHER_LEFT_POSITION = 0.2;
+    public static final double BUTTON_PUSHER_RIGHT_POSITION = 0.8;
+    // The constants for the loader speeds
+    public static final double LOADER_ZERO_POWER = 0;
+    public static final double LOADER_FULL_REVERSE_POWER = -2 / 3;
+    public static final double LOADER_FULL_FORWARD_POWER = 2 / 3;
 
     //motor variables
     private SyncedDcMotors leftDrive;
@@ -58,7 +67,7 @@ public class RobotHardware {
     //servo variables
     private Servo leftTurretGuide;
     private Servo rightTurretGuide;
-    private CRServo buttonPusherServo;
+    private Servo buttonPusherServo;
     private CRServo loaderServoOne;
     private CRServo loaderServoTwo;
 
@@ -96,6 +105,10 @@ public class RobotHardware {
         turretRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretRotation.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        buttonPusherServo = hardwareMap.get(Servo.class, BUTTON_PUSHER_SERVO);
+        buttonPusherServo.setDirection(Servo.Direction.FORWARD);
+        buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
+
         leftTurretGuide = hardwareMap.get(Servo.class, LEFT_TURRET_GUIDE_SERVO);
         leftTurretGuide.setDirection(Servo.Direction.FORWARD);
 
@@ -104,19 +117,13 @@ public class RobotHardware {
 
         setTurretGuidePosition(0);
 
-        double zeroPower = 0; // TODO: 10/29/2016 check that this is no power
-
-        buttonPusherServo = hardwareMap.get(CRServo.class, BUTTON_PUSHER_SERVO);
-        buttonPusherServo.setDirection(DcMotorSimple.Direction.FORWARD);
-        buttonPusherServo.setPower(zeroPower);
-
         loaderServoOne = hardwareMap.get(CRServo.class, LOADER_SERVO_ONE);
         loaderServoOne.setDirection(DcMotorSimple.Direction.FORWARD);
-        loaderServoOne.setPower(zeroPower);
+        loaderServoOne.setPower(LOADER_ZERO_POWER);
 
         loaderServoTwo = hardwareMap.get(CRServo.class, LOADER_SERVO_TWO);
         loaderServoTwo.setDirection(DcMotorSimple.Direction.FORWARD);
-        loaderServoTwo.setPower(zeroPower);
+        loaderServoTwo.setPower(LOADER_ZERO_POWER);
 
         turretGyro = (ModernRoboticsI2cGyro) hardwareMap.get(GyroSensor.class, TURRET_GYRO);
         turretGyro.calibrate();  //look at z axis scaling coefficient when available
@@ -192,5 +199,12 @@ public class RobotHardware {
 
     public void pushButton(/*parameters needed*/) {
         // TODO: 10/29/2016 create code to push button
+    }
+
+    public void setLoaderPower(double power) {
+        power = Range.clip(power, -1, 1);
+        power = Range.scale(power, -1, 1, LOADER_FULL_REVERSE_POWER, LOADER_FULL_FORWARD_POWER);
+        loaderServoOne.setPower(power);
+        loaderServoTwo.setPower(power);
     }
 }
