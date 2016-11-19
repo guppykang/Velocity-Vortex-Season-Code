@@ -57,6 +57,9 @@ public class RobotHardware {
     public static final double LOADER_FULL_REVERSE_POWER = -2 / 3;
     public static final double LOADER_FULL_FORWARD_POWER = 2 / 3;
 
+    // The Vuforia License Key
+    public static final String VUFORIA_LICENSE_KEY = "";
+
     //motor variables
     private SyncedDcMotors leftDrive;
     private SyncedDcMotors rightDrive;
