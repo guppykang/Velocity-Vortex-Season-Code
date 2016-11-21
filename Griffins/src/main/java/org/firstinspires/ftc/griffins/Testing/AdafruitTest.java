@@ -25,7 +25,7 @@ import java.util.Locale;
  * To test the new BNO055 sensor
  */
 
-@TeleOp(name = "Adafruit IMU Test", group = "user")
+@TeleOp(name = "Adafruit IMU Test", group = "accel")
 
 public class AdafruitTest extends OpMode {
 
@@ -69,7 +69,7 @@ public class AdafruitTest extends OpMode {
         }
 
         if (gamepad1.b && !pressedB) {
-            String filename = "AccelerometerData.csv";
+            String filename = "AccelerometerDataAdafruit.csv";
             File file = AppUtil.getInstance().getSettingsFile(filename);
             ReadWriteFile.writeFile(file, integrator.getLog());
             telemetry.log().add("saved to '%s'", filename);
