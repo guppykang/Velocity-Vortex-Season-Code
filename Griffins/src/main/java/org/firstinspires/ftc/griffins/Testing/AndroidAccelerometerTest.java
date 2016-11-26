@@ -45,7 +45,7 @@ public class AndroidAccelerometerTest extends OpMode implements SensorEventListe
 
     @Override
     public void loop() {
-        telemetry.addData("acceleration data", log.get(log.size() - 1));
+        telemetry.addData("acceleration data", log.isEmpty() ? "no value" : log.get(log.size() - 1));
         if (gamepad1.a && !aPreviousState) {
             StringBuilder stringBuilder = new StringBuilder();
             for (Acceleration accel :

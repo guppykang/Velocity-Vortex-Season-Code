@@ -161,9 +161,9 @@ public class VuforiaNavigation extends LinearOpMode {
          */
         float mmPerInch = 25.4f;
         float mmFTCFieldWidth = (12 * 12 - 2) * mmPerInch;   // the FTC field is ~11'10" center-to-center of the glass panels
-        float mmPhoneXSlide = 6.5f * mmPerInch;
-        float mmPhoneYSlide = 0f * mmPerInch; //check with nina/thomas
-        float mmPhoneZSlide = 4f * mmPerInch; //check with nina/thomas
+        float mmPhoneXSlide = 5.4f * mmPerInch;
+        float mmPhoneYSlide = 3.3f * mmPerInch; //check with nina/thomas
+        float mmPhoneZSlide = 6.3f * mmPerInch; //check with nina/thomas
 
         float mmTargetHeight = (1.5f + 8.5f / 2f) * mmPerInch; // from the andymark setup guide, 1.5 inches up, 8.5 inch paper
         float mmMidTargetSlide = 12f * mmPerInch; // 1/2 a 2ft tile over

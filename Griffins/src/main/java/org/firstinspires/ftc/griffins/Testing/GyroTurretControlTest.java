@@ -2,6 +2,7 @@ package org.firstinspires.ftc.griffins.Testing;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
@@ -16,6 +17,7 @@ import static org.firstinspires.ftc.griffins.RobotHardware.TURRET_ROTATION_MOTOR
  * Created by David on 11/22/2016.
  */
 
+@TeleOp(name = "gyro turret control", group = "test")
 public class GyroTurretControlTest extends OpMode {
 
     int turretHeadingTarget;
@@ -50,26 +52,31 @@ public class GyroTurretControlTest extends OpMode {
     public void loop() {
         //turret on gamepad 1 right x axis, attempts to maintain heading relative to field
         turretHeadingTarget += gamepad1.right_stick_x * 5;
-        double turretError = turretHeadingTarget - turretGyro.getIntegratedZValue();
-        double turretSpeed = turretError / 20;
-        turretSpeed = Range.clip(turretSpeed, -1, 1);
+        double turretError = -(turretHeadingTarget - turretGyro.getIntegratedZValue());
+        double turretSpeed = turretError / 100;
+        turretSpeed = Range.clip(turretSpeed, -.5, .5);
 
         if (turretRotation.getCurrentPosition() > RobotHardware.TURRET_ENCODER_COUNT_REVOLUTION_LIMIT) {
             turretSpeed = Range.clip(turretSpeed, -1, 0);
             if (turretError > 20) {
-                turretHeadingTarget -= 360;
-                turretSpeed = -1;
+                turretHeadingTarget += 360;
+                //turretSpeed = -1;
             }
+
         } else if (turretRotation.getCurrentPosition() < -RobotHardware.TURRET_ENCODER_COUNT_REVOLUTION_LIMIT) {
             turretSpeed = Range.clip(turretSpeed, 0, 1);
             if (turretError < -20) {
-                turretHeadingTarget += 360;
-                turretSpeed = 1;
+                turretHeadingTarget -= 360;
+                // turretSpeed = 1;
             }
+
         }
+
+        turretRotation.setPower(turretSpeed);
 
         telemetry.addData("Turret Heading Current|Target", turretGyro.getIntegratedZValue() + "|" + turretHeadingTarget);
         telemetry.addData("Turret Error", turretError);
         telemetry.addData("Turret Speed", turretSpeed);
+        telemetry.addData("Turret Counts", turretRotation.getCurrentPosition());
     }
 }
