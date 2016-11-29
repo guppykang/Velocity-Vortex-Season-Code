@@ -46,8 +46,8 @@ public class RobotHardware {
     public static final String BNO055_SENSOR = "bno055";
 
     // The addresses for the color sensors, since we are using two, the default will be changed
-    public static final I2cAddr LEFT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x3C);
-    public static final I2cAddr RIGHT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x38);
+    public static final I2cAddr LEFT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x38);
+    public static final I2cAddr RIGHT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x3C);
     // The constants for the button pusher positions
     public static final double BUTTON_PUSHER_CENTER_POSITION = 0.5;
     public static final double BUTTON_PUSHER_LEFT_POSITION = 0.2;
@@ -119,7 +119,7 @@ public class RobotHardware {
 
         buttonPusherServo = hardwareMap.get(Servo.class, BUTTON_PUSHER_SERVO);
         buttonPusherServo.setDirection(Servo.Direction.FORWARD);
-        this.pushButton();
+        this.pushButton(BeaconState.UNDEFINED_STATE);
 
         leftTurretGuide = hardwareMap.get(Servo.class, LEFT_TURRET_GUIDE_SERVO);
         leftTurretGuide.setDirection(Servo.Direction.FORWARD);
@@ -209,8 +209,44 @@ public class RobotHardware {
         // TODO: 10/29/2016 create code for turret position
     }
 
-    public void pushButton(/*parameters needed*/) {
-        // TODO: 10/29/2016 create code to push button
+    public void pushButton(BeaconState beaconState) {
+
+    }
+
+    public BeaconState findBeaconState() {
+        BeaconState beaconState = BeaconState.UNDEFINED_STATE;
+        BeaconState leftSide = findColorSensorState(leftButtonPusherColorSensor);
+        BeaconState rightSide = findColorSensorState(rightButtonPusherColorSensor);
+
+        if (leftSide == BeaconState.BLUE_BLUE) {
+            if (rightSide == BeaconState.BLUE_BLUE) {
+                beaconState = BeaconState.BLUE_BLUE;
+            } else if (rightSide == BeaconState.RED_RED) {
+                beaconState = BeaconState.BLUE_RED;
+            }
+        } else if (leftSide == BeaconState.RED_RED) {
+            if (rightSide == BeaconState.BLUE_BLUE) {
+                beaconState = BeaconState.RED_BLUE;
+            } else if (rightSide == BeaconState.RED_RED) {
+                beaconState = BeaconState.RED_RED;
+            }
+        }
+
+        return beaconState;
+    }
+
+    private BeaconState findColorSensorState(ColorSensor colorSensor) {
+        BeaconState colorState;
+
+        if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.green()) {
+            colorState = BeaconState.RED_RED;
+        } else if (colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.green()) {
+            colorState = BeaconState.BLUE_BLUE;
+        } else {
+            colorState = BeaconState.UNDEFINED_STATE;
+        }
+
+        return colorState;
     }
 
     public void setLoaderPower(double power) {
@@ -218,5 +254,13 @@ public class RobotHardware {
         power = Range.scale(power, -1, 1, LOADER_FULL_REVERSE_POWER, LOADER_FULL_FORWARD_POWER);
         loaderServoOne.setPower(power);
         loaderServoTwo.setPower(power);
+    }
+
+    public enum BeaconState {
+        BLUE_BLUE,
+        BLUE_RED,
+        RED_BLUE,
+        RED_RED,
+        UNDEFINED_STATE
     }
 }
