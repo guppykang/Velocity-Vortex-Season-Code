@@ -36,7 +36,7 @@ public class RobotHardware {
     public static final String LEFT_TURRET_GUIDE_SERVO = "turretL";
     public static final String RIGHT_TURRET_GUIDE_SERVO = "turretR";
     public static final String BUTTON_PUSHER_SERVO = "button";
-    public static final String LOADER_SERVO_ONE = "loader1";
+    public static final String LOADER_SERVO_ONE = "loader";
     public static final String LOADER_SERVO_TWO = "loader2";
     public static final String TURRET_GYRO = "gyro";
     public static final String LEFT_BUTTON_PUSHER_SENSOR = "colorL";
@@ -81,7 +81,7 @@ public class RobotHardware {
     private Servo rightTurretGuide;
     private Servo buttonPusherServo;
     private CRServo loaderServoOne;
-    private CRServo loaderServoTwo;
+    //private CRServo loaderServoTwo;
 
     //sensor variables
     private ModernRoboticsI2cGyro turretGyro;
@@ -133,9 +133,9 @@ public class RobotHardware {
         loaderServoOne.setDirection(DcMotorSimple.Direction.FORWARD);
         loaderServoOne.setPower(LOADER_ZERO_POWER);
 
-        loaderServoTwo = hardwareMap.get(CRServo.class, LOADER_SERVO_TWO);
+        /*loaderServoTwo = hardwareMap.get(CRServo.class, LOADER_SERVO_TWO);
         loaderServoTwo.setDirection(DcMotorSimple.Direction.FORWARD);
-        loaderServoTwo.setPower(LOADER_ZERO_POWER);
+        loaderServoTwo.setPower(LOADER_ZERO_POWER);*/
 
         turretGyro = (ModernRoboticsI2cGyro) hardwareMap.get(GyroSensor.class, TURRET_GYRO);
         turretGyro.calibrate();  //look at z axis scaling coefficient when available
@@ -264,7 +264,7 @@ public class RobotHardware {
         power = Range.clip(power, -1, 1);
         power = Range.scale(power, -1, 1, LOADER_FULL_REVERSE_POWER, LOADER_FULL_FORWARD_POWER);
         loaderServoOne.setPower(power);
-        loaderServoTwo.setPower(power);
+        //loaderServoTwo.setPower(power);
     }
 
     public enum BeaconState {
