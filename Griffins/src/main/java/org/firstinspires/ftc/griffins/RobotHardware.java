@@ -91,6 +91,8 @@ public class RobotHardware {
     private DigitalChannel loaderParticleLimitSwitch;
     private BNO055IMU robotTracker;
 
+    private int turretHeadingTarget;
+
     public RobotHardware() {
     }
 
@@ -218,5 +220,35 @@ public class RobotHardware {
         power = Range.scale(power, -1, 1, LOADER_FULL_REVERSE_POWER, LOADER_FULL_FORWARD_POWER);
         loaderServoOne.setPower(power);
         loaderServoTwo.setPower(power);
+    }
+
+    public void setTurretRotation(int target){
+        turretHeadingTarget += target;
+        double turretError = -(turretHeadingTarget - turretGyro.getIntegratedZValue());
+        double turretSpeed = turretError / 100;
+        turretSpeed = Range.clip(turretSpeed, -.5, .5);
+
+        if (turretRotation.getCurrentPosition() > RobotHardware.TURRET_ENCODER_COUNT_REVOLUTION_LIMIT) {
+            turretSpeed = Range.clip(turretSpeed, -1, 0);
+            if (turretError > 20) {
+                turretHeadingTarget += 360;
+                //turretSpeed = -1;
+            }
+
+        } else if (turretRotation.getCurrentPosition() < -RobotHardware.TURRET_ENCODER_COUNT_REVOLUTION_LIMIT) {
+            turretSpeed = Range.clip(turretSpeed, 0, 1);
+            if (turretError < -20) {
+                turretHeadingTarget -= 360;
+                // turretSpeed = 1;
+            }
+
+        }
+
+        turretRotation.setPower(turretSpeed);
+
+       /* telemetry.addData("Turret Heading Current|Target", turretGyro.getIntegratedZValue() + "|" + turretHeadingTarget);
+        telemetry.addData("Turret Error", turretError);
+        telemetry.addData("Turret Speed", turretSpeed);
+        telemetry.addData("Turret Counts", turretRotation.getCurrentPosition());*/
     }
 }
