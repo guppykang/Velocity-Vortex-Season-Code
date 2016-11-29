@@ -95,7 +95,7 @@ public class RobotHardware {
     }
 
     public void initialize(HardwareMap hardwareMap) {
-        leftDrive = new SyncedDcMotors(hardwareMap, DcMotorSimple.Direction.FORWARD, SyncedDcMotors.ALL_SAME, LEFT_DRIVE_ONE, LEFT_DRIVE_TWO);
+        leftDrive = new SyncedDcMotors(hardwareMap, DcMotorSimple.Direction.REVERSE, SyncedDcMotors.ALL_SAME, LEFT_DRIVE_ONE, LEFT_DRIVE_TWO);
         leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -210,9 +210,15 @@ public class RobotHardware {
     }
 
     public void pushButton(BeaconState beaconState) {
-
+        // TODO: 11/29/2016 add code
     }
 
+    /**
+     * Will check the color sensors to determine the beacon state
+     * If either color sensor's state is UNDEFINED_STATE, then this method will return UNDEFINED_STATE.
+     *
+     * @return the state of the beacon, as a variable of BeaconState,
+     */
     public BeaconState findBeaconState() {
         BeaconState beaconState = BeaconState.UNDEFINED_STATE;
         BeaconState leftSide = findColorSensorState(leftButtonPusherColorSensor);
@@ -235,6 +241,11 @@ public class RobotHardware {
         return beaconState;
     }
 
+    /**
+     * Checks the state of the color sensor to determine what color is being read
+     * @param colorSensor the color sensor that will be checked
+     * @return A BeaconState, which will be either RED_RED, BLUE_BLUE, or UNDEFINED_STATE.
+     */
     private BeaconState findColorSensorState(ColorSensor colorSensor) {
         BeaconState colorState;
 
