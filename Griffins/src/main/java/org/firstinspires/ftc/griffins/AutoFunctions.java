@@ -29,7 +29,7 @@ public class AutoFunctions {
         ElapsedTime timeout = new ElapsedTime();
         double drivePower = 1.0;
         do {
-            linearOpMode.waitForNextHardwareCycle(); //replace with idle, check that while loops call opmode is active
+            linearOpMode.idle(); //replace with idle, check that while loops call opmode is active
             int headingError = (gyroTarget - (int)getZAngle());
 
             RobotLog.i("time: " + timeout.time());
@@ -48,12 +48,12 @@ public class AutoFunctions {
         while (Math.abs(getZAngle()) > 0 && timeout.time() < 5); //DAVID: can't find new getRobotRotationGyro method
 
         //stop driving
-        linearOpMode.waitForNextHardwareCycle();
+        linearOpMode.idle();
         hardware.getLeftDrive().setPower(0);
         hardware.getRightDrive().setPower(0);
 
         //send any late signals
-        linearOpMode.waitForNextHardwareCycle();
+        linearOpMode.idle();
     }
 
     public void twoWheelTurn(double angle) throws InterruptedException {
@@ -66,7 +66,7 @@ public class AutoFunctions {
         double minimumPower = .10;
         double drivePower = 1.0;
         do {
-            linearOpMode.waitForNextHardwareCycle();
+            linearOpMode.idle();
             int headingError = (gyroTarget - (int)getZAngle());
             if (Math.abs(drivePower) < minimumPower) {
                 drivePower = minimumPower * Math.signum(drivePower);
@@ -86,12 +86,12 @@ public class AutoFunctions {
         while (Math.abs(getZAngle() - gyroTarget) > 0 && timeout.time() < 5);
 
         //stop motors
-        linearOpMode.waitForNextHardwareCycle();
+        linearOpMode.idle();
         hardware.getLeftDrive().setPower(0);
         hardware.getRightDrive().setPower(0);
 
         //send any late signals
-        linearOpMode.waitForNextHardwareCycle();
+        linearOpMode.idle();
     }
 
     public void driveStraight(long encoderCount, DriveStraightDirection direction, double power) throws InterruptedException {
@@ -146,7 +146,7 @@ public class AutoFunctions {
             RobotLog.i("Power offset: " + powerOffset);
             linearOpMode.telemetry.addData("Encoder Counts to go", Math.abs(hardware.getLeftDrive().getCurrentPosition() - encoderTarget));
 
-            linearOpMode.waitForNextHardwareCycle();
+            linearOpMode.idle();
             hardware.getLeftDrive().setPower(power - powerOffset);
             hardware.getRightDrive().setPower(power + powerOffset);
 
@@ -154,12 +154,12 @@ public class AutoFunctions {
         } while (stopCondition && timeout.time() < 10);
 
         //stop motors
-        linearOpMode.waitForNextHardwareCycle();
+        linearOpMode.idle();
         hardware.getLeftDrive().setPower(0);
         hardware.getRightDrive().setPower(0);
 
         //send any late signals
-        linearOpMode.waitForNextHardwareCycle();
+        linearOpMode.idle();
     }
 
     public enum DriveStraightDirection {FORWARD, BACKWARD}
