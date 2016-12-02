@@ -43,17 +43,17 @@ public class FtcValueMenu extends FtcMenu {
      *                     as the first line in the menu.
      * @param parent       specifies the parent menu to go back to if the BACK button
      *                     is pressed. If this is the root menu, it can be set to null.
-     * @param menuButtons  specifies the object that implements the MenuButtons interface.
+     * @param menuButtonsAndDashboard  specifies the object that implements the MenuButtonsAndDashboard interface.
      * @param minValue     specifies the minimum value of the value range.
      * @param maxValue     specifies the maximum value of the value range.
      * @param valueStep    specifies the value step.
      * @param defaultValue specifies the default value.
      * @param valueFormat  specifies the format string for the value.
      */
-    public FtcValueMenu(String menuTitle, FtcMenu parent, MenuButtons menuButtons,
+    public FtcValueMenu(String menuTitle, FtcMenu parent, MenuButtonsAndDashboard menuButtonsAndDashboard,
                         double minValue, double maxValue, double valueStep, double defaultValue,
-                        String valueFormat, HalDashboard dashboard) {
-        super(menuTitle, parent, menuButtons, dashboard);
+                        String valueFormat) {
+        super(menuTitle, parent, menuButtonsAndDashboard);
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.valueStep = valueStep;

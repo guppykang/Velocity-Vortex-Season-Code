@@ -56,16 +56,14 @@ public class HalDashboard {
      * instance of this object via getInstance(telemetry) and
      * nobody else.
      *
+     * Note that in order to ensure the underlying telemetry object
+     * is configured properly for HalDashboard, resetTelemetryForHalDashboard
+     * *MUST* be called.
+     *
      * @param telemetry specifies the Telemetry object.
      */
     public HalDashboard(Telemetry telemetry) {
         this.telemetry = telemetry;
-        telemetry.clearAll();
-        telemetry.setAutoClear(false);
-        for (int i = 0; i < display.length; i++) {
-            display[i] = telemetry.addData(String.format(displayKeyFormat, i), "");
-        }
-        telemetry.update();
     }   //HalDashboard
 
     /**
@@ -78,6 +76,15 @@ public class HalDashboard {
     public void resetTelemetryForOpMode() {
         telemetry.clearAll();
         telemetry.setAutoClear(true);
+        telemetry.update();
+    }
+
+    public void resetTelemetryForHalDashboard() {
+        telemetry.clearAll();
+        telemetry.setAutoClear(true);
+        for (int i = 0; i < display.length; i++) {
+            display[i] = telemetry.addData(String.format(displayKeyFormat, i), "");
+        }
         telemetry.update();
     }
 

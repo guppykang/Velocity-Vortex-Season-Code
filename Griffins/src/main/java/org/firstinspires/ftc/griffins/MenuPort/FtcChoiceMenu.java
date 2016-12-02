@@ -42,10 +42,10 @@ public class FtcChoiceMenu extends FtcMenu {
      *                    as the first line in the menu.
      * @param parent      specifies the parent menu to go back to if the BACK button
      *                    is pressed. If this is the root menu, it can be set to null.
-     * @param menuButtons specifies the object that implements the MenuButtons interface.
+     * @param menuButtonsAndDashboard specifies the object that implements the MenuButtonsAndDashboard interface.
      */
-    public FtcChoiceMenu(String menuTitle, FtcMenu parent, MenuButtons menuButtons, HalDashboard dashboard) {
-        super(menuTitle, parent, menuButtons, dashboard);
+    public FtcChoiceMenu(String menuTitle, FtcMenu parent, MenuButtonsAndDashboard menuButtonsAndDashboard) {
+        super(menuTitle, parent, menuButtonsAndDashboard);
     }   //FtcMenu
 
     /**

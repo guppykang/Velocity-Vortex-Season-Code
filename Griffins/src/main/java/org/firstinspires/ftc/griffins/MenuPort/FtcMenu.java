@@ -50,26 +50,25 @@ public abstract class FtcMenu {
     protected HalDashboard dashboard;
     private String menuTitle;
     private FtcMenu parent;
-    private MenuButtons menuButtons;
+    private MenuButtonsAndDashboard menuButtonsAndDashboard;
 
     /**
      * Constructor: Creates an instance of the object.
-     *
-     * @param menuTitle   specifies the title of the menu. The title will be displayed
+     *  @param menuTitle   specifies the title of the menu. The title will be displayed
      *                    as the first line in the menu.
      * @param parent      specifies the parent menu to go back to if the BACK button
      *                    is pressed. If this is the root menu, it can be set to null.
-     * @param menuButtons specifies the object that implements the MenuButtons interface.
+     * @param menuButtonsAndDashboard specifies the object that implements the MenuButtonsAndDashboard interface.
      */
-    protected FtcMenu(String menuTitle, FtcMenu parent, MenuButtons menuButtons, HalDashboard dashboard) {
-        if (menuButtons == null || menuTitle == null) {
-            throw new NullPointerException("menuTitle/menuButtons cannot be null.");
+    protected FtcMenu(String menuTitle, FtcMenu parent, MenuButtonsAndDashboard menuButtonsAndDashboard) {
+        if (menuButtonsAndDashboard == null || menuTitle == null) {
+            throw new NullPointerException("menuTitle/menuButtonsAndDashboard cannot be null.");
         }
 
-        this.dashboard = dashboard;
+        this.dashboard = menuButtonsAndDashboard.getHalDashboard();
         this.menuTitle = menuTitle;
         this.parent = parent;
-        this.menuButtons = menuButtons;
+        this.menuButtonsAndDashboard = menuButtonsAndDashboard;
     }   //FtcMenu
 
     /**
@@ -125,7 +124,7 @@ public abstract class FtcMenu {
         if (currMenu == null) {
             done = true;
         } else {
-            int currButtonStates = currMenu.getMenuButtons();
+            int currButtonStates = currMenu.getMenuButtonsAndDashboard();
             int changedButtons = currButtonStates ^ prevButtonStates;
             //
             // Refresh the display to update the menu state.
@@ -218,26 +217,27 @@ public abstract class FtcMenu {
      *
      * @return an integer representing the states of all the menu buttons.
      */
-    private int getMenuButtons() {
+    private int getMenuButtonsAndDashboard() {
         int buttons = 0;
 
-        if (menuButtons.isMenuBackButton()) buttons |= MENUBUTTON_BACK;
-        if (menuButtons.isMenuEnterButton()) buttons |= MENUBUTTON_ENTER;
-        if (menuButtons.isMenuUpButton()) buttons |= MENUBUTTON_UP;
-        if (menuButtons.isMenuDownButton()) buttons |= MENUBUTTON_DOWN;
+        if (menuButtonsAndDashboard.isMenuBackButton()) buttons |= MENUBUTTON_BACK;
+        if (menuButtonsAndDashboard.isMenuEnterButton()) buttons |= MENUBUTTON_ENTER;
+        if (menuButtonsAndDashboard.isMenuUpButton()) buttons |= MENUBUTTON_UP;
+        if (menuButtonsAndDashboard.isMenuDownButton()) buttons |= MENUBUTTON_DOWN;
 
         return buttons;
-    }   //getMenuButtons
+    }   //getMenuButtonsAndDashboard
 
     /**
-     * The user of this class is required to implement the MenuButtons
+     * The user of this class is required to implement the MenuButtonsAndDashboard
      * interface. The methods in this interface allows this class to
      * check for button activities the user made without hard coding
      * what particular buttons are associated with up/down/enter/back.
      * So you can associate the activities with gamepad buttons or even
      * other input devices.
+     * It also stores access to the instance of HalDashboard to be used.
      */
-    public interface MenuButtons {
+    public interface MenuButtonsAndDashboard {
         /**
          * This method is called by this class to check if the UP button
          * is pressed.
@@ -269,6 +269,14 @@ public abstract class FtcMenu {
          * @return true if the BACK button is pressed, false otherwise.
          */
         public boolean isMenuBackButton();
-    }   //interface MenuButtons
+
+        /**
+         * This method is called by this class to get an instance of HalDashboard
+         * to print out data to.
+         *
+         * @return the dashboard, set up to be used, see {@link HalDashboard#resetTelemetryForHalDashboard()}.
+         */
+        public HalDashboard getHalDashboard();
+    }   //interface MenuButtonsAndDashboard
 
 }   //class FtcMenu
