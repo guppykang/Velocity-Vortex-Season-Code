@@ -36,7 +36,7 @@ public class RobotHardware {
     public static final String LEFT_TURRET_GUIDE_SERVO = "turretL";
     public static final String RIGHT_TURRET_GUIDE_SERVO = "turretR";
     public static final String BUTTON_PUSHER_SERVO = "button";
-    public static final String LOADER_SERVO_ONE = "loader1";
+    public static final String LOADER_SERVO_ONE = "loader";
     public static final String LOADER_SERVO_TWO = "loader2";
     public static final String TURRET_GYRO = "gyro";
     public static final String LEFT_BUTTON_PUSHER_SENSOR = "colorL";
@@ -46,8 +46,8 @@ public class RobotHardware {
     public static final String BNO055_SENSOR = "bno055";
 
     // The addresses for the color sensors, since we are using two, the default will be changed
-    public static final I2cAddr LEFT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x3C);
-    public static final I2cAddr RIGHT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x38);
+    public static final I2cAddr LEFT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x38);
+    public static final I2cAddr RIGHT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x3C);
     // The constants for the button pusher positions
     public static final double BUTTON_PUSHER_CENTER_POSITION = 0.5;
     public static final double BUTTON_PUSHER_LEFT_POSITION = 0.2;
@@ -81,7 +81,7 @@ public class RobotHardware {
     private Servo rightTurretGuide;
     private Servo buttonPusherServo;
     private CRServo loaderServoOne;
-    private CRServo loaderServoTwo;
+    //private CRServo loaderServoTwo;
 
     //sensor variables
     private ModernRoboticsI2cGyro turretGyro;
@@ -97,7 +97,7 @@ public class RobotHardware {
     }
 
     public void initialize(HardwareMap hardwareMap) {
-        leftDrive = new SyncedDcMotors(hardwareMap, DcMotorSimple.Direction.FORWARD, SyncedDcMotors.ALL_SAME, LEFT_DRIVE_ONE, LEFT_DRIVE_TWO);
+        leftDrive = new SyncedDcMotors(hardwareMap, DcMotorSimple.Direction.REVERSE, SyncedDcMotors.ALL_SAME, LEFT_DRIVE_ONE, LEFT_DRIVE_TWO);
         leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -121,7 +121,7 @@ public class RobotHardware {
 
         buttonPusherServo = hardwareMap.get(Servo.class, BUTTON_PUSHER_SERVO);
         buttonPusherServo.setDirection(Servo.Direction.FORWARD);
-        this.pushButton();
+        this.pushButton(BeaconState.UNDEFINED_STATE);
 
         leftTurretGuide = hardwareMap.get(Servo.class, LEFT_TURRET_GUIDE_SERVO);
         leftTurretGuide.setDirection(Servo.Direction.FORWARD);
@@ -135,9 +135,9 @@ public class RobotHardware {
         loaderServoOne.setDirection(DcMotorSimple.Direction.FORWARD);
         loaderServoOne.setPower(LOADER_ZERO_POWER);
 
-        loaderServoTwo = hardwareMap.get(CRServo.class, LOADER_SERVO_TWO);
+        /*loaderServoTwo = hardwareMap.get(CRServo.class, LOADER_SERVO_TWO);
         loaderServoTwo.setDirection(DcMotorSimple.Direction.FORWARD);
-        loaderServoTwo.setPower(LOADER_ZERO_POWER);
+        loaderServoTwo.setPower(LOADER_ZERO_POWER);*/
 
         turretGyro = (ModernRoboticsI2cGyro) hardwareMap.get(GyroSensor.class, TURRET_GYRO);
         turretGyro.calibrate();  //look at z axis scaling coefficient when available
@@ -211,15 +211,70 @@ public class RobotHardware {
         // TODO: 10/29/2016 create code for turret position
     }
 
-    public void pushButton(/*parameters needed*/) {
-        // TODO: 10/29/2016 create code to push button
+    public void pushButton(BeaconState beaconState) {
+        // TODO: 11/29/2016 add code
+    }
+
+    /**
+     * Will check the color sensors to determine the beacon state
+     * If either color sensor's state is UNDEFINED_STATE, then this method will return UNDEFINED_STATE.
+     *
+     * @return the state of the beacon, as a variable of BeaconState,
+     */
+    public BeaconState findBeaconState() {
+        BeaconState beaconState = BeaconState.UNDEFINED_STATE;
+        BeaconState leftSide = findColorSensorState(leftButtonPusherColorSensor);
+        BeaconState rightSide = findColorSensorState(rightButtonPusherColorSensor);
+
+        if (leftSide == BeaconState.BLUE_BLUE) {
+            if (rightSide == BeaconState.BLUE_BLUE) {
+                beaconState = BeaconState.BLUE_BLUE;
+            } else if (rightSide == BeaconState.RED_RED) {
+                beaconState = BeaconState.BLUE_RED;
+            }
+        } else if (leftSide == BeaconState.RED_RED) {
+            if (rightSide == BeaconState.BLUE_BLUE) {
+                beaconState = BeaconState.RED_BLUE;
+            } else if (rightSide == BeaconState.RED_RED) {
+                beaconState = BeaconState.RED_RED;
+            }
+        }
+
+        return beaconState;
+    }
+
+    /**
+     * Checks the state of the color sensor to determine what color is being read
+     * @param colorSensor the color sensor that will be checked
+     * @return A BeaconState, which will be either RED_RED, BLUE_BLUE, or UNDEFINED_STATE.
+     */
+    private BeaconState findColorSensorState(ColorSensor colorSensor) {
+        BeaconState colorState;
+
+        if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.green()) {
+            colorState = BeaconState.RED_RED;
+        } else if (colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.green()) {
+            colorState = BeaconState.BLUE_BLUE;
+        } else {
+            colorState = BeaconState.UNDEFINED_STATE;
+        }
+
+        return colorState;
     }
 
     public void setLoaderPower(double power) {
         power = Range.clip(power, -1, 1);
         power = Range.scale(power, -1, 1, LOADER_FULL_REVERSE_POWER, LOADER_FULL_FORWARD_POWER);
         loaderServoOne.setPower(power);
-        loaderServoTwo.setPower(power);
+        //loaderServoTwo.setPower(power);
+    }
+
+    public enum BeaconState {
+        BLUE_BLUE,
+        BLUE_RED,
+        RED_BLUE,
+        RED_RED,
+        UNDEFINED_STATE
     }
 
     public void setTurretRotation(int target){
