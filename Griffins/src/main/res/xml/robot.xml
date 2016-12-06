@@ -1,14 +1,33 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <Robot type="FirstInspires-FTC">
+    <ServoController
+        name="Servo Controller"
+        serialNumber="AL00YAWU">
+        <Servo
+            name="button"
+            port="2"/>
+        <Servo
+            name="turretL"
+            port="3"/>
+        <Servo
+            name="turretR"
+            port="4"/>
+        <Servo
+            name="loader"
+            port="6"/>
+    </ServoController>
     <MotorController
-        name="Motor Controller a"
+        name="Motor Controller L"
         serialNumber="AL00XR3M">
+        <Motor
+            name="intake"
+            port="1"/>
         <Motor
             name="left1"
             port="2"/>
     </MotorController>
     <MotorController
-        name="Motor Controller c"
+        name="Secondary Drive"
         serialNumber="AI049P55">
         <Motor
             name="left2"
@@ -18,10 +37,37 @@
             port="2"/>
     </MotorController>
     <MotorController
-        name="Motor Controller b"
+        name="shooter Motor Controller"
+        serialNumber="AL00XTHN">
+        <Motor
+            name="shooterR"
+            port="1"/>
+        <Motor
+            name="shooterL"
+            port="2"/>
+    </MotorController>
+    <DeviceInterfaceModule
+        name="Device Interface Module 1"
+        serialNumber="AL00VF04">
+        <Gyro
+            name="gyro"
+            port="0"/>
+        <ColorSensor
+            name="colorL"
+            port="1"/>
+        <ColorSensor
+            name="colorR"
+            port="2"/>
+    </DeviceInterfaceModule>
+    <MotorController
+        name="Motor Controller R"
         serialNumber="A7008NIY">
         <Motor
             name="right1"
             port="1"/>
+        <Motor
+            name="turret"
+            port="2"/>
     </MotorController>
 </Robot>
+
