@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.griffins;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.util.Range;
 
 /**
  * Created by David on 11/26/2016.
@@ -11,6 +10,7 @@ public class TeleOp extends OpMode {
 
     RobotHardware hardware;
     int turretHeadingTarget;
+    boolean turretTrackingOn;
 
     @Override
     public void init() {
@@ -20,19 +20,34 @@ public class TeleOp extends OpMode {
     }
 
     @Override
+    public void init_loop() {
+        telemetry.addData("Ready for Teleop", hardware.getTurretGyro().isCalibrating());
+
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        hardware.startTurretTracking();
+        turretTrackingOn = true;
+    }
+
+    @Override
     public void loop() {
         double leftVal = -gamepad1.left_stick_y;
         double rightVal = -gamepad1.right_stick_y;
+        RobotHardware.BeaconState beaconPushState;
 
-        double angle = -gamepad2.left_stick_y;
-
-        hardware.getLeftDrive().setPower(leftVal);
-        hardware.getRightDrive().setPower(rightVal);
-
-        hardware.setTurretGuidePosition(angle);
-
+        if (turretTrackingOn) {
+            hardware.setTurretRotation((int) (-gamepad2.left_stick_x * 2));
+        }
         boolean intakeOn = false;
         double intakeSpeed = 0.0;
+
+        if (gamepad2.a) {
+            hardware.getTurretRotation().setPower(gamepad2.left_stick_x);
+            hardware.setTurretHeadingTarget(hardware.getTurretGyro().getIntegratedZValue());
+        }
 
         if(gamepad1.left_bumper) {
             intakeSpeed = -1.0;
@@ -46,49 +61,35 @@ public class TeleOp extends OpMode {
 
         if(gamepad2.left_bumper){
             hardware.setLoaderPower(-1.0);
-            intakeSpeed = -1.0;
-            intakeOn = true;
+            hardware.getShooter().setPower(-0.2);
+        } else if (gamepad2.left_trigger != 0) {
+            hardware.setLoaderPower(1);
+        } else {
+            hardware.setLoaderPower(0);
         }
 
-        if(gamepad2.left_trigger != 0){
-            hardware.setLoaderPower(gamepad2.left_trigger);
-            hardware.getShooter().setPower(1.0);
-        }else
-            hardware.getShooter().setPower(0.0);
+        if (gamepad2.right_bumper) {
+            hardware.getShooter().setPower(1);
+        } else {
+            hardware.getShooter().setPower(0);
+        }
 
         hardware.getIntake().setPower(intakeSpeed);
 
-        turretHeadingTarget += gamepad1.right_stick_x * 5;
-        double turretError = -(turretHeadingTarget - hardware.getTurretGyro().getIntegratedZValue());
-        double turretSpeed = turretError / 100;
-        turretSpeed = Range.clip(turretSpeed, -.5, .5);
-
-        if (hardware.getTurretRotation().getCurrentPosition() > RobotHardware.TURRET_ENCODER_COUNT_REVOLUTION_LIMIT) {
-            turretSpeed = Range.clip(turretSpeed, -1, 0);
-            if (turretError > 20) {
-                turretHeadingTarget += 360;
-                //turretSpeed = -1;
-            }
-
-        } else if (hardware.getTurretRotation().getCurrentPosition() < -RobotHardware.TURRET_ENCODER_COUNT_REVOLUTION_LIMIT) {
-            turretSpeed = Range.clip(turretSpeed, 0, 1);
-            if (turretError < -20) {
-                turretHeadingTarget -= 360;
-                // turretSpeed = 1;
-            }
-
-        }
-
-        hardware.getTurretRotation().setPower(turretSpeed);
+        hardware.setTurretRotation((int) (gamepad2.right_stick_x * 5));
 
         if(gamepad2.right_trigger == 1.0){
-            hardware.pushButton();
+            beaconPushState = RobotHardware.BeaconState.BLUE_RED;
         }else
-            hardware.pushButton(); //make so that there are different parameters and retracts
+            beaconPushState = RobotHardware.BeaconState.UNDEFINED_STATE;
+
+
+        hardware.getLeftDrive().setPower(leftVal);
+        hardware.getRightDrive().setPower(rightVal);
+        hardware.pushButton(beaconPushState);
 
         telemetry.addData("Left Drive Speed", leftVal);
         telemetry.addData("Right Drive Speed", rightVal);
-        telemetry.addData("Turret Angle", angle);
         telemetry.addData("Intake On?", intakeOn);
         telemetry.addData("Intake Speed", intakeSpeed);
     }

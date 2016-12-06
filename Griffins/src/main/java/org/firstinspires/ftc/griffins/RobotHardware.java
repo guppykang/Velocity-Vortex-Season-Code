@@ -3,20 +3,15 @@ package org.firstinspires.ftc.griffins;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
-
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 /**
  * Created by David on 10/29/2016.
@@ -49,26 +44,24 @@ public class RobotHardware {
     public static final I2cAddr LEFT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x38);
     public static final I2cAddr RIGHT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x3C);
     // The constants for the button pusher positions
-    public static final double BUTTON_PUSHER_CENTER_POSITION = 0.5;
-    public static final double BUTTON_PUSHER_LEFT_POSITION = 0.2;
-    public static final double BUTTON_PUSHER_RIGHT_POSITION = 0.8;
+    public static final double BUTTON_PUSHER_CENTER_POSITION = 243 / 255.0;
+    public static final double BUTTON_PUSHER_LEFT_POSITION = 188 / 255.0;
+    public static final double BUTTON_PUSHER_RIGHT_POSITION = 255.0;
     // The constants for the loader speeds
     public static final double LOADER_ZERO_POWER = 0;
-    public static final double LOADER_FULL_REVERSE_POWER = -2 / 3;
-    public static final double LOADER_FULL_FORWARD_POWER = 2 / 3;
+    public static final double LOADER_FULL_REVERSE_POWER = -2 / 3.0;
+    public static final double LOADER_FULL_FORWARD_POWER = 2 / 3.0;
     // The constants for shooting speeds
     public static final double SHOOTER_SPEED = 0.9;
-
     // The constants for motor encoders
     public static final int NEVEREST_ENCODER_COUNT_PER_ROTATION = 28;
     public static final int NEVEREST_40_ENCODER_COUNTS_PER_ROTATION = NEVEREST_ENCODER_COUNT_PER_ROTATION * 40;
     public static final double ENCODER_COUNTS_PER_TURRET_REVOLUTION = NEVEREST_40_ENCODER_COUNTS_PER_ROTATION * 3;
     public static final double ENCODER_COUNTS_PER_TURRET_DEGREE = ENCODER_COUNTS_PER_TURRET_REVOLUTION / 360;
     public static final int TURRET_ENCODER_COUNT_REVOLUTION_LIMIT = (int) (ENCODER_COUNTS_PER_TURRET_DEGREE * 200);
-
     // The Vuforia License Key
     public static final String VUFORIA_LICENSE_KEY = "";
-
+    private BeaconState alliance;
     //motor variables
     private SyncedDcMotors leftDrive;
     private SyncedDcMotors rightDrive;
@@ -80,7 +73,7 @@ public class RobotHardware {
     private Servo leftTurretGuide;
     private Servo rightTurretGuide;
     private Servo buttonPusherServo;
-    private CRServo loaderServoOne;
+    private Servo loaderServoOne;
     //private CRServo loaderServoTwo;
 
     //sensor variables
@@ -94,6 +87,7 @@ public class RobotHardware {
     private int turretHeadingTarget;
 
     public RobotHardware() {
+        alliance = BeaconState.BLUE_BLUE;
     }
 
     public void initialize(HardwareMap hardwareMap) {
@@ -105,12 +99,12 @@ public class RobotHardware {
         rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        shooter = new SyncedDcMotors(hardwareMap, DcMotorSimple.Direction.FORWARD, SyncedDcMotors.ALTERNATING, SHOOTER_MOTOR_LEFT, SHOOTER_MOTOR_RIGHT);
+        shooter = new SyncedDcMotors(hardwareMap, DcMotorSimple.Direction.REVERSE, SyncedDcMotors.ALTERNATING, SHOOTER_MOTOR_LEFT, SHOOTER_MOTOR_RIGHT);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         intake = hardwareMap.get(DcMotor.class, INTAKE_MOTOR);
-        intake.setDirection(DcMotorSimple.Direction.FORWARD);
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
@@ -131,19 +125,20 @@ public class RobotHardware {
 
         setTurretGuidePosition(0);
 
-        loaderServoOne = hardwareMap.get(CRServo.class, LOADER_SERVO_ONE);
-        loaderServoOne.setDirection(DcMotorSimple.Direction.FORWARD);
-        loaderServoOne.setPower(LOADER_ZERO_POWER);
+        loaderServoOne = hardwareMap.get(Servo.class, LOADER_SERVO_ONE);
+        loaderServoOne.setDirection(Servo.Direction.REVERSE);
 
         /*loaderServoTwo = hardwareMap.get(CRServo.class, LOADER_SERVO_TWO);
         loaderServoTwo.setDirection(DcMotorSimple.Direction.FORWARD);
         loaderServoTwo.setPower(LOADER_ZERO_POWER);*/
 
+        this.setLoaderPower(0);
+
         turretGyro = (ModernRoboticsI2cGyro) hardwareMap.get(GyroSensor.class, TURRET_GYRO);
         turretGyro.calibrate();  //look at z axis scaling coefficient when available
         turretGyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN); // verify that the angles have the correct sign
 
-        leftButtonPusherColorSensor = hardwareMap.get(ColorSensor.class, LEFT_BUTTON_PUSHER_SENSOR);
+        /*leftButtonPusherColorSensor = hardwareMap.get(ColorSensor.class, LEFT_BUTTON_PUSHER_SENSOR);
         leftButtonPusherColorSensor.setI2cAddress(LEFT_COLOR_SENSOR_ADDRESS);
         leftButtonPusherColorSensor.enableLed(false);
 
@@ -153,6 +148,7 @@ public class RobotHardware {
 
         beaconDistanceSensor = hardwareMap.get(ModernRoboticsAnalogOpticalDistanceSensor.class, BEACON_DISTANCE_SENSOR);
         beaconDistanceSensor.enableLed(true);
+
 
         loaderParticleLimitSwitch = hardwareMap.get(DigitalChannel.class, LOADER_SWITCH);
         loaderParticleLimitSwitch.setMode(DigitalChannelController.Mode.INPUT);
@@ -164,7 +160,7 @@ public class RobotHardware {
         parameters.calibrationDataFile = "AdafruitIMUCalibration.json";
         parameters.loggingEnabled = false;
         robotTracker.initialize(parameters);
-        robotTracker.startAccelerationIntegration(new Position(), new Velocity(), 10);
+        robotTracker.startAccelerationIntegration(new Position(), new Velocity(), 10);*/
     }
 
     public SyncedDcMotors getLeftDrive() {
@@ -185,6 +181,36 @@ public class RobotHardware {
 
     public DcMotor getTurretRotation() {
         return turretRotation;
+    }
+
+    public void setTurretRotation(int target) {
+        turretHeadingTarget += target;
+        double turretError = -(turretHeadingTarget - turretGyro.getIntegratedZValue());
+        double turretSpeed = turretError / 100;
+        turretSpeed = Range.clip(turretSpeed, -.5, .5);
+
+        if (turretRotation.getCurrentPosition() > RobotHardware.TURRET_ENCODER_COUNT_REVOLUTION_LIMIT) {
+            turretSpeed = Range.clip(turretSpeed, -1, 0);
+            if (turretError > 20) {
+                turretHeadingTarget += 360;
+                //turretSpeed = -1;
+            }
+
+        } else if (turretRotation.getCurrentPosition() < -RobotHardware.TURRET_ENCODER_COUNT_REVOLUTION_LIMIT) {
+            turretSpeed = Range.clip(turretSpeed, 0, 1);
+            if (turretError < -20) {
+                turretHeadingTarget -= 360;
+                // turretSpeed = 1;
+            }
+
+        }
+
+        turretRotation.setPower(turretSpeed);
+
+       /* telemetry.addData("Turret Heading Current|Target", turretGyro.getIntegratedZValue() + "|" + turretHeadingTarget);
+        telemetry.addData("Turret Error", turretError);
+        telemetry.addData("Turret Speed", turretSpeed);
+        telemetry.addData("Turret Counts", turretRotation.getCurrentPosition());*/
     }
 
     public BNO055IMU getRobotTracker() {
@@ -212,7 +238,32 @@ public class RobotHardware {
     }
 
     public void pushButton(BeaconState beaconState) {
-        // TODO: 11/29/2016 add code
+        if (alliance == BeaconState.BLUE_BLUE) {
+            if (beaconState == BeaconState.BLUE_RED) {
+                buttonPusherServo.setPosition(BUTTON_PUSHER_LEFT_POSITION);
+            } else if (beaconState == BeaconState.RED_BLUE) {
+                buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
+            } else if (beaconState == BeaconState.BLUE_BLUE) {
+                buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
+            } else if (beaconState == BeaconState.RED_RED) {
+                buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
+            }
+        } else if (alliance == BeaconState.RED_RED) {
+            if (beaconState == BeaconState.BLUE_RED) {
+                buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
+            } else if (beaconState == BeaconState.RED_BLUE) {
+                buttonPusherServo.setPosition(BUTTON_PUSHER_LEFT_POSITION);
+            } else if (beaconState == BeaconState.BLUE_BLUE) {
+                buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
+            } else if (beaconState == BeaconState.RED_RED) {
+                buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
+            }
+        }
+
+        if (beaconState == BeaconState.UNDEFINED_STATE) {
+            buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
+        }
+
     }
 
     /**
@@ -264,9 +315,18 @@ public class RobotHardware {
 
     public void setLoaderPower(double power) {
         power = Range.clip(power, -1, 1);
-        power = Range.scale(power, -1, 1, LOADER_FULL_REVERSE_POWER, LOADER_FULL_FORWARD_POWER);
-        loaderServoOne.setPower(power);
+        power = Range.scale(power, -1, 1, 0, 1);
+        loaderServoOne.setPosition(power);
         //loaderServoTwo.setPower(power);
+    }
+
+    public void startTurretTracking() {
+        turretGyro.resetZAxisIntegrator();
+        turretHeadingTarget = 0;
+    }
+
+    public void setTurretHeadingTarget(int target) {
+        turretHeadingTarget = target;
     }
 
     public enum BeaconState {
@@ -275,35 +335,5 @@ public class RobotHardware {
         RED_BLUE,
         RED_RED,
         UNDEFINED_STATE
-    }
-
-    public void setTurretRotation(int target){
-        turretHeadingTarget += target;
-        double turretError = -(turretHeadingTarget - turretGyro.getIntegratedZValue());
-        double turretSpeed = turretError / 100;
-        turretSpeed = Range.clip(turretSpeed, -.5, .5);
-
-        if (turretRotation.getCurrentPosition() > RobotHardware.TURRET_ENCODER_COUNT_REVOLUTION_LIMIT) {
-            turretSpeed = Range.clip(turretSpeed, -1, 0);
-            if (turretError > 20) {
-                turretHeadingTarget += 360;
-                //turretSpeed = -1;
-            }
-
-        } else if (turretRotation.getCurrentPosition() < -RobotHardware.TURRET_ENCODER_COUNT_REVOLUTION_LIMIT) {
-            turretSpeed = Range.clip(turretSpeed, 0, 1);
-            if (turretError < -20) {
-                turretHeadingTarget -= 360;
-                // turretSpeed = 1;
-            }
-
-        }
-
-        turretRotation.setPower(turretSpeed);
-
-       /* telemetry.addData("Turret Heading Current|Target", turretGyro.getIntegratedZValue() + "|" + turretHeadingTarget);
-        telemetry.addData("Turret Error", turretError);
-        telemetry.addData("Turret Speed", turretSpeed);
-        telemetry.addData("Turret Counts", turretRotation.getCurrentPosition());*/
     }
 }
