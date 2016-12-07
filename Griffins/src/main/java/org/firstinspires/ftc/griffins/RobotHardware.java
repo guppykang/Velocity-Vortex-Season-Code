@@ -183,11 +183,23 @@ public class RobotHardware {
         return turretRotation;
     }
 
-    public void setTurretRotation(int target) {
-        turretHeadingTarget += target;
-        double turretError = -(turretHeadingTarget - turretGyro.getIntegratedZValue());
-        double turretSpeed = turretError / 100;
-        turretSpeed = Range.clip(turretSpeed, -.5, .5);
+    public void setTurretRotation(double joystickInput, boolean trackingOn) {
+        if (this.getTurretGyro().isCalibrating()) {
+            trackingOn = false;
+        }
+
+        double turretSpeed = 0;
+        double turretError = 0;
+
+        if (trackingOn) {
+            turretHeadingTarget += joystickInput;
+            turretError = -(turretHeadingTarget - turretGyro.getIntegratedZValue());
+            turretSpeed = turretError / 100;
+            turretSpeed = Range.clip(turretSpeed, -.5, .5);
+        } else {
+            turretSpeed = joystickInput;
+            turretHeadingTarget = turretGyro.getIntegratedZValue();
+        }
 
         if (turretRotation.getCurrentPosition() > RobotHardware.TURRET_ENCODER_COUNT_REVOLUTION_LIMIT) {
             turretSpeed = Range.clip(turretSpeed, -1, 0);
@@ -323,10 +335,6 @@ public class RobotHardware {
     public void startTurretTracking() {
         turretGyro.resetZAxisIntegrator();
         turretHeadingTarget = 0;
-    }
-
-    public void setTurretHeadingTarget(int target) {
-        turretHeadingTarget = target;
     }
 
     public enum BeaconState {
