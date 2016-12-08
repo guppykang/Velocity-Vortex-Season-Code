@@ -177,10 +177,44 @@ public class AutoFunctions {
 
     }
 
+    public void driveStraightSimple(long encoderCount, DriveStraightDirection direction, double power) {
+        if (power < 0) {
+            throw new IllegalArgumentException("Power must be greater than 0");
+        } else if (power > 1) {
+            throw new IllegalArgumentException("Power must be less than 1");
+        }
+        if (encoderCount < 0) {
+            throw new IllegalArgumentException(" Encoder count must be greater than 0");
+        }
+
+        hardware.getLeftDrive().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hardware.getRightDrive().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        if (direction == DriveStraightDirection.FORWARD) {
+            hardware.getLeftDrive().setTargetPosition((int) (encoderCount + hardware.getLeftDrive().getCurrentPosition()));
+            hardware.getRightDrive().setTargetPosition((int) (encoderCount + hardware.getRightDrive().getCurrentPosition()));
+        } else {
+            hardware.getLeftDrive().setTargetPosition((int) (encoderCount - hardware.getLeftDrive().getCurrentPosition()));
+            hardware.getRightDrive().setTargetPosition((int) (encoderCount - hardware.getRightDrive().getCurrentPosition()));
+        }
+
+        while (linearOpMode.opModeIsActive() && (hardware.getLeftDrive().isBusy() || hardware.getRightDrive().isBusy())) {
+            hardware.getLeftDrive().setPower(power);
+            hardware.getRightDrive().setPower(power);
+        }
+
+        hardware.getLeftDrive().setPower(0);
+        hardware.getRightDrive().setPower(0);
+
+        hardware.getLeftDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hardware.getRightDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
     public void shoot() {
         hardware.getShooter().setPower(1.0);
+        linearOpMode.sleep(500);
         hardware.setLoaderPower(1.0);
-        linearOpMode.sleep(2000);
+        linearOpMode.sleep(3000);
         hardware.getShooter().setPower(0.0);
         hardware.setLoaderPower(0.0);
     }

@@ -201,7 +201,7 @@ public class RobotHardware {
             turretHeadingTarget = turretGyro.getIntegratedZValue();
         }
 
-        if (turretRotation.getCurrentPosition() > RobotHardware.TURRET_ENCODER_COUNT_REVOLUTION_LIMIT) {
+        /*if (turretRotation.getCurrentPosition() > RobotHardware.TURRET_ENCODER_COUNT_REVOLUTION_LIMIT) {
             turretSpeed = Range.clip(turretSpeed, -1, 0);
             if (turretError > 10) {
                 turretHeadingTarget += 360;
@@ -214,8 +214,7 @@ public class RobotHardware {
                 turretHeadingTarget -= 360;
                 // turretSpeed = 1;
             }
-
-        }
+        }*/
 
         turretRotation.setPower(turretSpeed);
 
