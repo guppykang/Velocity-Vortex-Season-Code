@@ -84,7 +84,7 @@ public class RobotHardware {
     private DigitalChannel loaderParticleLimitSwitch;
     private BNO055IMU robotTracker;
 
-    private int turretHeadingTarget;
+    private double turretHeadingTarget;
 
     public RobotHardware() {
         alliance = BeaconState.BLUE_BLUE;
@@ -193,7 +193,7 @@ public class RobotHardware {
 
         if (trackingOn) {
             turretHeadingTarget += joystickInput;
-            turretError = -(turretHeadingTarget - turretGyro.getIntegratedZValue());
+            turretError = -((int) turretHeadingTarget - turretGyro.getIntegratedZValue());
             turretSpeed = turretError / 100;
             turretSpeed = Range.clip(turretSpeed, -.5, .5);
         } else {
@@ -203,14 +203,14 @@ public class RobotHardware {
 
         if (turretRotation.getCurrentPosition() > RobotHardware.TURRET_ENCODER_COUNT_REVOLUTION_LIMIT) {
             turretSpeed = Range.clip(turretSpeed, -1, 0);
-            if (turretError > 20) {
+            if (turretError > 10) {
                 turretHeadingTarget += 360;
                 //turretSpeed = -1;
             }
 
         } else if (turretRotation.getCurrentPosition() < -RobotHardware.TURRET_ENCODER_COUNT_REVOLUTION_LIMIT) {
             turretSpeed = Range.clip(turretSpeed, 0, 1);
-            if (turretError < -20) {
+            if (turretError < -10) {
                 turretHeadingTarget -= 360;
                 // turretSpeed = 1;
             }

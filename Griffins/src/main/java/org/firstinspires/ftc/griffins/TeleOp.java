@@ -8,19 +8,21 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 public class TeleOp extends OpMode {
 
-    RobotHardware hardware;
-    boolean turretTrackingOn;
+    private RobotHardware hardware;
+    private boolean turretTrackingOn;
 
     @Override
     public void init() {
         hardware = new RobotHardware();
         hardware.initialize(hardwareMap);
+
+        gamepad1.setJoystickDeadzone(0.1f);
+        gamepad2.setJoystickDeadzone(0.1f);
     }
 
     @Override
     public void init_loop() {
         telemetry.addData("Ready for Teleop", hardware.getTurretGyro().isCalibrating());
-
     }
 
     @Override
@@ -35,8 +37,9 @@ public class TeleOp extends OpMode {
         double leftDrivePower;
         double rightDrivePower;
         double shooterPower;
-        double intakeSpeed = 0.0;
+        double intakeSpeed;
         double loaderPower;
+        double targetTurretSpeed;
         RobotHardware.BeaconState beaconPushState;
 
         rightDrivePower = Math.pow(-gamepad1.right_stick_y, 3);
@@ -44,9 +47,7 @@ public class TeleOp extends OpMode {
 
         if(gamepad1.left_bumper) {
             intakeSpeed = -1.0;
-        }
-
-        if(gamepad1.left_trigger != 0){
+        } else {
             intakeSpeed = gamepad1.left_trigger;
         }
 
@@ -66,7 +67,20 @@ public class TeleOp extends OpMode {
             shooterPower = 0;
         }
 
-        hardware.setTurretRotation(Math.pow(-gamepad2.left_stick_x, 3), turretTrackingOn);
+        double currentTurretSpeed = hardware.getTurretRotation().getPower();
+        targetTurretSpeed = -gamepad2.left_stick_x;
+        if (Math.abs(targetTurretSpeed) < 0.2) {
+            currentTurretSpeed = targetTurretSpeed;
+        } else {
+            if (Math.signum(targetTurretSpeed) != Math.signum(currentTurretSpeed)) {
+                currentTurretSpeed = -currentTurretSpeed;
+            }
+
+            if (Math.abs(currentTurretSpeed - targetTurretSpeed) < 0.05) {
+                currentTurretSpeed = -targetTurretSpeed;
+            }
+            currentTurretSpeed = currentTurretSpeed + Math.signum(targetTurretSpeed - currentTurretSpeed) * 0.05;
+        }
 
         if (gamepad2.right_trigger == 1.0) {
             beaconPushState = RobotHardware.BeaconState.BLUE_RED;
@@ -80,6 +94,7 @@ public class TeleOp extends OpMode {
         hardware.getIntake().setPower(intakeSpeed);
         hardware.setLoaderPower(loaderPower);
         hardware.pushButton(beaconPushState);
+        hardware.setTurretRotation(Math.pow(currentTurretSpeed, 3), turretTrackingOn);
 
         telemetry.addData("Left Drive Speed", leftDrivePower);
         telemetry.addData("Right Drive Speed", rightDrivePower);
