@@ -22,6 +22,8 @@
 
 package org.firstinspires.ftc.griffins.MenuPort;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 /**
  * This class is intended to be inherited by a specific menu class such as FtcChoiceMenu or
  * FtcValueMenu. Therefore, this class cannot be instantiated by itself. It implements a display
@@ -94,10 +96,10 @@ public abstract class FtcMenu {
      *
      * @param rootMenu specifies the root of the menu tree.
      */
-    public static void walkMenuTree(FtcMenu rootMenu) {
+    public static void walkMenuTree(FtcMenu rootMenu, LinearOpMode opModeCheck) {
         setRootMenu(rootMenu);
 
-        while (!runMenus()) {
+        while (!runMenus() && opModeCheck.isStopRequested()) {
             long sleepTime = LOOP_INTERVAL;
             long wakeupTime = System.currentTimeMillis() + sleepTime;
             while (sleepTime > 0) {
