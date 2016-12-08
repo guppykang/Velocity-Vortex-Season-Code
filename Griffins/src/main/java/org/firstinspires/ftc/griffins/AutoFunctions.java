@@ -137,7 +137,11 @@ public class AutoFunctions {
             //calculate using encoder difference
             double powerOffset = 0;
 
-            power = encoderCount / (2 * error);
+            if (error != 0) {
+                power = encoderCount / (2.0 * error);
+            } else {
+                power = 0;
+            }
 
             if (Math.abs(power) < minimumPower) {
                 power = minimumPower * Math.signum(power);

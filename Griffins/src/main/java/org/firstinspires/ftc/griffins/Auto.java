@@ -18,12 +18,14 @@ public class Auto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        hardware = new RobotHardware();
+        hardware.initialize(hardwareMap);
         autoFunctions = new AutoFunctions(hardware, this);
         waitForStart();
-        autoFunctions.driveStraight((int) inchesPerEncoderCount * 40, AutoFunctions.DriveStraightDirection.FORWARD, .5);
+        autoFunctions.driveStraight((int) (40 / inchesPerEncoderCount), AutoFunctions.DriveStraightDirection.FORWARD, .5);
         autoFunctions.shoot();
         hardware.getIntake().setPower(-1.0);
-        autoFunctions.driveStraight((int) inchesPerEncoderCount * 32, AutoFunctions.DriveStraightDirection.FORWARD, .5);
+        autoFunctions.driveStraight((int) (32 / inchesPerEncoderCount), AutoFunctions.DriveStraightDirection.FORWARD, .5);
         hardware.getIntake().setPower(0.0);
     }
 
