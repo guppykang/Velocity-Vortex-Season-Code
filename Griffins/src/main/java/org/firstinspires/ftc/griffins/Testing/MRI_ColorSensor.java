@@ -18,6 +18,7 @@ Support is available by emailing support@modernroboticsinc.com.
 
 import android.graphics.Color;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -25,7 +26,7 @@ import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 @TeleOp(name = "color sensor test", group = "user")
-
+@Disabled
 public class MRI_ColorSensor extends LinearOpMode {
 
     ColorSensor colorSensor;       //Instance of ColorSensor - for reading color

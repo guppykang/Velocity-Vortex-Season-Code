@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.griffins.Testing;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,7 +14,7 @@ import java.util.Iterator;
  * Created by David on 10/22/2016.
  */
 @TeleOp
-
+@Disabled
 public class MotorSpeedTest2 extends LinearOpMode {
 
     public static final int RATE_TRACKING_WINDOW = 2000; // In milliseconds
