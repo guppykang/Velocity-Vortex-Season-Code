@@ -100,6 +100,7 @@ public class AutoFunctions {
 
     public void driveStraight(long encoderCount, DriveStraightDirection direction, double power) throws InterruptedException {
         double minimumPower = .1;
+        double maximumPower = power;
         if (power < 0) {
             throw new IllegalArgumentException("Power must be greater than 0");
         } else if (power > 1) {
@@ -132,19 +133,21 @@ public class AutoFunctions {
 
             //how much the left motor is ahead of the right motor.
             long encoderDifference = (hardware.getLeftDrive().getCurrentPosition() - leftEncoderOffset) - (hardware.getRightDrive().getCurrentPosition() - rightEncoderOffset);
-            long error = hardware.getLeftDrive().getCurrentPosition() - encoderDifference / 2;
+            long error = encoderTarget - (hardware.getLeftDrive().getCurrentPosition() - encoderDifference / 2);
 
             //calculate using encoder difference
-            double powerOffset = 0;
+            double powerOffset = encoderDifference / 50;
 
             if (error != 0) {
-                power = encoderCount / (2.0 * error);
+                power = error / 50;
             } else {
                 power = 0;
             }
 
             if (Math.abs(power) < minimumPower) {
                 power = minimumPower * Math.signum(power);
+            } else if (Math.abs(power) > maximumPower) {
+                power = maximumPower * Math.signum(power);
             }
 
             RobotLog.i("DriveStraight loop------");
