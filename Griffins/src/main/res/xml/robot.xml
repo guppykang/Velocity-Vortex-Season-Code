@@ -46,19 +46,6 @@
             name="shooterL"
             port="2"/>
     </MotorController>
-    <DeviceInterfaceModule
-        name="Device Interface Module 1"
-        serialNumber="AL00VF04">
-        <Gyro
-            name="gyro"
-            port="0"/>
-        <ColorSensor
-            name="colorL"
-            port="1"/>
-        <ColorSensor
-            name="colorR"
-            port="2"/>
-    </DeviceInterfaceModule>
     <MotorController
         name="Motor Controller R"
         serialNumber="A7008NIY">
