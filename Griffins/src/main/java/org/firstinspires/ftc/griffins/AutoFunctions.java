@@ -1,10 +1,6 @@
 package org.firstinspires.ftc.griffins;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-/**
- * Created by David on 11/28/2016.
- */
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -12,6 +8,10 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+
+/**
+ * Created by David on 11/28/2016.
+ */
 
 public class AutoFunctions {
     private LinearOpMode linearOpMode;
@@ -44,8 +44,9 @@ public class AutoFunctions {
             }
             linearOpMode.telemetry.addData("error", headingError);
             linearOpMode.telemetry.addData("Motor power", drivePower);
+            linearOpMode.telemetry.update();
         }
-        while (Math.abs(getZAngle()) > 0 && timeout.time() < 5); //DAVID: can't find new getRobotRotationGyro method
+        while (Math.abs(getZAngle()) > 0 && timeout.time() < 5 && linearOpMode.opModeIsActive()); //DAVID: can't find new getRobotRotationGyro method
 
         //stop driving
         linearOpMode.waitForNextHardwareCycle();
@@ -54,6 +55,7 @@ public class AutoFunctions {
 
         //send any late signals
         linearOpMode.waitForNextHardwareCycle();
+        linearOpMode.telemetry.update();
     }
 
     public void twoWheelTurn(double angle) throws InterruptedException {
@@ -82,8 +84,9 @@ public class AutoFunctions {
             linearOpMode.telemetry.addData("error", headingError);
             linearOpMode.telemetry.addData("target, current", gyroTarget + ", " + getZAngle());
             linearOpMode.telemetry.addData("Motor power", drivePower);
+            linearOpMode.telemetry.update();
         }
-        while (Math.abs(getZAngle() - gyroTarget) > 0 && timeout.time() < 5);
+        while (Math.abs(getZAngle() - gyroTarget) > 0 && timeout.time() < 5 && linearOpMode.opModeIsActive());
 
         //stop motors
         linearOpMode.waitForNextHardwareCycle();
@@ -92,6 +95,7 @@ public class AutoFunctions {
 
         //send any late signals
         linearOpMode.waitForNextHardwareCycle();
+        linearOpMode.telemetry.update();
     }
 
     public void driveStraight(long encoderCount, DriveStraightDirection direction, double power) throws InterruptedException {
@@ -151,7 +155,9 @@ public class AutoFunctions {
             hardware.getRightDrive().setPower(power + powerOffset);
 
             stopCondition = Math.abs(hardware.getLeftDrive().getCurrentPosition() - encoderTarget) < 3;
-        } while (stopCondition && timeout.time() < 10);
+
+            linearOpMode.telemetry.update();
+        } while (stopCondition && timeout.time() < 10 && linearOpMode.opModeIsActive());
 
         //stop motors
         linearOpMode.waitForNextHardwareCycle();
@@ -160,12 +166,22 @@ public class AutoFunctions {
 
         //send any late signals
         linearOpMode.waitForNextHardwareCycle();
+        linearOpMode.telemetry.update();
+
     }
 
-    public enum DriveStraightDirection {FORWARD, BACKWARD}
+    public void shoot() {
+        hardware.getShooter().setPower(1.0);
+        hardware.setLoaderPower(1.0);
+        linearOpMode.sleep(2000);
+        hardware.getShooter().setPower(0.0);
+        hardware.setLoaderPower(0.0);
+    }
 
     public float getZAngle(){
         return hardware.getRobotTracker().getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX).firstAngle;
 
     }
+
+    public enum DriveStraightDirection {FORWARD, BACKWARD}
 }
