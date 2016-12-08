@@ -73,13 +73,14 @@ public class TeleOp extends OpMode {
             currentTurretSpeed = targetTurretSpeed;
         } else {
             if (Math.signum(targetTurretSpeed) != Math.signum(currentTurretSpeed)) {
-                currentTurretSpeed = -currentTurretSpeed;
+                currentTurretSpeed = 0;
             }
 
-            if (Math.abs(currentTurretSpeed - targetTurretSpeed) < 0.05) {
-                currentTurretSpeed = -targetTurretSpeed;
+            if (Math.abs(currentTurretSpeed - targetTurretSpeed) <= 0.05) {
+                currentTurretSpeed = targetTurretSpeed;
+            } else {
+                currentTurretSpeed = currentTurretSpeed + Math.signum(targetTurretSpeed - currentTurretSpeed) * 0.05;
             }
-            currentTurretSpeed = currentTurretSpeed + Math.signum(targetTurretSpeed - currentTurretSpeed) * 0.05;
         }
 
         if (gamepad2.right_trigger == 1.0) {
@@ -94,7 +95,7 @@ public class TeleOp extends OpMode {
         hardware.getIntake().setPower(intakeSpeed);
         hardware.setLoaderPower(loaderPower);
         hardware.pushButton(beaconPushState);
-        hardware.setTurretRotation(Math.pow(currentTurretSpeed, 3), turretTrackingOn);
+        hardware.setTurretRotation(currentTurretSpeed, turretTrackingOn);
 
         telemetry.addData("Left Drive Speed", leftDrivePower);
         telemetry.addData("Right Drive Speed", rightDrivePower);
