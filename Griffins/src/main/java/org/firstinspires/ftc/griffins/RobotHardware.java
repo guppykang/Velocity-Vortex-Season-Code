@@ -201,7 +201,7 @@ public class RobotHardware {
             turretSpeed = turretError / 100;
             turretSpeed = Range.clip(turretSpeed, -.5, .5);
         } else {
-            turretSpeed = joystickInput;
+            turretSpeed = -joystickInput;
             turretHeadingTarget = turretGyro.getIntegratedZValue();
         }
 

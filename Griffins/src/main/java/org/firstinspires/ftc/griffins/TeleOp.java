@@ -17,7 +17,7 @@ public class TeleOp extends OpMode {
         hardware.initialize(hardwareMap);
 
         gamepad1.setJoystickDeadzone(0.1f);
-        gamepad2.setJoystickDeadzone(0.3f);
+        gamepad2.setJoystickDeadzone(0.1f);
     }
 
     @Override
