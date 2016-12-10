@@ -155,8 +155,9 @@ public abstract class FtcMenu {
                     if (currMenu == null) {
                         //
                         // We are done with the menus. Let's clear the dashboard.
+                        //  DOESN'T WORK HERE
                         //
-                        currMenu.dashboard.clearDisplay();
+                        //currMenu.dashboard.clearDisplay();
                     }
                 } else if ((buttonsPressed & MENUBUTTON_UP) != 0) {
                     currMenu.menuUp();
