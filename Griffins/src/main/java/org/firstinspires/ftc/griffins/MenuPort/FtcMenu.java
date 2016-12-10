@@ -126,7 +126,7 @@ public abstract class FtcMenu {
         if (currMenu == null) {
             done = true;
         } else {
-            int currButtonStates = currMenu.getMenuButtonsAndDashboard();
+            int currButtonStates = currMenu.getMenuButtons();
             int changedButtons = currButtonStates ^ prevButtonStates;
             //
             // Refresh the display to update the menu state.
@@ -219,7 +219,7 @@ public abstract class FtcMenu {
      *
      * @return an integer representing the states of all the menu buttons.
      */
-    private int getMenuButtonsAndDashboard() {
+    private int getMenuButtons() {
         int buttons = 0;
 
         if (menuButtonsAndDashboard.isMenuBackButton()) buttons |= MENUBUTTON_BACK;
@@ -228,7 +228,7 @@ public abstract class FtcMenu {
         if (menuButtonsAndDashboard.isMenuDownButton()) buttons |= MENUBUTTON_DOWN;
 
         return buttons;
-    }   //getMenuButtonsAndDashboard
+    }   //getMenuButtons
 
     /**
      * The user of this class is required to implement the MenuButtonsAndDashboard

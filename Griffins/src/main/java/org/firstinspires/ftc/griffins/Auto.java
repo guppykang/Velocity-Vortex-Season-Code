@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.griffins.MenuPort.FtcMenu;
+import org.firstinspires.ftc.griffins.MenuPort.FtcValueMenu;
 import org.firstinspires.ftc.griffins.MenuPort.HalDashboard;
 
 import static org.firstinspires.ftc.griffins.RobotHardware.ENCODER_COUNTS_PER_INCH;
@@ -24,14 +25,15 @@ public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboar
         hardware.initialize(hardwareMap);
         autoFunctions = new AutoFunctions(hardware, this);
 
-        /*FtcValueMenu firstDriveDistanceMenu = new FtcValueMenu("First Drive Distance", null, this, 0, 100, 1, 40, "%.0f in");
+        FtcValueMenu firstDriveDistanceMenu = new FtcValueMenu("First Drive Distance", null, this, 0, 100, 1, 0, "%.0f in");
         FtcValueMenu secondDriveDistanceMenu = new FtcValueMenu("Second Drive Distance", firstDriveDistanceMenu, this,
-                0, 100, 1, 32, "%.0f in");
+                0, 100, 1, 48, "%.0f in");
+        firstDriveDistanceMenu.setChildMenu(secondDriveDistanceMenu);
         FtcMenu.walkMenuTree(firstDriveDistanceMenu, this);
         halDashboard.resetTelemetryForOpMode();
-*/
+
         double firstDriveDistance = 48;
-        double secondDriveDistance = 48;
+        double secondDriveDistance = secondDriveDistanceMenu.getCurrentValue();
         telemetry.log().add("First Drive Distance is %.0f in", firstDriveDistance);
         telemetry.log().add("Second Drive Distance is %.0f in", secondDriveDistance);
 
@@ -65,7 +67,9 @@ public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboar
 
     @Override
     public HalDashboard getHalDashboard() {
-        halDashboard = new HalDashboard(telemetry);
+        if (halDashboard == null) {
+            halDashboard = new HalDashboard(telemetry);
+        }
         halDashboard.resetTelemetryForHalDashboard();
         return halDashboard;
     }
