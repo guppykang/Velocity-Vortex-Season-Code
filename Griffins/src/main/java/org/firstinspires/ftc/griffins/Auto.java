@@ -14,10 +14,14 @@ import static org.firstinspires.ftc.griffins.RobotHardware.ENCODER_COUNTS_PER_IN
  */
 @Autonomous
 public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboard {
+    public static final double countsPerRobotRotation = RobotHardware.ENCODER_COUNTS_PER_INCH * Math.PI * 14.5625;
     HalDashboard halDashboard;
-
     private RobotHardware hardware;
     private AutoFunctions autoFunctions;
+
+    public Auto() {
+        halDashboard = new HalDashboard(telemetry);
+    }
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -29,11 +33,11 @@ public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboar
         FtcValueMenu secondDriveDistanceMenu = new FtcValueMenu("Second Drive Distance", firstDriveDistanceMenu, this,
                 0, 100, 1, 48, "%.0f in");
         firstDriveDistanceMenu.setChildMenu(secondDriveDistanceMenu);
-        FtcMenu.walkMenuTree(firstDriveDistanceMenu, this);
+//        FtcMenu.walkMenuTree(firstDriveDistanceMenu, this);
         halDashboard.resetTelemetryForOpMode();
 
         double firstDriveDistance = 48;
-        double secondDriveDistance = secondDriveDistanceMenu.getCurrentValue();
+        double secondDriveDistance = 48;
         telemetry.log().add("First Drive Distance is %.0f in", firstDriveDistance);
         telemetry.log().add("Second Drive Distance is %.0f in", secondDriveDistance);
 
@@ -41,7 +45,10 @@ public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboar
         //autoFunctions.driveStraightSimple((int) (firstDriveDistance * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
         autoFunctions.shoot();
         hardware.getIntake().setPower(-1.0);
-        autoFunctions.driveStraightSimple((int) (secondDriveDistance * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
+        autoFunctions.driveStraight((int) (10 * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
+        autoFunctions.driveStraight((int) ((secondDriveDistance - 10) * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
+
+        autoFunctions.twoWheelTurnSimple((int) (countsPerRobotRotation / 8), AutoFunctions.TurnDirection.RIGHT, 1);
         hardware.getIntake().setPower(0.0);
     }
 
