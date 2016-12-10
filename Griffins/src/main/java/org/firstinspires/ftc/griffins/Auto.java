@@ -8,8 +8,6 @@ import org.firstinspires.ftc.griffins.MenuPort.FtcMenu;
 import org.firstinspires.ftc.griffins.MenuPort.FtcValueMenu;
 import org.firstinspires.ftc.griffins.MenuPort.HalDashboard;
 
-import static org.firstinspires.ftc.griffins.RobotHardware.ENCODER_COUNTS_PER_INCH;
-
 /**
  * Created by David on 12/7/2016.
  */
@@ -51,7 +49,7 @@ public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboar
         waitForStart();
         //autoFunctions.driveStraightSimple((int) (firstDriveDistance * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
         autoFunctions.shoot();
-        hardware.getIntake().setPower(-1.0);
+        /*hardware.getIntake().setPower(-1.0);
         autoFunctions.driveStraight((int) (10 * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
         autoFunctions.driveStraight((int) ((secondDriveDistance - 10) * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
 
@@ -64,7 +62,7 @@ public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboar
             sleep(1000);
             autoFunctions.twoWheelTurnSimple((int) (countsPerRobotRotation / 8), AutoFunctions.TurnDirection.RIGHT, 0.5);
         }
-        hardware.getIntake().setPower(0.0);
+        hardware.getIntake().setPower(0.0);*/
     }
 
     @Override
