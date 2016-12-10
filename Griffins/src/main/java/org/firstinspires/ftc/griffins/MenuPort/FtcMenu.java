@@ -99,7 +99,7 @@ public abstract class FtcMenu {
     public static void walkMenuTree(FtcMenu rootMenu, LinearOpMode opModeCheck) {
         setRootMenu(rootMenu);
 
-        while (!runMenus() && opModeCheck.isStopRequested()) {
+        while (!runMenus()) {
             long sleepTime = LOOP_INTERVAL;
             long wakeupTime = System.currentTimeMillis() + sleepTime;
             while (sleepTime > 0) {

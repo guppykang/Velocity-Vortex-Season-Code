@@ -40,6 +40,9 @@ public class RobotHardware {
     public static final String LOADER_SWITCH = "loader switch";
     public static final String BNO055_SENSOR = "bno055";
 
+    // The constants for motor encoders
+    public static final int NEVEREST_ENCODER_COUNT_PER_ROTATION = 28;
+    public static final int NEVEREST_40_ENCODER_COUNTS_PER_ROTATION = NEVEREST_ENCODER_COUNT_PER_ROTATION * 40;
     // The addresses for the color sensors, since we are using two, the default will be changed
     public static final I2cAddr LEFT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x38);
     public static final I2cAddr RIGHT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x3C);
@@ -53,9 +56,10 @@ public class RobotHardware {
     public static final double LOADER_FULL_FORWARD_POWER = 2 / 3.0;
     // The constants for shooting speeds
     public static final double SHOOTER_SPEED = 0.9;
-    // The constants for motor encoders
-    public static final int NEVEREST_ENCODER_COUNT_PER_ROTATION = 28;
-    public static final int NEVEREST_40_ENCODER_COUNTS_PER_ROTATION = NEVEREST_ENCODER_COUNT_PER_ROTATION * 40;
+    // The constants for driving
+    public static final double INCHES_PER_ENCODER_COUNT = (2 * Math.PI) / (NEVEREST_ENCODER_COUNT_PER_ROTATION * 10);  // (wheel diameter * pi) / (encoder counts per motor rotation * gear ratio)
+    public static final double ENCODER_COUNTS_PER_INCH = 1 / INCHES_PER_ENCODER_COUNT; // inverse of above INCHES_PER_ENCODER_COUNT
+    //turret encoder limits
     public static final double ENCODER_COUNTS_PER_TURRET_REVOLUTION = NEVEREST_40_ENCODER_COUNTS_PER_ROTATION * 3;
     public static final double ENCODER_COUNTS_PER_TURRET_DEGREE = ENCODER_COUNTS_PER_TURRET_REVOLUTION / 360;
     public static final int TURRET_ENCODER_COUNT_REVOLUTION_LIMIT = (int) (ENCODER_COUNTS_PER_TURRET_DEGREE * 200);

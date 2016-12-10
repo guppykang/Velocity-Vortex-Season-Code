@@ -4,15 +4,15 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.griffins.MenuPort.FtcMenu;
-import org.firstinspires.ftc.griffins.MenuPort.FtcValueMenu;
 import org.firstinspires.ftc.griffins.MenuPort.HalDashboard;
+
+import static org.firstinspires.ftc.griffins.RobotHardware.ENCODER_COUNTS_PER_INCH;
 
 /**
  * Created by David on 12/7/2016.
  */
 @Autonomous
 public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboard {
-    public static final double inchesPerEncoderCount = Math.PI / 140;
     HalDashboard halDashboard;
 
     private RobotHardware hardware;
@@ -24,22 +24,22 @@ public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboar
         hardware.initialize(hardwareMap);
         autoFunctions = new AutoFunctions(hardware, this);
 
-        FtcValueMenu firstDriveDistanceMenu = new FtcValueMenu("First Drive Distance", null, this, 0, 100, 1, 40, "%.0f in");
+        /*FtcValueMenu firstDriveDistanceMenu = new FtcValueMenu("First Drive Distance", null, this, 0, 100, 1, 40, "%.0f in");
         FtcValueMenu secondDriveDistanceMenu = new FtcValueMenu("Second Drive Distance", firstDriveDistanceMenu, this,
                 0, 100, 1, 32, "%.0f in");
         FtcMenu.walkMenuTree(firstDriveDistanceMenu, this);
         halDashboard.resetTelemetryForOpMode();
-
-        double firstDriveDistance = firstDriveDistanceMenu.getCurrentValue();
-        double secondDriveDistance = secondDriveDistanceMenu.getCurrentValue();
+*/
+        double firstDriveDistance = 48;
+        double secondDriveDistance = 48;
         telemetry.log().add("First Drive Distance is %.0f in", firstDriveDistance);
         telemetry.log().add("Second Drive Distance is %.0f in", secondDriveDistance);
 
         waitForStart();
-        autoFunctions.driveStraight((int) (firstDriveDistance / inchesPerEncoderCount), AutoFunctions.DriveStraightDirection.FORWARD, .5);
+        //autoFunctions.driveStraightSimple((int) (firstDriveDistance * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
         autoFunctions.shoot();
         hardware.getIntake().setPower(-1.0);
-        autoFunctions.driveStraight((int) (secondDriveDistance / inchesPerEncoderCount), AutoFunctions.DriveStraightDirection.FORWARD, .5);
+        autoFunctions.driveStraightSimple((int) (secondDriveDistance * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
         hardware.getIntake().setPower(0.0);
     }
 

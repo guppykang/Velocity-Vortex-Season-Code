@@ -194,11 +194,12 @@ public class AutoFunctions {
             hardware.getLeftDrive().setTargetPosition((int) (encoderCount + hardware.getLeftDrive().getCurrentPosition()));
             hardware.getRightDrive().setTargetPosition((int) (encoderCount + hardware.getRightDrive().getCurrentPosition()));
         } else {
-            hardware.getLeftDrive().setTargetPosition((int) (encoderCount - hardware.getLeftDrive().getCurrentPosition()));
-            hardware.getRightDrive().setTargetPosition((int) (encoderCount - hardware.getRightDrive().getCurrentPosition()));
+            hardware.getLeftDrive().setTargetPosition((int) (hardware.getLeftDrive().getCurrentPosition() - encoderCount));
+            hardware.getRightDrive().setTargetPosition((int) (hardware.getRightDrive().getCurrentPosition() - encoderCount));
         }
 
-        while (linearOpMode.opModeIsActive() && (hardware.getLeftDrive().isBusy() || hardware.getRightDrive().isBusy())) {
+        ElapsedTime timeout = new ElapsedTime();
+        while (linearOpMode.opModeIsActive() && (hardware.getLeftDrive().isBusy() && hardware.getRightDrive().isBusy()) && timeout.seconds() < 8) {
             hardware.getLeftDrive().setPower(power);
             hardware.getRightDrive().setPower(power);
         }
@@ -212,9 +213,9 @@ public class AutoFunctions {
 
     public void shoot() {
         hardware.getShooter().setPower(1.0);
-        linearOpMode.sleep(500);
+        linearOpMode.sleep(1000);
         hardware.setLoaderPower(1.0);
-        linearOpMode.sleep(3000);
+        linearOpMode.sleep(5000);
         hardware.getShooter().setPower(0.0);
         hardware.setLoaderPower(0.0);
     }
