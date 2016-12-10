@@ -99,7 +99,7 @@ public class AutoFunctions {
     }
 
     public void driveStraight(long encoderCount, DriveStraightDirection direction, double power) throws InterruptedException {
-        double minimumPower = .1;
+        double minimumPower = .05;
         double maximumPower = power;
         if (power < 0) {
             throw new IllegalArgumentException("Power must be greater than 0");
@@ -121,7 +121,6 @@ public class AutoFunctions {
         long rightEncoderOffset = hardware.getRightDrive().getCurrentPosition();
 
         if (direction == DriveStraightDirection.BACKWARD) {
-            power = -power;
             encoderTarget = hardware.getLeftDrive().getCurrentPosition() - encoderCount;
         } else {
             encoderTarget = hardware.getLeftDrive().getCurrentPosition() + encoderCount;
@@ -161,7 +160,7 @@ public class AutoFunctions {
             hardware.getLeftDrive().setPower(power - powerOffset);
             hardware.getRightDrive().setPower(power + powerOffset);
 
-            stopCondition = Math.abs(hardware.getLeftDrive().getCurrentPosition() - encoderTarget) < 3;
+            stopCondition = !(Math.abs(hardware.getLeftDrive().getCurrentPosition() - encoderTarget) < RobotHardware.ENCODER_COUNTS_PER_INCH);
 
             linearOpMode.telemetry.update();
         } while (stopCondition && timeout.time() < 10 && linearOpMode.opModeIsActive());
@@ -211,6 +210,40 @@ public class AutoFunctions {
         hardware.getRightDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    public void twoWheelTurnSimple(long encoderCount, TurnDirection direction, double power) {
+        if (power < 0) {
+            throw new IllegalArgumentException("Power must be greater than 0");
+        } else if (power > 1) {
+            throw new IllegalArgumentException("Power must be less than 1");
+        }
+        if (encoderCount < 0) {
+            throw new IllegalArgumentException(" Encoder count must be greater than 0");
+        }
+
+        hardware.getLeftDrive().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hardware.getRightDrive().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        if (direction == TurnDirection.LEFT) {
+            hardware.getLeftDrive().setTargetPosition((int) (hardware.getLeftDrive().getCurrentPosition() - encoderCount));
+            hardware.getRightDrive().setTargetPosition((int) (hardware.getRightDrive().getCurrentPosition() + encoderCount));
+        } else {
+            hardware.getLeftDrive().setTargetPosition((int) (hardware.getLeftDrive().getCurrentPosition() + encoderCount));
+            hardware.getRightDrive().setTargetPosition((int) (hardware.getRightDrive().getCurrentPosition() - encoderCount));
+        }
+
+        ElapsedTime timeout = new ElapsedTime();
+        while (linearOpMode.opModeIsActive() && (hardware.getLeftDrive().isBusy() && hardware.getRightDrive().isBusy()) && timeout.seconds() < 8) {
+            hardware.getLeftDrive().setPower(power);
+            hardware.getRightDrive().setPower(power);
+        }
+
+        hardware.getLeftDrive().setPower(0);
+        hardware.getRightDrive().setPower(0);
+
+        hardware.getLeftDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hardware.getRightDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
     public void shoot() {
         hardware.getShooter().setPower(1.0);
         linearOpMode.sleep(1000);
@@ -226,4 +259,6 @@ public class AutoFunctions {
     }
 
     public enum DriveStraightDirection {FORWARD, BACKWARD}
+
+    public enum TurnDirection {RIGHT, LEFT}
 }
