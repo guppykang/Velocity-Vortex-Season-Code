@@ -38,7 +38,7 @@ public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboar
         allianceMenu.addChoice("Red", Alliance.RED_ALLIANCE);
         allianceMenu.addChoice("Blue", Alliance.BLUE_ALLIANCE);
 
-        FtcMenu.walkMenuTree(allianceMenu, this);
+        FtcMenu.walkMenuTree(allianceMenu, this, true);
         halDashboard.resetTelemetryForOpMode();
 
         Alliance alliance = (Alliance) allianceMenu.getCurrentChoiceObject();

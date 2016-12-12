@@ -48,6 +48,7 @@ public class HalDashboard {
     private Telemetry telemetry = null;
     private Paint paint = null;
     private Telemetry.Item[] display = new Telemetry.Item[MAX_NUM_TEXTLINES];
+    private boolean telemtryReadyForDashboard = false;
 
     /**
      * Constructor: Creates an instance of the object.
@@ -64,6 +65,7 @@ public class HalDashboard {
      */
     public HalDashboard(Telemetry telemetry) {
         this.telemetry = telemetry;
+        this.telemtryReadyForDashboard = false;
     }   //HalDashboard
 
     /**
@@ -74,18 +76,24 @@ public class HalDashboard {
      * After this method is called, the HalDashboard will not function as expected!
      */
     public void resetTelemetryForOpMode() {
-        telemetry.clearAll();
-        telemetry.setAutoClear(true);
-        telemetry.update();
+        if (telemtryReadyForDashboard) {
+            telemtryReadyForDashboard = false;
+            telemetry.clearAll();
+            telemetry.setAutoClear(true);
+            telemetry.update();
+        }
     }
 
     public void resetTelemetryForHalDashboard() {
-        telemetry.clearAll();
-        telemetry.setAutoClear(true);
-        for (int i = 0; i < display.length; i++) {
-            display[i] = telemetry.addData(String.format(displayKeyFormat, i), "");
+        if (!telemtryReadyForDashboard) {
+            telemetry.clearAll();
+            telemetry.setAutoClear(true);
+            for (int i = 0; i < display.length; i++) {
+                display[i] = telemetry.addData(String.format(displayKeyFormat, i), "");
+            }
+            telemetry.update();
+            telemtryReadyForDashboard = true;
         }
-        telemetry.update();
     }
 
     /**

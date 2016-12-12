@@ -95,20 +95,15 @@ public abstract class FtcMenu {
      * environment, you must use the runMenus() method instead.
      *
      * @param rootMenu specifies the root of the menu tree.
+     * @param opModeCheck the linear opmode to use for sleeping, idling, and checking for stopping conditions.
+     * @param checkIsStarted decides whether to check if the op mode is started for terminating menus
      */
-    public static void walkMenuTree(FtcMenu rootMenu, LinearOpMode opModeCheck) {
+    public static void walkMenuTree(FtcMenu rootMenu, LinearOpMode opModeCheck, boolean checkIsStarted) {
         setRootMenu(rootMenu);
 
-        while (!runMenus()) {
-            long sleepTime = LOOP_INTERVAL;
-            long wakeupTime = System.currentTimeMillis() + sleepTime;
-            while (sleepTime > 0) {
-                try {
-                    Thread.sleep(sleepTime);
-                } catch (InterruptedException e) {
-                }
-                sleepTime = wakeupTime - System.currentTimeMillis();
-            }
+        while (!runMenus() && !opModeCheck.isStopRequested() && !(checkIsStarted && opModeCheck.isStarted())) {
+            opModeCheck.sleep(LOOP_INTERVAL);
+            opModeCheck.idle();
         }
     }   //walkMenuTree
 
