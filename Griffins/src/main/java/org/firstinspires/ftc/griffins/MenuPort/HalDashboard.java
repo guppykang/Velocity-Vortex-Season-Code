@@ -45,11 +45,11 @@ public class HalDashboard {
     private static final String moduleName = "HalDashboard";
     private static final boolean debugEnabled = false;
     private static final String displayKeyFormat = "%02d";
+    private static HalDashboard theDashboard;
     private Telemetry telemetry = null;
     private Paint paint = null;
     private Telemetry.Item[] display = new Telemetry.Item[MAX_NUM_TEXTLINES];
-    private boolean telemtryReadyForDashboard = false;
-
+    private boolean telemetryReadyForDashboard = false;
     /**
      * Constructor: Creates an instance of the object.
      * There should only be one global instance of this object.
@@ -63,10 +63,32 @@ public class HalDashboard {
      *
      * @param telemetry specifies the Telemetry object.
      */
-    public HalDashboard(Telemetry telemetry) {
+    private HalDashboard(Telemetry telemetry) {
         this.telemetry = telemetry;
-        this.telemtryReadyForDashboard = false;
+        this.telemetryReadyForDashboard = false;
     }   //HalDashboard
+
+    public static HalDashboard getInstance(Telemetry telemetry) {
+        if (telemetry == null) {
+            if (theDashboard == null) {
+                throw new RuntimeException("There is no existing instance of the HalDashboard");
+            }
+            return theDashboard;
+        }
+
+        if (theDashboard == null) {
+            theDashboard = new HalDashboard(telemetry);
+        } else {
+            theDashboard.setTelemetry(telemetry);
+        }
+
+        return theDashboard;
+    }
+
+    public void setTelemetry(Telemetry telemetry) {
+        this.telemetry = telemetry;
+        resetTelemetryForHalDashboard();
+    }
 
     /**
      * Designed to reset the telemetry data back to default.
@@ -76,8 +98,8 @@ public class HalDashboard {
      * After this method is called, the HalDashboard will not function as expected!
      */
     public void resetTelemetryForOpMode() {
-        if (telemtryReadyForDashboard) {
-            telemtryReadyForDashboard = false;
+        if (telemetryReadyForDashboard) {
+            telemetryReadyForDashboard = false;
             telemetry.clearAll();
             telemetry.setAutoClear(true);
             telemetry.update();
@@ -85,14 +107,14 @@ public class HalDashboard {
     }
 
     public void resetTelemetryForHalDashboard() {
-        if (!telemtryReadyForDashboard) {
+        if (!telemetryReadyForDashboard) {
             telemetry.clearAll();
             telemetry.setAutoClear(true);
             for (int i = 0; i < display.length; i++) {
                 display[i] = telemetry.addData(String.format(displayKeyFormat, i), "");
             }
             telemetry.update();
-            telemtryReadyForDashboard = true;
+            telemetryReadyForDashboard = true;
         }
     }
 

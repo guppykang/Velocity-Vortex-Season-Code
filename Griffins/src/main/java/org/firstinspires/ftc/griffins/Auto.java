@@ -21,7 +21,7 @@ public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboar
     private AutoFunctions autoFunctions;
 
     public Auto() {
-        halDashboard = new HalDashboard(telemetry);
+        halDashboard = HalDashboard.getInstance(telemetry);
     }
 
     @Override
@@ -89,9 +89,6 @@ public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboar
 
     @Override
     public HalDashboard getHalDashboard() {
-        if (halDashboard == null) {
-            halDashboard = new HalDashboard(telemetry);
-        }
         halDashboard.resetTelemetryForHalDashboard();
         return halDashboard;
     }

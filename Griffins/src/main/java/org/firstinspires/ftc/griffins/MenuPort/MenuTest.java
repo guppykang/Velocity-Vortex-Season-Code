@@ -29,7 +29,7 @@ public class MenuTest extends OpMode implements FtcMenu.MenuButtonsAndDashboard 
     private Alliance alliance = Alliance.RED_ALLIANCE;
 
     public MenuTest() {
-        menuDashboard = new HalDashboard(telemetry);
+        menuDashboard = HalDashboard.getInstance(telemetry);
     }
 
     @Override
