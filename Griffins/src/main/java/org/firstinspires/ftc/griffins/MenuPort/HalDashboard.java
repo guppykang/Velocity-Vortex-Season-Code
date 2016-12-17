@@ -86,8 +86,13 @@ public class HalDashboard {
     }
 
     public void setTelemetry(Telemetry telemetry) {
-        this.telemetry = telemetry;
-        resetTelemetryForHalDashboard();
+        if (!telemetry.equals(this.telemetry)) {
+            this.telemetry = telemetry;
+            if (telemetryReadyForDashboard) {
+                telemetryReadyForDashboard = false;
+                resetTelemetryForHalDashboard();
+            }
+        }
     }
 
     /**
