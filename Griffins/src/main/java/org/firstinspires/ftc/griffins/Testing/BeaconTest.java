@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.griffins.RobotHardware;
 
 import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_CENTER_POSITION;
+import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_LEFT_FULL_EXTENSION;
 import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_LEFT_POSITION;
 import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_RIGHT_POSITION;
 import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_SERVO;
@@ -23,6 +24,7 @@ import static org.firstinspires.ftc.griffins.RobotHardware.RIGHT_COLOR_SENSOR_AD
 @Autonomous
 //@Disabled
 public class BeaconTest extends LinearOpMode {
+    public static final double BEACON_SERVO_INCREMENT = (BUTTON_PUSHER_LEFT_POSITION - BUTTON_PUSHER_CENTER_POSITION) / 10;
     private Servo buttonPusherServo;
     private ColorSensor leftButtonPusherColorSensor;
     private ColorSensor rightButtonPusherColorSensor;
@@ -45,10 +47,10 @@ public class BeaconTest extends LinearOpMode {
         waitForStart();
 
         RobotHardware.BeaconState beaconState = findBeaconState();
-        while (opModeIsActive() && beaconState == RobotHardware.BeaconState.UNDEFINED_STATE) {
-            beaconState = findBeaconState();
-            telemetry.addData("Beacon State", "Undefined State, Reading again");
-            telemetry.update();
+        if (beaconState == RobotHardware.BeaconState.UNDEFINED_STATE) {
+            telemetry.log().add("Beacon state undefined, attempting active beacon state finder");
+            sleep(1000);
+            beaconState = activeBeaconStateFinder();
         }
         telemetry.addData("Beacon State", beaconState);
         telemetry.update();
@@ -95,9 +97,14 @@ public class BeaconTest extends LinearOpMode {
      * @return the state of the beacon, as a variable of BeaconState,
      */
     public RobotHardware.BeaconState findBeaconState() {
-        RobotHardware.BeaconState beaconState = RobotHardware.BeaconState.UNDEFINED_STATE;
         RobotHardware.BeaconState leftSide = findColorSensorState(leftButtonPusherColorSensor);
         RobotHardware.BeaconState rightSide = findColorSensorState(rightButtonPusherColorSensor);
+
+        return mergeBeaconSideStates(leftSide, rightSide);
+    }
+
+    private RobotHardware.BeaconState mergeBeaconSideStates(RobotHardware.BeaconState leftSide, RobotHardware.BeaconState rightSide) {
+        RobotHardware.BeaconState beaconState = RobotHardware.BeaconState.UNDEFINED_STATE;
 
         if (leftSide == RobotHardware.BeaconState.BLUE_BLUE) {
             if (rightSide == RobotHardware.BeaconState.BLUE_BLUE) {
@@ -132,6 +139,40 @@ public class BeaconTest extends LinearOpMode {
         } else {
             colorState = RobotHardware.BeaconState.UNDEFINED_STATE;
         }
+
+        return colorState;
+    }
+
+    //blocking method
+    RobotHardware.BeaconState activeBeaconStateFinder() {
+        RobotHardware.BeaconState colorState = RobotHardware.BeaconState.UNDEFINED_STATE;
+        RobotHardware.BeaconState leftColorState = RobotHardware.BeaconState.UNDEFINED_STATE;
+        RobotHardware.BeaconState rightColorState = RobotHardware.BeaconState.UNDEFINED_STATE;
+        double beaconServoPosition = BUTTON_PUSHER_CENTER_POSITION;
+
+        for (int i = 0; i < 3; i++) {
+            colorState = findBeaconState();
+            if (colorState != RobotHardware.BeaconState.UNDEFINED_STATE)
+                return colorState;
+        }
+
+        while (opModeIsActive() && leftColorState == RobotHardware.BeaconState.UNDEFINED_STATE) {
+            if (beaconServoPosition < BUTTON_PUSHER_LEFT_FULL_EXTENSION) {
+                return RobotHardware.BeaconState.UNDEFINED_STATE;
+            }
+
+            beaconServoPosition += BEACON_SERVO_INCREMENT;
+            buttonPusherServo.setPosition(beaconServoPosition);
+            sleep(250);
+            leftColorState = findColorSensorState(leftButtonPusherColorSensor);
+        }
+
+        beaconServoPosition = BUTTON_PUSHER_CENTER_POSITION - (beaconServoPosition - BUTTON_PUSHER_CENTER_POSITION);
+        buttonPusherServo.setPosition(beaconServoPosition);
+        sleep(1000);
+        rightColorState = findColorSensorState(rightButtonPusherColorSensor);
+
+        colorState = mergeBeaconSideStates(leftColorState, rightColorState);
 
         return colorState;
     }

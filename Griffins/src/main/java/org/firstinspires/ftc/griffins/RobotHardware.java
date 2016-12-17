@@ -47,10 +47,10 @@ public class RobotHardware {
     public static final I2cAddr LEFT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x38);
     public static final I2cAddr RIGHT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x3C);
     // The constants for the button pusher positions
-    public static final double BUTTON_PUSHER_CENTER_POSITION = 120 / 255.0;
+    public static final double BUTTON_PUSHER_CENTER_POSITION = 107 / 255.0;
     public static final double BUTTON_PUSHER_RATIO = 2 / 3.0;
-    public static final double BUTTON_PUSHER_LEFT_FULL_EXTENSION = 10 / 255.0;
-    public static final double BUTTON_PUSHER_RIGHT_FULL_EXTENSION = 230 / 255.0;
+    public static final double BUTTON_PUSHER_LEFT_FULL_EXTENSION = 32 / 255.0;
+    public static final double BUTTON_PUSHER_RIGHT_FULL_EXTENSION = 182 / 255.0;
     public static final double BUTTON_PUSHER_LEFT_POSITION = (BUTTON_PUSHER_LEFT_FULL_EXTENSION - BUTTON_PUSHER_CENTER_POSITION) * BUTTON_PUSHER_RATIO + BUTTON_PUSHER_CENTER_POSITION;
     public static final double BUTTON_PUSHER_RIGHT_POSITION = (BUTTON_PUSHER_RIGHT_FULL_EXTENSION - BUTTON_PUSHER_CENTER_POSITION) * BUTTON_PUSHER_RATIO + BUTTON_PUSHER_CENTER_POSITION;
     ;
