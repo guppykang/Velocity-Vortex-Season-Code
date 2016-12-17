@@ -6,6 +6,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ReadWriteFile;
@@ -23,6 +24,7 @@ import java.util.List;
  */
 
 @TeleOp(name = "Android Accelerometer Test", group = "accel")
+@Disabled
 public class AndroidAccelerometerTest extends OpMode implements SensorEventListener {
 
     Sensor sensor;

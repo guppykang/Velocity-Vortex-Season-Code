@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.griffins.Testing;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,6 +19,7 @@ import static org.firstinspires.ftc.griffins.RobotHardware.TURRET_ROTATION_MOTOR
  */
 
 @TeleOp(name = "gyro turret control", group = "test")
+@Disabled
 public class GyroTurretControlTest extends OpMode {
 
     int turretHeadingTarget;

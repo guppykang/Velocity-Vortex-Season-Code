@@ -8,6 +8,7 @@ import android.hardware.SensorManager;
 
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cCompassSensor;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -21,6 +22,7 @@ import java.util.List;
  */
 
 @TeleOp(name = "Accelerometer Comparison", group = "accel")
+@Disabled
 public class AccelerometerComparison extends OpMode implements SensorEventListener {
 
     final Object lock = new Object();

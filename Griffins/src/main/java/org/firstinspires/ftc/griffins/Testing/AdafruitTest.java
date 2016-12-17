@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.griffins.Testing;
 
 import com.qualcomm.hardware.adafruit.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ReadWriteFile;
@@ -26,7 +27,7 @@ import java.util.Locale;
  */
 
 @TeleOp(name = "Adafruit IMU Test", group = "accel")
-
+@Disabled
 public class AdafruitTest extends OpMode {
 
     BNO055IMU imu;
