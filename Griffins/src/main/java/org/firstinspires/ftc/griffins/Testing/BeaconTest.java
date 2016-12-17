@@ -21,7 +21,7 @@ import static org.firstinspires.ftc.griffins.RobotHardware.RIGHT_COLOR_SENSOR_AD
  */
 
 @Autonomous
-
+//@Disabled
 public class BeaconTest extends LinearOpMode {
     private Servo buttonPusherServo;
     private ColorSensor leftButtonPusherColorSensor;

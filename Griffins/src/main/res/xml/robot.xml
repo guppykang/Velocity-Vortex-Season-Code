@@ -5,7 +5,7 @@
         serialNumber="AL00YAWU">
         <Servo
             name="button"
-            port="2"/>
+            port="1"/>
         <Servo
             name="turretL"
             port="3"/>
