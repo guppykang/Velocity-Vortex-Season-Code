@@ -53,7 +53,6 @@ public class RobotHardware {
     public static final double BUTTON_PUSHER_RIGHT_FULL_EXTENSION = 182 / 255.0;
     public static final double BUTTON_PUSHER_LEFT_POSITION = (BUTTON_PUSHER_LEFT_FULL_EXTENSION - BUTTON_PUSHER_CENTER_POSITION) * BUTTON_PUSHER_RATIO + BUTTON_PUSHER_CENTER_POSITION;
     public static final double BUTTON_PUSHER_RIGHT_POSITION = (BUTTON_PUSHER_RIGHT_FULL_EXTENSION - BUTTON_PUSHER_CENTER_POSITION) * BUTTON_PUSHER_RATIO + BUTTON_PUSHER_CENTER_POSITION;
-    ;
     // The constants for the loader speeds
     public static final double LOADER_ZERO_POWER = 0;
     public static final double LOADER_FULL_REVERSE_POWER = -2 / 3.0;
@@ -68,7 +67,13 @@ public class RobotHardware {
     public static final double ENCODER_COUNTS_PER_TURRET_DEGREE = ENCODER_COUNTS_PER_TURRET_REVOLUTION / 360;
     public static final int TURRET_ENCODER_COUNT_REVOLUTION_LIMIT = (int) (ENCODER_COUNTS_PER_TURRET_DEGREE * 200);
     // The Vuforia License Key
-    public static final String VUFORIA_LICENSE_KEY = "";
+    public static final String VUFORIA_LICENSE_KEY = "AT3JPAj/////AAAAGdMIFxYU7UYXs7ZUAq3xlpUJDbeYIAIe69usc" +
+                                                     "Pw2c6g2kjczfs8x9A1YX2Mi3SLEFsx0JM1x9Lm733yP8I8HxGqUGJ" +
+                                                     "r2HDUcUheHtJZ3itjlnCaAZWYqeV+RB4bU8t3BW3pnecmQ9BmjcUO" +
+                                                     "aO32ENJIc0PRvpzPFNTtKB6HHJwNhPoMZYonmVEVeCwsuSfIhyzl1" +
+                                                     "KWHU8GVzgdz3NRBs0O7Dedd+cECw9dmXX0TutXkuMr9ykOstrDXM6" +
+                                                     "1D1Hb2DuY+4LKERkLFwUm/TDv5+zR7A4eDoE92nmEIpVdSfR7kNYG" +
+                                                     "QGeDbWK7/oHGjwVYOZvEvmTW9dMBDQNiCCeWCag6o4odFTMo5Tc8U6+grD2qVR";
     private BeaconState alliance;
     //motor variables
     private SyncedDcMotors leftDrive;

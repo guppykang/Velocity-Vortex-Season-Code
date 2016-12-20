@@ -28,7 +28,7 @@ public class BeaconTest extends LinearOpMode {
     private Servo buttonPusherServo;
     private ColorSensor leftButtonPusherColorSensor;
     private ColorSensor rightButtonPusherColorSensor;
-    private RobotHardware.BeaconState alliance = RobotHardware.BeaconState.BLUE_BLUE;
+    private RobotHardware.BeaconState alliance = RobotHardware.BeaconState.RED_RED;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -56,7 +56,7 @@ public class BeaconTest extends LinearOpMode {
         telemetry.update();
         sleep(1000);
         pushButton(beaconState);
-        sleep(5000);
+        sleep(3000);
         pushButton(RobotHardware.BeaconState.UNDEFINED_STATE);
         sleep(2000);
     }
