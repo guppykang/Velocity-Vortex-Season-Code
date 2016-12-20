@@ -45,12 +45,8 @@ public class TeleOp extends OpMode {
         rightDrivePower = Math.pow(-gamepad1.right_stick_y, 3);
         leftDrivePower = Math.pow(-gamepad1.left_stick_y, 3);
 
-        if(gamepad1.left_bumper) {
-            intakeSpeed = -1.0;
-        } else {
-            intakeSpeed = gamepad1.left_trigger;
-        }
-
+        intakeSpeed = gamepad1.left_trigger-gamepad1.right_trigger;
+        
         if(gamepad2.left_bumper){
             loaderPower = -1.0;
         } else if (gamepad2.left_trigger != 0) {
