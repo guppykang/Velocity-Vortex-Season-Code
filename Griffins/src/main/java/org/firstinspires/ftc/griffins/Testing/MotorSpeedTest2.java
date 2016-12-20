@@ -4,6 +4,7 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDcMotorController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.griffins.MenuPort.FtcChoiceMenu;
@@ -27,6 +28,7 @@ public class MotorSpeedTest2 extends LinearOpMode implements FtcMenu.MenuButtons
     @Override
     public void runOpMode() throws InterruptedException {
         Iterator<DcMotor> motorIterator = hardwareMap.dcMotor.iterator();
+        HalDashboard dashboard = HalDashboard.getInstance(telemetry);
         final DcMotor motor = motorIterator.next();
         DcMotor motor2 = null;
         if (motorIterator.hasNext()) {
@@ -34,7 +36,11 @@ public class MotorSpeedTest2 extends LinearOpMode implements FtcMenu.MenuButtons
         }
         ElapsedTime time = new ElapsedTime();
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        motor.setDirection(DcMotorSimple.Direction.FORWARD);
+        if (motor2 != null) {
+            motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            motor2.setDirection(DcMotorSimple.Direction.FORWARD);
+        }
 
         telemetry.log().setCapacity(20);
 
@@ -55,20 +61,7 @@ public class MotorSpeedTest2 extends LinearOpMode implements FtcMenu.MenuButtons
                     ((ModernRoboticsUsbDcMotorController) motor2.getController()).getGearRatio(motor2.getPortNumber()));
         }
 
-        telemetry.addData("Gamepad", new Func<String>() {
-            @Override
-            public String value() {
-                return gamepad1.toString();
-            }
-        });
-        telemetry.addData("Voltage", new Func<Double>() {
-            @Override
-            public Double value() {
-                return ((ModernRoboticsUsbDcMotorController) motor.getController()).getVoltage();
-            }
-        });
-
-        telemetry.log().add("Procedure: Use the menus to determine motor parameters, using the d_pad");
+        telemetry.log().add("Procedure: Use the menus to determine motor parameters, using the d_pad. Then press a to start tracking");
 
         waitForStart();
 
@@ -79,7 +72,17 @@ public class MotorSpeedTest2 extends LinearOpMode implements FtcMenu.MenuButtons
             int encoderPosition2 = 0;
             int sampleWindow = DEFAULT_RATE_TRACKING_WINDOW;
 
+            dashboard.resetTelemetryForHalDashboard();
             FtcMenu.walkMenuTree(motorModeMenu, this, false);
+            dashboard.resetTelemetryForOpMode();
+
+            telemetry.addData("Voltage", new Func<Double>() {
+                @Override
+                public Double value() {
+                    return ((ModernRoboticsUsbDcMotorController) motor.getController()).getVoltage();
+                }
+            });
+
             mode = (DcMotor.RunMode) motorModeMenu.getCurrentChoiceObject();
             speed = motorSpeedMenu.getCurrentValue();
             sampleWindow = (int) rateTrackingWindowMenu.getCurrentValue();
@@ -91,7 +94,7 @@ public class MotorSpeedTest2 extends LinearOpMode implements FtcMenu.MenuButtons
 
             motor.setPower(speed);
             if (motor2 != null) {
-                motor2.setPower(-speed);
+                motor2.setPower(speed);
             }
 
             while (!gamepad1.a && opModeIsActive()) ;
@@ -124,7 +127,7 @@ public class MotorSpeedTest2 extends LinearOpMode implements FtcMenu.MenuButtons
                 rate2 = (motor2.getCurrentPosition() - encoderPosition2) / time.seconds();
             }
 
-            telemetry.log().add("motor power, mode, sample window: %.2f, %s, %.1f", motor.getPower(), motor.getMode(), sampleWindow / 1000);
+            telemetry.log().add("motor power, mode, sample window: %.2f, %s, %.1f", motor.getPower(), motor.getMode(), sampleWindow / 1000.0);
             if (motor2 != null) {
                 telemetry.log().add("encoder counts per second: %.2f, %.2f", rate1, rate2);
             } else {
@@ -135,7 +138,9 @@ public class MotorSpeedTest2 extends LinearOpMode implements FtcMenu.MenuButtons
             telemetry.update();
 
             motor.setPower(0);
-            motor2.setPower(0);
+            if (motor2 != null) {
+                motor2.setPower(0);
+            }
         }
 
     }
