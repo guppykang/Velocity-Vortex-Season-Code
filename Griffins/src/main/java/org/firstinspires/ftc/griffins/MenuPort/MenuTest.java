@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.griffins.MenuPort;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 /**
  * Created by David on 12/2/2016.
  */
 
+@Autonomous(name = "Menu Test", group = "Testing")
+@Disabled
 public class MenuTest extends OpMode implements FtcMenu.MenuButtonsAndDashboard {
     HalDashboard menuDashboard;
     private FtcValueMenu delayMenu;
@@ -23,6 +27,10 @@ public class MenuTest extends OpMode implements FtcMenu.MenuButtonsAndDashboard 
     private double driveDistance = 0.0;
     private double turnDegrees = 0.0;
     private Alliance alliance = Alliance.RED_ALLIANCE;
+
+    public MenuTest() {
+        menuDashboard = HalDashboard.getInstance(telemetry);
+    }
 
     @Override
     public void init() {

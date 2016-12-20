@@ -34,7 +34,6 @@ package org.firstinspires.ftc.griffins.Testing;
 
 import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -51,6 +50,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
+import java.util.Locale;
 
 /**
  * This OpMode illustrates the basics of using the Vuforia localizer to determine
@@ -81,23 +82,36 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  */
 
 @Autonomous(name = "Concept: Vuforia Navigation", group = "Concept")
-@Disabled
+//@Disabled
 public class VuforiaNavigation extends LinearOpMode {
 
     public static final String TAG = "Vuforia Sample";
 
-    OpenGLMatrix lastLocation = null;
+    private OpenGLMatrix lastLocation = null;
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
      * localization engine.
      */
-    VuforiaLocalizer vuforia;
+    private VuforiaLocalizer vuforia;
+    private VuforiaTrackables visionTargets;
 
-    @Override
-    public void runOpMode() {
-        ElapsedTime vuforiaTimer = new ElapsedTime();
+    public boolean isVuforiaReady() {
+        return vuforiaReady;
+    }
 
+    public VuforiaTrackables getVisionTargets() {
+        return visionTargets;
+    }
+
+    public OpenGLMatrix getLastLocation() {
+        return lastLocation;
+    }
+
+    private boolean vuforiaReady = false;
+
+    public void initializeVuforia () {
+        vuforiaReady = false;
         /**
          * Start up Vuforia, telling it the id of the view that we wish to use as the parent for
          * the camera monitor feedback; if no camera monitor feedback is desired, use the parameterless
@@ -133,7 +147,7 @@ public class VuforiaNavigation extends LinearOpMode {
          * Studio 'Project' view over there on the left of the screen). You can make your own datasets
          * with the Vuforia Target Manager: https://developer.vuforia.com/target-manager.
          */
-        VuforiaTrackables visionTargets = this.vuforia.loadTrackablesFromAsset("FTC_2016-17");
+        visionTargets = this.vuforia.loadTrackablesFromAsset("FTC_2016-17");
 
         VuforiaTrackable blueMidTarget = visionTargets.get(0);
         blueMidTarget.setName("Blue Middle Target");  // Wheels
@@ -311,6 +325,15 @@ public class VuforiaNavigation extends LinearOpMode {
         ((VuforiaTrackableDefaultListener) redMidTarget.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
         ((VuforiaTrackableDefaultListener) blueFarTarget.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
 
+        vuforiaReady = true;
+    }
+
+    @Override
+    public void runOpMode() {
+        ElapsedTime vuforiaTimer = new ElapsedTime();
+
+        initializeVuforia();
+
         /**
          * A brief tutorial: here's how all the math is going to work:
          *
@@ -350,7 +373,11 @@ public class VuforiaNavigation extends LinearOpMode {
                  * the last time that call was made, or if the trackable is not currently visible.
                  * getRobotLocation() will return null if the trackable is not currently visible.
                  */
+                OpenGLMatrix locationRelativeToTarget = ((VuforiaTrackableDefaultListener) trackable.getListener()).getPose();
                 telemetry.addData(trackable.getName(), ((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible() ? "Visible" : "Not Visible");
+                if (locationRelativeToTarget != null) {
+                    telemetry.addData("location relative to target", format(locationRelativeToTarget));
+                }
                 isTargetVisible |= ((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible();
 
                 OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
@@ -383,6 +410,9 @@ public class VuforiaNavigation extends LinearOpMode {
      * and formats it in a form palatable to a human being.
      */
     String format(OpenGLMatrix transformationMatrix) {
-        return transformationMatrix.formatAsTransform();
+        float[] data = transformationMatrix.getTranslation().getData();
+        Orientation orientation = Orientation.getOrientation(transformationMatrix, AxesReference.EXTRINSIC, AxesOrder.XYZ,AngleUnit.DEGREES);
+
+        return String.format(Locale.ENGLISH, "(%+05.1f, %+05.1f, %+05.1f), rot.(z-axis) %+03.1f, %s", data[0], data[1], data[2], orientation.thirdAngle, orientation.toString());
     }
 }
