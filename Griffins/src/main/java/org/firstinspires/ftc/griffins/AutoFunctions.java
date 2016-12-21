@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.griffins.Testing.LinearOpModeTimeOutFunc;
+import org.firstinspires.ftc.griffins.Testing.PIDDrive;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
@@ -16,10 +18,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 public class AutoFunctions {
     private LinearOpMode linearOpMode;
     private RobotHardware hardware;
+    private PIDDrive drive;
 
     public AutoFunctions(RobotHardware hardware, LinearOpMode linearOpMode) {
         this.hardware = hardware;
         this.linearOpMode = linearOpMode;
+        drive = new PIDDrive(hardware);
     }
 
     public void oneWheelTurn(DcMotor turningMotor, double angle) throws InterruptedException {
@@ -262,4 +266,14 @@ public class AutoFunctions {
     public enum DriveStraightDirection {FORWARD, BACKWARD}
 
     public enum TurnDirection {RIGHT, LEFT}
+
+    public void driveStraightPID(double inches, DriveStraightDirection direction) {
+        drive.setDriveTarget(inches * (direction == DriveStraightDirection.FORWARD? 1:-1) );
+        drive.driveToTarget(new LinearOpModeTimeOutFunc(linearOpMode, 10));
+    }
+
+    public void twoWheelTurnPID(double degrees, TurnDirection direction) {
+        drive.setTurnTarget(degrees * (direction == TurnDirection.RIGHT? 1:-1));
+        drive.driveToTarget(new LinearOpModeTimeOutFunc(linearOpMode, 5));
+    }
 }
