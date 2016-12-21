@@ -104,6 +104,8 @@ public class VuforiaNavigation extends LinearOpMode {
         return visionTargets;
     }
 
+    // y axis is the heading
+    //930 is the ~2ft
     public OpenGLMatrix getLastLocation() {
         return lastLocation;
     }

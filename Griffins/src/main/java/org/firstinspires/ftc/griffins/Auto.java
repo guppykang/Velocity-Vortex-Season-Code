@@ -8,14 +8,11 @@ import org.firstinspires.ftc.griffins.MenuPort.FtcMenu;
 import org.firstinspires.ftc.griffins.MenuPort.FtcValueMenu;
 import org.firstinspires.ftc.griffins.MenuPort.HalDashboard;
 
-import static org.firstinspires.ftc.griffins.RobotHardware.ENCODER_COUNTS_PER_INCH;
-
 /**
  * Created by David on 12/7/2016.
  */
 @Autonomous
 public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboard {
-    public static final double countsPerRobotRotation = RobotHardware.ENCODER_COUNTS_PER_INCH * Math.PI * 14.5625;
     HalDashboard halDashboard;
     private RobotHardware hardware;
     private AutoFunctions autoFunctions;
@@ -52,17 +49,29 @@ public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboar
         //autoFunctions.driveStraightSimple((int) (firstDriveDistance * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
         autoFunctions.shoot();
         hardware.getIntake().setPower(-1.0);
-        autoFunctions.driveStraight((int) (10 * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
-        autoFunctions.driveStraight((int) ((secondDriveDistance - 10) * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
+        autoFunctions.driveStraightPID(10, AutoFunctions.DriveStraightDirection.FORWARD);
+        telemetry.log().add("finished driving straight 1");
+        telemetry.update();
+        autoFunctions.driveStraightPID(secondDriveDistance - 10, AutoFunctions.DriveStraightDirection.FORWARD);
+        telemetry.log().add("Finished driving straight 2");
+        telemetry.update();
 
         if (alliance == Alliance.BLUE_ALLIANCE) {
-            autoFunctions.twoWheelTurnSimple((int) (countsPerRobotRotation / 8), AutoFunctions.TurnDirection.RIGHT, 1);
+            autoFunctions.twoWheelTurnPID(90, AutoFunctions.TurnDirection.RIGHT);
+            telemetry.log().add("finished turn 1");
+            telemetry.update();
             sleep(1000);
-            autoFunctions.twoWheelTurnSimple((int) (countsPerRobotRotation / 8), AutoFunctions.TurnDirection.LEFT, 0.5);
+            autoFunctions.twoWheelTurnPID(90, AutoFunctions.TurnDirection.LEFT);
+            telemetry.log().add("finished turn 2");
+            telemetry.update();
         } else {
-            autoFunctions.twoWheelTurnSimple((int) (countsPerRobotRotation / 8), AutoFunctions.TurnDirection.LEFT, 1);
+            autoFunctions.twoWheelTurnPID(90, AutoFunctions.TurnDirection.LEFT);
+            telemetry.log().add("finished turn 3");
+            telemetry.update();
             sleep(1000);
-            autoFunctions.twoWheelTurnSimple((int) (countsPerRobotRotation / 8), AutoFunctions.TurnDirection.RIGHT, 0.5);
+            autoFunctions.twoWheelTurnPID(90, AutoFunctions.TurnDirection.RIGHT);
+            telemetry.log().add("finished turn 4");
+            telemetry.update();
         }
         hardware.getIntake().setPower(0.0);
     }
