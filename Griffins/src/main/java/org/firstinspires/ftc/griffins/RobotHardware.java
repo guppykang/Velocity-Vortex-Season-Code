@@ -62,6 +62,8 @@ public class RobotHardware {
     // The constants for driving
     public static final double INCHES_PER_ENCODER_COUNT = (2 * Math.PI) / (NEVEREST_ENCODER_COUNT_PER_ROTATION * 10);  // (wheel diameter * pi) / (encoder counts per motor rotation * gear ratio)
     public static final double ENCODER_COUNTS_PER_INCH = 1 / INCHES_PER_ENCODER_COUNT; // inverse of above INCHES_PER_ENCODER_COUNT
+    public static final double ENCODER_COUNTS_PER_ROBOT_REVOLUTION = RobotHardware.ENCODER_COUNTS_PER_INCH * Math.PI * 14.5625; // (pi * diameter) * encoder counts per inch, if the turn is on point
+    public static final double ENCODER_COUNTS_PER_ROBOT_DEGREE = ENCODER_COUNTS_PER_ROBOT_REVOLUTION / 360; // multiply ENCODER_COUNTS_PER_ROBOT_ROTATION by 1rot/360deg
     //turret encoder limits
     public static final double ENCODER_COUNTS_PER_TURRET_REVOLUTION = NEVEREST_40_ENCODER_COUNTS_PER_ROTATION * 3;
     public static final double ENCODER_COUNTS_PER_TURRET_DEGREE = ENCODER_COUNTS_PER_TURRET_REVOLUTION / 360;
