@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.griffins.Testing;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
-
 import org.firstinspires.ftc.griffins.RobotHardware;
 import org.firstinspires.ftc.robotcore.external.Func;
 
@@ -12,60 +10,89 @@ import org.firstinspires.ftc.robotcore.external.Func;
 public class PIDDrive {
 
     private RobotHardware hardware;
-    private PIDController pid;
+    private PIDController pidDrivingDifference;
+    private PIDController pidTurningDifference;
 
     private double difference;
+    private boolean isTurning;
 
     private PIDController pidRightDrive, pidLeftDrive;
 
-    public void init(){
-        hardware = new RobotHardware();
+    public PIDDrive(RobotHardware hardware) {
+        this.hardware = hardware;
+        init();
+    }
 
-        pidLeftDrive= new  PIDController(1/50.0, 0, 0, new Func<Double>() {
+    public void init(){
+        pidLeftDrive= new PIDController(1/800.0, 0, 5, new Func<Double>() {
             @Override
             public Double value() {
                 return (double)hardware.getLeftDrive().getCurrentPosition();
             }
-        }, hardware.getLeftDrive());
+        }, null);
 
-        pidRightDrive = new PIDController(1/50.0, 0, 0, new Func<Double>() {
+        pidRightDrive = new PIDController(1/800.0, 0, 5, new Func<Double>() {
             @Override
             public Double value() {
                 return (double)hardware.getRightDrive().getCurrentPosition();
             }
-        }, hardware.getRightDrive());
+        }, null);
 
-        pid = new PIDController(1/50.0, 0, 0, new Func<Double>() {
+        pidDrivingDifference = new PIDController(1/200.0, 0, 0, new Func<Double>() {
             @Override
             public Double value() {
-                return hardware.getLeftDrive().getPower() - hardware.getRightDrive().getPower();
+                return (double) (hardware.getLeftDrive().getCurrentPosition() - hardware.getRightDrive().getCurrentPosition());
             }
         }, null);
 
+        pidTurningDifference = new PIDController(.1, 0, 0, new Func<Double>() {
+            @Override
+            public Double value() {
+                return (double) (hardware.getLeftDrive().getCurrentPosition() + hardware.getRightDrive().getCurrentPosition());
+            }
+        }, null);
     }
 
     public void syncDrives(){
+        double rightPower = pidRightDrive.sendPIDOutput();
+        double leftPower = pidLeftDrive.sendPIDOutput();
 
-        pidRightDrive.sendPIDOutput();
-        pidLeftDrive.sendPIDOutput();
+        if (isTurning) {
+            difference = pidTurningDifference.sendPIDOutput();
+            leftPower -= difference;
+            rightPower += difference;
+        } else {
+            difference = pidDrivingDifference.sendPIDOutput();
+            leftPower += difference;
+            rightPower -= difference;
+        }
 
-       difference = pid.sendPIDOutput();
 
-        hardware.getLeftDrive().setPower(hardware.getLeftDrive().getPower() - difference);
-        hardware.getRightDrive().setPower(hardware.getRightDrive().getPower() + difference);
+        hardware.getLeftDrive().setPower(leftPower);
+        hardware.getRightDrive().setPower(rightPower);
     }
 
-    public void setTarget(Double target){
-        pidRightDrive.setSetPoint(target);
-        pidLeftDrive.setSetPoint(target);
-        pid.setSetPoint(pid.getSourceVal());
+    public void setDriveTarget(double inches){
+        pidRightDrive.setSetPoint(hardware.getRightDrive().getCurrentPosition() + inches*RobotHardware.ENCODER_COUNTS_PER_INCH);
+        pidLeftDrive.setSetPoint(hardware.getLeftDrive().getCurrentPosition() + inches*RobotHardware.ENCODER_COUNTS_PER_INCH);
+        pidDrivingDifference.setSetPoint(pidDrivingDifference.getSourceVal());
+        isTurning = false;
     }
 
-    public void driveToTarget(){
-        while(!pidLeftDrive.isOnTarget() && !pidRightDrive.isOnTarget())
-            syncDrives();
+    //turns to the right are positive...
+    public void setTurnTarget(double degrees) {
+        pidRightDrive.setSetPoint(hardware.getRightDrive().getCurrentPosition() - degrees*RobotHardware.ENCODER_COUNTS_PER_ROBOT_DEGREE);
+        pidLeftDrive.setSetPoint(hardware.getLeftDrive().getCurrentPosition() + degrees*RobotHardware.ENCODER_COUNTS_PER_ROBOT_DEGREE);
+        pidTurningDifference.setSetPoint(pidTurningDifference.getSourceVal());
+        isTurning = true;
+    }
 
-        while(!pid.isOnTarget())
+    public void driveToTarget(Func<Boolean> earlyExitCheck){
+        do {
             syncDrives();
+        } while(!pidLeftDrive.isOnTarget() && !pidRightDrive.isOnTarget() && earlyExitCheck.value());
+
+        hardware.getLeftDrive().setPower(0);
+        hardware.getRightDrive().setPower(0);
     }
 }
