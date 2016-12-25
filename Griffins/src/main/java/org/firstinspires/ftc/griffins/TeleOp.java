@@ -10,14 +10,6 @@ public class TeleOp extends OpMode {
 
     private RobotHardware hardware;
     private boolean turretTrackingOn;
-
-    enum DriveStyle {
-        TANK_DRIVE,
-        ARCADE,
-        SPLIT_ARCADE,
-        VIDEO_GAME
-    }
-
     private DriveStyle style;
 
     @Override
@@ -27,7 +19,7 @@ public class TeleOp extends OpMode {
 
         gamepad1.setJoystickDeadzone(0.1f);
         gamepad2.setJoystickDeadzone(0.1f);
-        style = DriveStyle.TANK_DRIVE;
+        style = DriveStyle.ARCADE;
     }
 
     @Override
@@ -94,7 +86,7 @@ public class TeleOp extends OpMode {
             rightDrivePower /= 2;
             leftDrivePower /= 2;
         }
-        
+
         if(gamepad2.left_bumper){
             loaderPower = 1.0;
         } else if (gamepad2.right_bumper) {
@@ -150,5 +142,12 @@ public class TeleOp extends OpMode {
         telemetry.addData("Shooter Speed", shooterPower);
         telemetry.addData("gamepad 1", gamepad1);
         telemetry.addData("gamepad 2", gamepad2);
+    }
+
+    enum DriveStyle {
+        TANK_DRIVE,
+        ARCADE,
+        SPLIT_ARCADE,
+        VIDEO_GAME
     }
 }

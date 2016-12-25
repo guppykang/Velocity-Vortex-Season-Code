@@ -263,17 +263,21 @@ public class AutoFunctions {
 
     }
 
-    public enum DriveStraightDirection {FORWARD, BACKWARD}
-
-    public enum TurnDirection {RIGHT, LEFT}
+    public void driveStraightPID(double inches, DriveStraightDirection direction, double timeoutSeconds) {
+        drive.setDriveTarget(inches * (direction == DriveStraightDirection.FORWARD ? 1 : -1));
+        drive.driveToTarget(new LinearOpModeTimeOutFunc(linearOpMode, timeoutSeconds));
+    }
 
     public void driveStraightPID(double inches, DriveStraightDirection direction) {
-        drive.setDriveTarget(inches * (direction == DriveStraightDirection.FORWARD? 1:-1) );
-        drive.driveToTarget(new LinearOpModeTimeOutFunc(linearOpMode, 10));
+        driveStraightPID(inches, direction, 8);
     }
 
     public void twoWheelTurnPID(double degrees, TurnDirection direction) {
-        drive.setTurnTarget(degrees * (direction == TurnDirection.RIGHT? 1:-1));
+        drive.setTurnTarget(degrees * (direction == TurnDirection.LEFT ? 1 : -1));
         drive.driveToTarget(new LinearOpModeTimeOutFunc(linearOpMode, 5));
     }
+
+    public enum DriveStraightDirection {FORWARD, BACKWARD}
+
+    public enum TurnDirection {RIGHT, LEFT}
 }
