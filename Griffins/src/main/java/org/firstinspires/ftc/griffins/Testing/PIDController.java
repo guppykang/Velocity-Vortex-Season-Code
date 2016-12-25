@@ -1,11 +1,7 @@
 package org.firstinspires.ftc.griffins.Testing;
 
-import android.hardware.Sensor;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.griffins.RobotHardware;
 import org.firstinspires.ftc.robotcore.external.Func;
 
 /**
@@ -14,11 +10,11 @@ import org.firstinspires.ftc.robotcore.external.Func;
 
 public class PIDController { //for upcoming comp, just use P and D controllers
 
-    private double kP, kI, kD;
-    private double setPoint;
-    private double sensorValue;
+    private double kP, kI, kD; // proportional gain, integral gain, derivative gain
+    private double setPoint; // desired value (e.g. encoder count, gyro heading, etc)
+    private double sensorValue; // measured value
     private double error;
-    private double lastPropTerm;
+    private double lastError;
     private double propTerm;
     private double intTerm;
     private double derTerm;
@@ -34,13 +30,15 @@ public class PIDController { //for upcoming comp, just use P and D controllers
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;
-        //this.setPoint = setPoint;
+        this.setPoint = source.value();
         this.source = source;
         this.output = output;
+        lastError = Double.NaN;
     }
 
     public boolean isOnTarget(){
-        if(error==0)
+        //TODO: replace encoder count with a parameter or something
+        if (Math.abs(error) < 5)
             isOnTarget = true;
         else
             isOnTarget = false;
@@ -51,17 +49,12 @@ public class PIDController { //for upcoming comp, just use P and D controllers
         return source.value();
     }
 
-    public void setSetPoint(double setPoint){
-        this.setPoint = setPoint;
-    }
-
     public double sendPIDOutput(){
         isEnabled = true;
 
         calculate();
 
         double control = propTerm+intTerm+derTerm;
-        control = Range.clip(control, -1, 1);
         if(output != null)
          output.setPower(control);
         return control;
@@ -78,6 +71,10 @@ public class PIDController { //for upcoming comp, just use P and D controllers
         return setPoint;
     }
 
+    public void setSetPoint(double setPoint) {
+        this.setPoint = setPoint;
+    }
+
     public double getError(){
         return error;
     }
@@ -90,20 +87,16 @@ public class PIDController { //for upcoming comp, just use P and D controllers
             sensorValue = source.value();
             error = setPoint - sensorValue;
             propTerm = kP*error;
-            intError = kI*propTerm;
+            intError = kI * error;
 
-            if(intError > 0){
-                intTerm += intError;
-            }
+            intTerm += intError;
 
-            if(intError < 0){
-                intTerm -= intError;
-            }else
-                intTerm += intError;
+            if (lastError != Double.NaN)
+                derTerm = kD * (error - lastError);
+            else
+                derTerm = 0;
 
-            derTerm = kD*(propTerm - lastPropTerm);
-
-            lastPropTerm = propTerm;
+            lastError = error;
 
         }
     }

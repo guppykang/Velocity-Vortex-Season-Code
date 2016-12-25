@@ -23,13 +23,13 @@ public class PIDDriveTest extends LinearOpMode {
 
         autoFunctions.driveStraightPID(24, DriveStraightDirection.FORWARD);
         log("finished 24\" drive");
-        sleep(2000);
+        sleep(1000);
         autoFunctions.driveStraightPID(12, DriveStraightDirection.BACKWARD);
         log("finished -12\" drive");
-        sleep(2000);
+        sleep(1000);
         autoFunctions.driveStraightPID(12, DriveStraightDirection.FORWARD);
         log("finished 12\" drive");
-        sleep(2000);
+        sleep(1000);
         autoFunctions.driveStraightPID(48, DriveStraightDirection.FORWARD);
         log("finished 48\" drive");
         sleep(5000);
