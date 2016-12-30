@@ -48,11 +48,16 @@ public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboar
         waitForStart();
         //autoFunctions.driveStraightSimple((int) (firstDriveDistance * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
         autoFunctions.shoot();
+
         hardware.getIntake().setPower(-1.0);
-        autoFunctions.driveStraightPID(10, AutoFunctions.DriveStraightDirection.FORWARD, 2);
-        telemetry.log().add("finished driving straight 1");
+
+        autoFunctions.twoWheelTurnPID(30, AutoFunctions.TurnDirection.LEFT);
+        autoFunctions.driveStraightPID(60, AutoFunctions.DriveStraightDirection.FORWARD, 4);
+        telemetry.log().add("Finished driving straight 1");
         telemetry.update();
-        autoFunctions.driveStraightPID(secondDriveDistance - 12, AutoFunctions.DriveStraightDirection.FORWARD, 4);
+
+        autoFunctions.twoWheelTurnPID(180, AutoFunctions.TurnDirection.RIGHT);
+        autoFunctions.driveStraightPID(24, AutoFunctions.DriveStraightDirection.FORWARD, 4);
         telemetry.log().add("Finished driving straight 2");
         telemetry.update();
 
