@@ -10,7 +10,6 @@ public class TeleOp extends OpMode {
 
     private RobotHardware hardware;
     private boolean turretTrackingOn;
-    private DriveStyle style;
 
     @Override
     public void init() {
@@ -19,7 +18,6 @@ public class TeleOp extends OpMode {
 
         gamepad1.setJoystickDeadzone(0.1f);
         gamepad2.setJoystickDeadzone(0.1f);
-        style = DriveStyle.ARCADE;
     }
 
     @Override
@@ -44,61 +42,28 @@ public class TeleOp extends OpMode {
         double targetTurretSpeed;
         RobotHardware.BeaconState beaconPushState;
 
-        if (gamepad1.a) {
-            style = DriveStyle.TANK_DRIVE;
-        } else if (gamepad1.b) {
-            style = DriveStyle.ARCADE;
-        } else if (gamepad1.x) {
-            style = DriveStyle.SPLIT_ARCADE;
-        } else if (gamepad1.y) {
-            style = DriveStyle.VIDEO_GAME;
-        }
+        rightDrivePower = Math.pow(-gamepad1.right_stick_y, 3);
+        leftDrivePower = Math.pow(-gamepad1.left_stick_y, 3);
 
-        switch (style) {
-            case TANK_DRIVE:
-                rightDrivePower = -gamepad1.right_stick_y;
-                leftDrivePower = -gamepad1.left_stick_y;
-                break;
-            case ARCADE:
-                rightDrivePower = -gamepad1.left_stick_y - gamepad1.left_stick_x;
-                leftDrivePower = -gamepad1.left_stick_y + gamepad1.left_stick_x;
-                break;
-            case SPLIT_ARCADE:
-                rightDrivePower = -gamepad1.left_stick_y - gamepad1.right_stick_x;
-                leftDrivePower = -gamepad1.left_stick_y + gamepad1.right_stick_x;
-                break;
-            case VIDEO_GAME:
-                rightDrivePower = gamepad1.left_trigger - gamepad1.right_trigger - gamepad1.left_stick_x;
-                leftDrivePower = gamepad1.left_trigger - gamepad1.right_trigger + gamepad1.left_stick_x;
-                break;
-            default:
-                rightDrivePower = 0;
-                leftDrivePower = 0;
-        }
+        intakeSpeed = gamepad1.left_trigger-gamepad1.right_trigger;
 
-        if (style != DriveStyle.VIDEO_GAME) {
-            intakeSpeed = gamepad1.left_trigger - gamepad1.right_trigger;
-        } else {
-            intakeSpeed = -gamepad1.right_stick_y;
-        }
-
-        if (gamepad1.left_stick_button) {
-            rightDrivePower /= 2;
-            leftDrivePower /= 2;
+        if (gamepad1.right_bumper) {
+            rightDrivePower *= .40;
+            leftDrivePower *= .40;
         }
 
         if(gamepad2.left_bumper){
-            loaderPower = 1.0;
-        } else if (gamepad2.right_bumper) {
             loaderPower = -1.0;
+        } else if (gamepad2.left_trigger != 0) {
+            loaderPower = 1;
         } else {
             loaderPower = 0;
         }
 
-        if (gamepad2.left_trigger != 0) {
-            shooterPower = 1;
-        } else if (gamepad2.right_bumper) {
+        if (gamepad2.right_bumper) {
             shooterPower = -0.7;
+        } else if (gamepad2.left_bumper) {
+            shooterPower = 1.0;
         } else {
             shooterPower = 0;
         }
@@ -134,7 +99,6 @@ public class TeleOp extends OpMode {
         hardware.pushButton(beaconPushState);
         hardware.setTurretRotation(targetTurretSpeed, turretTrackingOn);
 
-        telemetry.addData("Drive Style", style);
         telemetry.addData("Left Drive Speed", leftDrivePower);
         telemetry.addData("Right Drive Speed", rightDrivePower);
         telemetry.addData("Intake Speed", intakeSpeed);
@@ -142,12 +106,5 @@ public class TeleOp extends OpMode {
         telemetry.addData("Shooter Speed", shooterPower);
         telemetry.addData("gamepad 1", gamepad1);
         telemetry.addData("gamepad 2", gamepad2);
-    }
-
-    enum DriveStyle {
-        TANK_DRIVE,
-        ARCADE,
-        SPLIT_ARCADE,
-        VIDEO_GAME
     }
 }
