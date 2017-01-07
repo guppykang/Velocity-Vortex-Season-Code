@@ -61,7 +61,7 @@ public class MenuTest extends OpMode implements FtcMenu.MenuButtonsAndDashboard 
     @Override
     public void loop() {
         telemetry.addData("Delay Selected", delay);
-        telemetry.addData("Auto Strategy Selected", autoStrategy);
+        telemetry.addData("RedAuto Strategy Selected", autoStrategy);
         telemetry.addData("Drive Time Selected", driveTime);
         telemetry.addData("Drive Distance Selected", driveDistance);
         telemetry.addData("Turn Degrees Selected", turnDegrees);
@@ -100,7 +100,7 @@ public class MenuTest extends OpMode implements FtcMenu.MenuButtonsAndDashboard 
         //
         delayMenu = new FtcValueMenu("Delay time:", null, this,
                 0.0, 10.0, 1.0, 0.0, "%.0f sec");
-        strategyMenu = new FtcChoiceMenu("Auto Strategies:", delayMenu, this);
+        strategyMenu = new FtcChoiceMenu("RedAuto Strategies:", delayMenu, this);
         driveTimeMenu = new FtcValueMenu("Drive time:", strategyMenu, this,
                 0.0, 10.0, 1.0, 4.0, "%.0f sec");
         distanceMenu = new FtcValueMenu("Drive distance:", strategyMenu, this,

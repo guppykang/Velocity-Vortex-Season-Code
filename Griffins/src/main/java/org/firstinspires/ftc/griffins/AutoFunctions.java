@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.griffins;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -10,6 +12,12 @@ import org.firstinspires.ftc.griffins.Testing.LinearOpModeTimeOutFunc;
 import org.firstinspires.ftc.griffins.Testing.PIDDrive;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+
+import static java.lang.Thread.sleep;
+import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_CENTER_POSITION;
+import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_LEFT_FULL_EXTENSION;
+import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_LEFT_POSITION;
+import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_RIGHT_POSITION;
 
 /**
  * Created by David on 11/28/2016.
@@ -213,6 +221,62 @@ public class AutoFunctions {
 
         hardware.getLeftDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         hardware.getRightDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void curveDriveShort(long encoderCountLeft, long encoderCountRight, double powerLeft, double powerRight){
+        if (powerLeft < -1.0 || powerRight < -1.0){
+            throw new IllegalArgumentException("Power must be greater than 0)");
+        } else if (powerLeft > 1 || powerRight > 1){
+            throw new IllegalArgumentException("Power must be less than 1");
+        }
+
+        hardware.getLeftDrive().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hardware.getRightDrive().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        hardware.getLeftDrive().setTargetPosition((int) (hardware.getLeftDrive().getCurrentPosition() - encoderCountLeft));
+        hardware.getRightDrive().setTargetPosition((int) (hardware.getRightDrive().getCurrentPosition() - encoderCountRight));
+
+        ElapsedTime timeout = new ElapsedTime();
+        while (linearOpMode.opModeIsActive() && timeout.seconds() < 1) {
+            hardware.getLeftDrive().setPower(powerLeft);
+            hardware.getRightDrive().setPower(powerRight);
+        }
+
+        hardware.getLeftDrive().setPower(0);
+        hardware.getRightDrive().setPower(0);
+
+        hardware.getLeftDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hardware.getRightDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+    }
+
+    public void curveDriveLong(long encoderCountLeft, long encoderCountRight, double powerLeft, double powerRight){
+        if (powerLeft < 0 || powerRight < 0){
+            throw new IllegalArgumentException("Power must be greater than 0)");
+        } else if (powerLeft > 1 || powerRight > 1){
+            throw new IllegalArgumentException("Power must be less than 1");
+        }
+
+        hardware.getLeftDrive().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hardware.getRightDrive().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        hardware.getLeftDrive().setTargetPosition((int) (hardware.getLeftDrive().getCurrentPosition() - encoderCountLeft));
+        hardware.getRightDrive().setTargetPosition((int) (hardware.getRightDrive().getCurrentPosition() - encoderCountRight));
+
+        ElapsedTime timeout = new ElapsedTime();
+        while (linearOpMode.opModeIsActive() && timeout.seconds() < 5) {
+            hardware.getLeftDrive().setPower(powerLeft);
+            hardware.getRightDrive().setPower(powerRight);
+        }
+
+        hardware.getLeftDrive().setPower(0);
+        hardware.getRightDrive().setPower(0);
+
+        hardware.getLeftDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hardware.getRightDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+
     }
 
     public void twoWheelTurnSimple(long encoderCount, TurnDirection direction, double power) {

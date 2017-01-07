@@ -102,7 +102,6 @@ public class RobotHardware {
     private double turretHeadingTarget;
 
     public RobotHardware() {
-        alliance = BeaconState.BLUE_BLUE;
     }
 
     public void initialize(HardwareMap hardwareMap) {
@@ -263,7 +262,7 @@ public class RobotHardware {
         // TODO: 10/29/2016 create code for turret position
     }
 
-    public void pushButton(BeaconState beaconState) {
+    public void pushButton(BeaconState beaconState, BeaconState alliance) {
         if (alliance == BeaconState.BLUE_BLUE) {
             if (beaconState == BeaconState.BLUE_RED) {
                 buttonPusherServo.setPosition(BUTTON_PUSHER_LEFT_POSITION);
@@ -290,6 +289,10 @@ public class RobotHardware {
             buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
         }
 
+    }
+
+    public void pushButton(BeaconState beaconState){
+        pushButton(beaconState, BeaconState.BLUE_BLUE);
     }
 
     /**
@@ -338,6 +341,8 @@ public class RobotHardware {
 
         return colorState;
     }
+
+
 
     public void setLoaderPower(double power) {
         power = Range.clip(power, -1, 1);

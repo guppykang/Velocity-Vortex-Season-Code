@@ -33,7 +33,7 @@ public class PIDController { //for upcoming comp, just use P and D controllers
         this.setPoint = source.value();
         this.source = source;
         this.output = output;
-        lastError = Double.NaN;
+        lastError = 0.0;
     }
 
     public boolean isOnTarget(){
@@ -56,7 +56,7 @@ public class PIDController { //for upcoming comp, just use P and D controllers
 
         double control = propTerm+intTerm+derTerm;
         if(output != null)
-         output.setPower(control);
+            output.setPower(control);
         return control;
         //return control; //send to output (motor value = control + currValue)
     }
@@ -91,7 +91,7 @@ public class PIDController { //for upcoming comp, just use P and D controllers
 
             intTerm += intError;
 
-            if (lastError != Double.NaN)
+            if (lastError != 0.0)
                 derTerm = kD * (error - lastError);
             else
                 derTerm = 0;
