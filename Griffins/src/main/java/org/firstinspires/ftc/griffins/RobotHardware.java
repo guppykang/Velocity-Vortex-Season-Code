@@ -152,7 +152,7 @@ public class RobotHardware {
         turretGyro.calibrate();  //look at z axis scaling coefficient when available
         turretGyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN); // verify that the angles have the correct sign
 
-        /*leftButtonPusherColorSensor = hardwareMap.get(ColorSensor.class, LEFT_BUTTON_PUSHER_SENSOR);
+        leftButtonPusherColorSensor = hardwareMap.get(ColorSensor.class, LEFT_BUTTON_PUSHER_SENSOR);
         leftButtonPusherColorSensor.setI2cAddress(LEFT_COLOR_SENSOR_ADDRESS);
         leftButtonPusherColorSensor.enableLed(false);
 
@@ -164,7 +164,7 @@ public class RobotHardware {
         beaconDistanceSensor.enableLed(true);
 
 
-        loaderParticleLimitSwitch = hardwareMap.get(DigitalChannel.class, LOADER_SWITCH);
+       /* loaderParticleLimitSwitch = hardwareMap.get(DigitalChannel.class, LOADER_SWITCH);
         loaderParticleLimitSwitch.setMode(DigitalChannelController.Mode.INPUT);
 
         robotTracker = hardwareMap.get(BNO055IMU.class, BNO055_SENSOR);
