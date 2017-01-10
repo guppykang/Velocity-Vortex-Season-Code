@@ -160,11 +160,10 @@ public class RobotHardware {
         rightButtonPusherColorSensor.setI2cAddress(RIGHT_COLOR_SENSOR_ADDRESS);
         rightButtonPusherColorSensor.enableLed(false);
 
-        beaconDistanceSensor = hardwareMap.get(ModernRoboticsAnalogOpticalDistanceSensor.class, BEACON_DISTANCE_SENSOR);
+        /*beaconDistanceSensor = hardwareMap.get(ModernRoboticsAnalogOpticalDistanceSensor.class, BEACON_DISTANCE_SENSOR);
         beaconDistanceSensor.enableLed(true);
 
-
-       /* loaderParticleLimitSwitch = hardwareMap.get(DigitalChannel.class, LOADER_SWITCH);
+        loaderParticleLimitSwitch = hardwareMap.get(DigitalChannel.class, LOADER_SWITCH);
         loaderParticleLimitSwitch.setMode(DigitalChannelController.Mode.INPUT);
 
         robotTracker = hardwareMap.get(BNO055IMU.class, BNO055_SENSOR);

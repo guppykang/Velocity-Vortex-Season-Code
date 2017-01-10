@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.griffins;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -12,12 +10,6 @@ import org.firstinspires.ftc.griffins.Testing.LinearOpModeTimeOutFunc;
 import org.firstinspires.ftc.griffins.Testing.PIDDrive;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-
-import static java.lang.Thread.sleep;
-import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_CENTER_POSITION;
-import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_LEFT_FULL_EXTENSION;
-import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_LEFT_POSITION;
-import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_RIGHT_POSITION;
 
 /**
  * Created by David on 11/28/2016.
@@ -233,8 +225,8 @@ public class AutoFunctions {
         hardware.getLeftDrive().setMode(DcMotor.RunMode.RUN_TO_POSITION);
         hardware.getRightDrive().setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        hardware.getLeftDrive().setTargetPosition((int) (hardware.getLeftDrive().getCurrentPosition() - encoderCountLeft));
-        hardware.getRightDrive().setTargetPosition((int) (hardware.getRightDrive().getCurrentPosition() - encoderCountRight));
+        hardware.getLeftDrive().setTargetPosition((int) (hardware.getLeftDrive().getCurrentPosition() + encoderCountLeft));
+        hardware.getRightDrive().setTargetPosition((int) (hardware.getRightDrive().getCurrentPosition() + encoderCountRight));
 
         ElapsedTime timeout = new ElapsedTime();
         while (linearOpMode.opModeIsActive() && timeout.seconds() < 1) {
@@ -314,7 +306,7 @@ public class AutoFunctions {
     }
 
     public void shoot() {
-        hardware.getShooter().setPower(1.0);
+        hardware.getShooter().setPower(0.8);
         linearOpMode.sleep(1000);
         hardware.setLoaderPower(1.0);
         linearOpMode.sleep(5000);

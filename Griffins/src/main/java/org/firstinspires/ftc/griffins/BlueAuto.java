@@ -5,9 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.griffins.MenuPort.FtcChoiceMenu;
 import org.firstinspires.ftc.griffins.MenuPort.FtcMenu;
-import org.firstinspires.ftc.griffins.MenuPort.FtcValueMenu;
 import org.firstinspires.ftc.griffins.MenuPort.HalDashboard;
 
 import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_SERVO;
@@ -68,12 +66,12 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
         telemetry.update();
 
         //drive toward beacon wall
-        autoFunctions.driveStraight((long)(63/hardware.INCHES_PER_ENCODER_COUNT), AutoFunctions.DriveStraightDirection.FORWARD, .5);
+        autoFunctions.driveStraight((long) (62.5 / hardware.INCHES_PER_ENCODER_COUNT), AutoFunctions.DriveStraightDirection.FORWARD, .5);
         telemetry.log().add("Arrived at beacon wall");
         telemetry.update();
 
         //"parallel parking"
-        autoFunctions.curveDriveShort((long)(3/hardware.INCHES_PER_ENCODER_COUNT),(long)(12/hardware.INCHES_PER_ENCODER_COUNT),-.1, -.9);
+        autoFunctions.curveDriveShort((long) (3 / hardware.INCHES_PER_ENCODER_COUNT), (long) (12 / hardware.INCHES_PER_ENCODER_COUNT), 0.1, 0.9);
         telemetry.log().add("Straightened out against wall");
         telemetry.update();
 
@@ -84,7 +82,7 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
 
         //button pusher works its magic
         if(opModeIsActive()){
-           hardware.pushButton(hardware.findBeaconState(), RobotHardware.BeaconState.RED_RED);
+            hardware.pushButton(hardware.findBeaconState(), RobotHardware.BeaconState.BLUE_BLUE);
         }
         telemetry.log().add("Pushed first button");
         telemetry.update();
@@ -96,7 +94,7 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
 
         //button pusher works its magic pt 2
         if(opModeIsActive()){
-           hardware.pushButton(hardware.findBeaconState(), RobotHardware.BeaconState.RED_RED);
+            hardware.pushButton(hardware.findBeaconState(), RobotHardware.BeaconState.BLUE_BLUE);
         }
         telemetry.log().add("Pushed second button");
         telemetry.update();

@@ -5,9 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.griffins.MenuPort.FtcChoiceMenu;
 import org.firstinspires.ftc.griffins.MenuPort.FtcMenu;
-import org.firstinspires.ftc.griffins.MenuPort.FtcValueMenu;
 import org.firstinspires.ftc.griffins.MenuPort.HalDashboard;
 
 import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_SERVO;
@@ -68,7 +66,7 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
         telemetry.update();
 
         //drive toward beacon wall
-        autoFunctions.driveStraight((long)(63/hardware.INCHES_PER_ENCODER_COUNT), AutoFunctions.DriveStraightDirection.FORWARD, .5);
+        autoFunctions.driveStraight((long) (62 / hardware.INCHES_PER_ENCODER_COUNT), AutoFunctions.DriveStraightDirection.FORWARD, .5);
         telemetry.log().add("Arrived at beacon wall");
         telemetry.update();
 
@@ -78,7 +76,7 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
         telemetry.update();
 
         //"parallel parking"
-        autoFunctions.curveDriveShort((long)(3/hardware.INCHES_PER_ENCODER_COUNT), (long)(12/hardware.INCHES_PER_ENCODER_COUNT), .1, .9);
+        autoFunctions.curveDriveShort(-(long) (3 / hardware.INCHES_PER_ENCODER_COUNT), -(long) (12.5 / hardware.INCHES_PER_ENCODER_COUNT), .1, .9);
         telemetry.log().add("Straightened out against wall");
         telemetry.update();
 
