@@ -104,6 +104,9 @@ public class TeleOp extends OpMode {
         hardware.pushButton(beaconPushState);
         hardware.setTurretRotation(targetTurretSpeed, turretTrackingOn);
 
+        telemetry.addData("Gyro Heading", hardware.getTurretGyro().getIntegratedZValue());
+
+        
         telemetry.addData("Left Drive Speed", leftDrivePower);
         telemetry.addData("Right Drive Speed", rightDrivePower);
         telemetry.addData("Intake Speed", intakeSpeed);

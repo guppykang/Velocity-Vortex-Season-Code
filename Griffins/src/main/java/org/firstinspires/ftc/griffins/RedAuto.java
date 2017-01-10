@@ -71,11 +71,11 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
         telemetry.update();
 
         //turn 180 degrees so beacon pusher is on wall side
-        autoFunctions.twoWheelTurnSimple((long)(25/hardware.INCHES_PER_ENCODER_COUNT), AutoFunctions.TurnDirection.RIGHT, .3);
+        autoFunctions.twoWheelTurn(180);
         telemetry.log().add("Pusher on Beacon side");
         telemetry.update();
 
-        //"parallel parking"
+        /*//"parallel parking"
         autoFunctions.curveDriveShort(-(long) (3 / hardware.INCHES_PER_ENCODER_COUNT), -(long) (12.5 / hardware.INCHES_PER_ENCODER_COUNT), .1, .9);
         telemetry.log().add("Straightened out against wall");
         telemetry.update();
@@ -102,7 +102,7 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
             hardware.pushButton(hardware.findBeaconState(), RobotHardware.BeaconState.RED_RED);
         }
         telemetry.log().add("Pushed second button");
-        telemetry.update();
+        telemetry.update();*/
 
     }
 

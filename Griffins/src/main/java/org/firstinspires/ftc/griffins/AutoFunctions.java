@@ -8,8 +8,6 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.griffins.Testing.LinearOpModeTimeOutFunc;
 import org.firstinspires.ftc.griffins.Testing.PIDDrive;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 /**
  * Created by David on 11/28/2016.
@@ -67,7 +65,7 @@ public class AutoFunctions {
 
         //curve around to face the ramp
         int gyroTarget;
-        gyroTarget = (int)getZAngle() + (int) angle;
+        gyroTarget = (int) getZAngle() - (int) angle;
 
         ElapsedTime timeout = new ElapsedTime();
         double minimumPower = .10;
@@ -315,8 +313,8 @@ public class AutoFunctions {
     }
 
     public float getZAngle(){
-        return hardware.getRobotTracker().getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX).firstAngle;
-
+        //return hardware.getRobotTracker().getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX).firstAngle;
+        return hardware.getTurretGyro().getIntegratedZValue();
     }
 
     public void driveStraightPID(double inches, DriveStraightDirection direction, double timeoutSeconds) {
