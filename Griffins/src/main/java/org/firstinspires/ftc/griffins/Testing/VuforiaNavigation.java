@@ -51,32 +51,33 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 /**
  * This OpMode illustrates the basics of using the Vuforia localizer to determine
  * positioning and orientation of robot on the FTC field.
  * The code is structured as a LinearOpMode
- *
+ * <p>
  * Vuforia uses the phone's camera to inspect it's surroundings, and attempt to locate target images.
- *
+ * <p>
  * When images are located, Vuforia is able to determine the position and orientation of the
  * image relative to the camera.  This sample code than combines that information with a
  * knowledge of where the target images are on the field, to determine the location of the camera.
- *
+ * <p>
  * This example assumes a "diamond" field configuration where the red and blue alliance stations
  * are adjacent on the corner of the field furthest from the audience.
  * From the Audience perspective, the Red driver station is on the right.
  * The four vision target are located on the two walls closest to the audience, facing in.
  * The Gears and the Tools are on the RED side of the field, and the Wheels and the Legos are on the Blue side.
- *
+ * <p>
  * A final calculation then uses the location of the camera on the robot to determine the
  * robot's location and orientation on the field.
  *
  * @see VuforiaLocalizer
  * @see VuforiaTrackableDefaultListener
  * see  ftc_app/doc/tutorial/FTC_FieldCoordinateSystemDefinition.pdf
- *
+ * <p>
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.  David Has Licence Key
  */
@@ -86,8 +87,15 @@ import java.util.Locale;
 public class VuforiaNavigation extends LinearOpMode {
 
     public static final String TAG = "Vuforia Sample";
+    public static final int BLUE_MIDDLE_TARGET_INDEX = 0;
+    public static final int RED_FAR_TARGET_INDEX = 1;
+    public static final int BLUE_FAR_TARGET_INDEX = 2;
+    public static final int RED_MIDDLE_TARGET_INDEX = 3;
+    public static final String[] TARGET_NAMES = {"Blue Mid (Wheels)", "Red Far (Tools)", "Blue Far(Legos)", "Red Mid (Gears)"};
 
     private OpenGLMatrix lastLocation = null;
+    private OpenGLMatrix[] locationRelativeToTargets = null;
+    private boolean[] targetsVisible = null;
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
@@ -95,9 +103,44 @@ public class VuforiaNavigation extends LinearOpMode {
      */
     private VuforiaLocalizer vuforia;
     private VuforiaTrackables visionTargets;
+    private boolean vuforiaReady = false;
+    private boolean vuforiaActivated = false;
+    private boolean isTargetVisible = false;
+
+    /**
+     * A simple utility that extracts positioning information from a transformation matrix
+     * and formats it in a form palatable to a human being.
+     */
+    public static String format(OpenGLMatrix transformationMatrix) {
+        float[] data = transformationMatrix.getTranslation().getData();
+        Orientation orientation = Orientation.getOrientation(transformationMatrix, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+
+        return String.format(Locale.ENGLISH, "(%+05.1f, %+05.1f, %+05.1f), rot.(z-axis) %+03.1f, %s", data[0], data[1], data[2], orientation.thirdAngle, orientation.toString());
+    }
+
+    /**
+     * UNTESTED
+     *
+     * @param transformationMatrix the OpenGLMatrix to extract data from
+     * @return an array with the relevant data, in the order [x coordinate, y coordinate, z axis rotation]
+     */
+    public static double[] extractData(OpenGLMatrix transformationMatrix) {
+        double[] data = new double[3];
+        float[] translationData = transformationMatrix.getTranslation().getData();
+
+        data[0] = translationData[0];
+        data[1] = translationData[1];
+        data[2] = Orientation.getOrientation(transformationMatrix, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
+
+        return data;
+    }
 
     public boolean isVuforiaReady() {
         return vuforiaReady;
+    }
+
+    public boolean isVuforiaActivated() {
+        return vuforiaActivated;
     }
 
     public VuforiaTrackables getVisionTargets() {
@@ -110,9 +153,43 @@ public class VuforiaNavigation extends LinearOpMode {
         return lastLocation;
     }
 
-    private boolean vuforiaReady = false;
+    public OpenGLMatrix[] getLocationRelativeToTargets() {
+        return locationRelativeToTargets;
+    }
 
-    public void initializeVuforia () {
+    public boolean[] getTargetsVisible() {
+        return targetsVisible;
+    }
+
+    /**
+     * Start tracking Vuforia images
+     */
+    public boolean activateTracking() {
+        // Start tracking any of the defined targets
+        if (vuforiaReady && !vuforiaActivated) {
+            visionTargets.activate();
+            vuforiaActivated = true;
+        }
+        return vuforiaReady;
+    }
+
+    public void deactivateTracking() {
+        if (vuforiaReady && vuforiaActivated) {
+            visionTargets.deactivate();
+
+            //invalidate any remaining data
+            lastLocation = null;
+            for (int i = 0; i < visionTargets.size(); i++) {
+                locationRelativeToTargets[i] = null;
+                targetsVisible[i] = false;
+            }
+            isTargetVisible = false;
+
+            vuforiaActivated = false;
+        }
+    }
+
+    public void initializeVuforia() {
         vuforiaReady = false;
         /**
          * Start up Vuforia, telling it the id of the view that we wish to use as the parent for
@@ -151,16 +228,16 @@ public class VuforiaNavigation extends LinearOpMode {
          */
         visionTargets = this.vuforia.loadTrackablesFromAsset("FTC_2016-17");
 
-        VuforiaTrackable blueMidTarget = visionTargets.get(0);
+        VuforiaTrackable blueMidTarget = visionTargets.get(BLUE_MIDDLE_TARGET_INDEX);
         blueMidTarget.setName("Blue Middle Target");  // Wheels
 
-        VuforiaTrackable redFarTarget = visionTargets.get(1);
+        VuforiaTrackable redFarTarget = visionTargets.get(RED_FAR_TARGET_INDEX);
         redFarTarget.setName("Red Far Target");  // Tools
 
-        VuforiaTrackable blueFarTarget = visionTargets.get(2);
+        VuforiaTrackable blueFarTarget = visionTargets.get(BLUE_FAR_TARGET_INDEX);
         blueFarTarget.setName("Blue Far Target"); // Legos
 
-        VuforiaTrackable redMidTarget = visionTargets.get(3);
+        VuforiaTrackable redMidTarget = visionTargets.get(RED_MIDDLE_TARGET_INDEX);
         redMidTarget.setName("Red Middle Target"); // Gears
 
 
@@ -299,10 +376,14 @@ public class VuforiaNavigation extends LinearOpMode {
 //        RobotLog.ii(TAG, "Blue Target=%s", format(blueFarTargetLocationOnField));
 
         /**
+         * The phone starts out lying flat, with the screen facing Up(+Z) and with the physical top of the phone
+         * pointing to towards us(+Y).
+         *
          * Create a transformation matrix describing where the phone is on the robot. Here, we
          * put the phone on the right hand side of the robot with the screen facing out (see our
-         * choice of FRONT camera above) and in landscape mode. Starting from alignment between the
-         * robot's and phone's axes, this is a rotation of 90deg along the Y axis.
+         * choice of FRONT camera above) and in portrait mode. Starting from alignment between the
+         * robot's and phone's axes, this is a rotation of 90deg along the Y axis, then 90deg along
+         * the X axis.
          *
          * When determining whether a rotation is positive or negative, consider yourself as looking
          * down the (positive) axis of rotation from the positive towards the origin. Positive rotations
@@ -311,10 +392,10 @@ public class VuforiaNavigation extends LinearOpMode {
          * plane) is then CCW, as one would normally expect from the usual classic 2D geometry.
          */
         OpenGLMatrix phoneLocationOnRobot = OpenGLMatrix
-                .translation(mmPhoneXSlide, mmPhoneYSlide, mmPhoneZSlide)
+                .translation(0, 0, 0)
                 .multiplied(Orientation.getRotationMatrix(
-                        AxesReference.EXTRINSIC, AxesOrder.YZY,
-                        AngleUnit.DEGREES, 90, 0, 0));
+                        AxesReference.EXTRINSIC, AxesOrder.YXY,
+                        AngleUnit.DEGREES, 90, 90, 0));
         RobotLog.ii(TAG, "phone=%s", format(phoneLocationOnRobot));
 
         /**
@@ -327,14 +408,46 @@ public class VuforiaNavigation extends LinearOpMode {
         ((VuforiaTrackableDefaultListener) redMidTarget.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
         ((VuforiaTrackableDefaultListener) blueFarTarget.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
 
+        locationRelativeToTargets = new OpenGLMatrix[visionTargets.size()];
+        targetsVisible = new boolean[visionTargets.size()];
+
         vuforiaReady = true;
+    }
+
+    public void vuforiaProcessLoop() {
+        if (vuforiaReady) {
+            isTargetVisible = false;
+            for (int i = 0; i < visionTargets.size(); i++) {
+                VuforiaTrackable trackable = visionTargets.get(i);
+                /**
+                 * getUpdatedRobotLocation() will return null if no new information is available since
+                 * the last time that call was made, or if the trackable is not currently visible.
+                 * getRobotLocation() will return null if the trackable is not currently visible.
+                 */
+                locationRelativeToTargets[i] = ((VuforiaTrackableDefaultListener) trackable.getListener()).getPose();
+                targetsVisible[i] = ((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible();
+
+                isTargetVisible |= ((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible();
+
+                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
+                if (robotLocationTransform != null) {
+                    lastLocation = robotLocationTransform;
+                }
+            }
+
+            if (!isTargetVisible) {
+                lastLocation = null;
+            }
+        } else {
+            RobotLog.ii(TAG, "Vuforia not ready yet!");
+        }
     }
 
     @Override
     public void runOpMode() {
         ElapsedTime vuforiaTimer = new ElapsedTime();
 
-        initializeVuforia();
+        this.initializeVuforia();
 
         /**
          * A brief tutorial: here's how all the math is going to work:
@@ -362,59 +475,33 @@ public class VuforiaNavigation extends LinearOpMode {
         waitForStart();
 
         /** Start tracking the data sets we care about. */
-        visionTargets.activate();
+        this.activateTracking();
 
         while (opModeIsActive()) {
             vuforiaTimer.reset();
 
-            boolean isTargetVisible = false;
+            this.vuforiaProcessLoop();
 
-            for (VuforiaTrackable trackable : visionTargets) {
-                /**
-                 * getUpdatedRobotLocation() will return null if no new information is available since
-                 * the last time that call was made, or if the trackable is not currently visible.
-                 * getRobotLocation() will return null if the trackable is not currently visible.
-                 */
-                OpenGLMatrix locationRelativeToTarget = ((VuforiaTrackableDefaultListener) trackable.getListener()).getPose();
-                telemetry.addData(trackable.getName(), ((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible() ? "Visible" : "Not Visible");
-                if (locationRelativeToTarget != null) {
-                    telemetry.addData("location relative to target", format(locationRelativeToTarget));
-                }
-                isTargetVisible |= ((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible();
-
-                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
-                if (robotLocationTransform != null) {
-                    lastLocation = robotLocationTransform;
+            for (int i = 0; i < TARGET_NAMES.length; i++) {
+                telemetry.addData(TARGET_NAMES[i], this.getTargetsVisible()[i] ? "Visible" : "Not Visible");
+                if (this.getLocationRelativeToTargets()[i] != null) {
+                    telemetry.addData("location relative to target", Arrays.toString(extractData(this.getLocationRelativeToTargets()[i])));
                 }
             }
 
-            /**
-             * Provide feedback as to where the robot was last located (if we know).
-             */
-            if (!isTargetVisible) {
-                lastLocation = null;
-            }
-            if (lastLocation != null) {
+
+            if (this.getLastLocation() != null) {
                 //  RobotLog.vv(TAG, "robot=%s", format(lastLocation));
-                telemetry.addData("Pos", format(lastLocation));
+                telemetry.addData("Pos", format(this.getLastLocation()));
+                telemetry.addData("Relevant Data", Arrays.toString(extractData(this.getLastLocation())));
             } else {
                 telemetry.addData("Pos", "Unknown");
+                telemetry.addData("Relevant Data", "None");
             }
             telemetry.addData("Loop Time (ms)", vuforiaTimer.milliseconds());
             telemetry.update();
         }
 
-        visionTargets.deactivate();
-    }
-
-    /**
-     * A simple utility that extracts positioning information from a transformation matrix
-     * and formats it in a form palatable to a human being.
-     */
-    String format(OpenGLMatrix transformationMatrix) {
-        float[] data = transformationMatrix.getTranslation().getData();
-        Orientation orientation = Orientation.getOrientation(transformationMatrix, AxesReference.EXTRINSIC, AxesOrder.XYZ,AngleUnit.DEGREES);
-
-        return String.format(Locale.ENGLISH, "(%+05.1f, %+05.1f, %+05.1f), rot.(z-axis) %+03.1f, %s", data[0], data[1], data[2], orientation.thirdAngle, orientation.toString());
+        this.deactivateTracking();
     }
 }
