@@ -18,31 +18,33 @@ public class PIDController { //for upcoming comp, just use P and D controllers
     private double propTerm;
     private double intTerm;
     private double derTerm;
-
-    private boolean isOnTarget = false;
-
     private Func<Double> source;
     private DcMotor output; //how you do this
-
     private boolean isEnabled = false;
+    private double tolerance;
 
-    public PIDController(double kP, double kI, double kD, Func<Double> source, DcMotor output){
+    public PIDController(double kP, double kI, double kD, double tolerance, Func<Double> source, DcMotor output) {
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;
+        this.tolerance = tolerance;
         this.setPoint = source.value();
         this.source = source;
         this.output = output;
         lastError = 0.0;
     }
 
+    public double getTolerance() {
+        return tolerance;
+    }
+
+    public void setTolerance(double tolerance) {
+        this.tolerance = tolerance;
+    }
+
     public boolean isOnTarget(){
         //TODO: replace encoder count with a parameter or something
-        if (Math.abs(error) < 5)
-            isOnTarget = true;
-        else
-            isOnTarget = false;
-        return isOnTarget;
+        return Math.abs(error) < tolerance;
     }
 
     public double getSourceVal(){

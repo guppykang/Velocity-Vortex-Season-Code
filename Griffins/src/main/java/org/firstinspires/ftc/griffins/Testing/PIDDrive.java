@@ -26,28 +26,28 @@ public class PIDDrive {
     }
 
     public void init(){
-        pidDrive = new PIDController(0.001, 0, 0.003, new Func<Double>() {
+        pidDrive = new PIDController(0.001, 0, 0.003, 22.3, new Func<Double>() {
             @Override
             public Double value() {
-                return (hardware.getLeftDrive().getCurrentPosition() + hardware.getRightDrive().getCurrentPosition()) / 2.0;
+                return (double) (hardware.getLeftDrive().getCurrentPosition() + hardware.getRightDrive().getCurrentPosition()) / 2;
             }
         }, null);
 
-        pidTurning = new PIDController(0.001, 0, 0, new Func<Double>() {
+        pidTurning = new PIDController(0.001, 0, 0, 22.3, new Func<Double>() {
             @Override
             public Double value() {
-                return (0 - hardware.getLeftDrive().getCurrentPosition() + hardware.getRightDrive().getCurrentPosition()) / 2.0;
+                return (double) (hardware.getRightDrive().getCurrentPosition() - hardware.getLeftDrive().getCurrentPosition()) / 2;
             }
         }, null);
 
-        pidDrivingDifference = new PIDController(.001, 0, 0, new Func<Double>() {
+        pidDrivingDifference = new PIDController(.001, 0, 0, 22.3, new Func<Double>() {
             @Override
             public Double value() {
                 return (double) (hardware.getLeftDrive().getCurrentPosition() - hardware.getRightDrive().getCurrentPosition());
             }
         }, null);
 
-        pidTurningDifference = new PIDController(0, 0, 0, new Func<Double>() {
+        pidTurningDifference = new PIDController(0, 0, 0, 22.3, new Func<Double>() {
             @Override
             public Double value() {
                 return (double) (hardware.getLeftDrive().getCurrentPosition() + hardware.getRightDrive().getCurrentPosition());
@@ -91,9 +91,15 @@ public class PIDDrive {
     }
 
     public void driveToTarget(Func<Boolean> earlyExitCheck){
+        int exitCounter = 0;
         do {
             syncDrives();
-        } while ((!pidDrive.isOnTarget() || !pidTurning.isOnTarget()) && earlyExitCheck.value());
+            if ((!pidDrive.isOnTarget() || !pidTurning.isOnTarget())) {
+                exitCounter++;
+            } else {
+                exitCounter = 0;
+            }
+        } while (exitCounter <= 10 && earlyExitCheck.value());
 
         hardware.getLeftDrive().setPower(0);
         hardware.getRightDrive().setPower(0);
