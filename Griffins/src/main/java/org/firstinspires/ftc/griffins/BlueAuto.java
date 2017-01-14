@@ -17,7 +17,7 @@ import static org.firstinspires.ftc.griffins.RobotHardware.RIGHT_COLOR_SENSOR_AD
 /**
  * Created by David on 12/7/2016.
  */
-@Autonomous
+@Autonomous(name = "Blue Beacon Auto", group = "Auto")
 public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboard {
     HalDashboard halDashboard;
     private RobotHardware hardware;

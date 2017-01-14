@@ -261,6 +261,15 @@ public class RobotHardware {
         // TODO: 10/29/2016 create code for turret position
     }
 
+    public void setDrivePower(double leftPower, double rightPower) {
+        leftDrive.setPower(leftPower);
+        rightDrive.setPower(rightPower);
+    }
+
+    public void stopDrive() {
+        setDrivePower(0, 0);
+    }
+
     public void pushButton(BeaconState beaconState, BeaconState alliance) {
         if (alliance == BeaconState.BLUE_BLUE) {
             if (beaconState == BeaconState.BLUE_RED) {

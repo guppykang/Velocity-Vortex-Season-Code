@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.griffins.Testing.LinearOpModeTimeOutFunc;
-import org.firstinspires.ftc.griffins.Testing.PIDDrive;
+import org.firstinspires.ftc.griffins.Navigation.LinearOpModeTimeOutFunc;
+import org.firstinspires.ftc.griffins.Navigation.PIDDrive;
 
 /**
  * Created by David on 11/28/2016.
@@ -65,7 +65,7 @@ public class AutoFunctions {
 
         //curve around to face the ramp
         int gyroTarget;
-        gyroTarget = (int) getZAngle() - (int) angle;
+        gyroTarget = (int) getZAngle() + (int) angle;
 
         ElapsedTime timeout = new ElapsedTime();
         double minimumPower = .10;
@@ -78,7 +78,7 @@ public class AutoFunctions {
             }
             hardware.getLeftDrive().setPower(drivePower);
             hardware.getRightDrive().setPower(-drivePower);
-            drivePower = headingError / (2 * Math.abs(angle));
+            drivePower = -headingError / (9 * Math.abs(angle));
             drivePower = Range.clip(drivePower, -1, 1);
             RobotLog.i("2w -----------------------");
             RobotLog.i("time: " + timeout.time());
