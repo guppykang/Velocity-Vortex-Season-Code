@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.griffins.Testing;
+package org.firstinspires.ftc.griffins.Navigation;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
