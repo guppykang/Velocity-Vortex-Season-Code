@@ -33,10 +33,10 @@ public class PIDDrive {
             }
         }, null);
 
-        pidTurning = new PIDController(0.001, 0, 0, 22.3, new Func<Double>() {
+        pidTurning = new PIDController(0.000176579, 0, 0, 1, new Func<Double>() {
             @Override
             public Double value() {
-                return (double) (hardware.getRightDrive().getCurrentPosition() - hardware.getLeftDrive().getCurrentPosition()) / 2;
+                return (double) hardware.getTurretGyro().getIntegratedZValue();
             }
         }, null);
 
@@ -63,15 +63,13 @@ public class PIDDrive {
             power = Range.clip(power, -0.5, 0.5);
             difference = pidTurningDifference.sendPIDOutput();
 
-            hardware.getLeftDrive().setPower(-power - difference);
-            hardware.getRightDrive().setPower(power + difference);
+            hardware.setDrivePower(-power - difference, power + difference);
         } else {
             power = pidDrive.sendPIDOutput();
             power = Range.clip(power, -0.5, 0.5);
             difference = pidDrivingDifference.sendPIDOutput();
 
-            hardware.getLeftDrive().setPower(power + difference);
-            hardware.getRightDrive().setPower(power - difference);
+            hardware.setDrivePower(power + difference, power - difference);
         }
 
 
@@ -85,7 +83,7 @@ public class PIDDrive {
 
     //turns to the left are positive...
     public void setTurnTarget(double degrees) {
-        pidTurning.setSetPoint(pidTurning.getSourceVal() + degrees * RobotHardware.ENCODER_COUNTS_PER_ROBOT_DEGREE);
+        pidTurning.setSetPoint(pidTurning.getSourceVal() + degrees);
         pidTurningDifference.setSetPoint(pidTurningDifference.getSourceVal());
         isTurning = true;
     }
@@ -94,14 +92,21 @@ public class PIDDrive {
         int exitCounter = 0;
         do {
             syncDrives();
-            if ((!pidDrive.isOnTarget() || !pidTurning.isOnTarget())) {
-                exitCounter++;
+            if (isTurning) {
+                if (pidTurning.isOnTarget()) {
+                    exitCounter++;
+                } else {
+                    exitCounter = 0;
+                }
             } else {
-                exitCounter = 0;
+                if (pidDrive.isOnTarget()) {
+                    exitCounter++;
+                } else {
+                    exitCounter = 0;
+                }
             }
         } while (exitCounter <= 10 && earlyExitCheck.value());
 
-        hardware.getLeftDrive().setPower(0);
-        hardware.getRightDrive().setPower(0);
+        hardware.stopDrive();
     }
 }

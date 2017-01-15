@@ -27,7 +27,7 @@ public class WallApproachTest extends LinearOpMode {
 
         hardware.getTurretGyro().resetZAxisIntegrator();
 
-        autoFunctions.twoWheelTurn(-30);
+        autoFunctions.twoWheelTurnPID(30, AutoFunctions.TurnDirection.RIGHT);
 
         hardware.setDrivePower(-.3, -.4);
 
