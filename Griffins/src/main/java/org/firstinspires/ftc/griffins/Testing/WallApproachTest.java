@@ -34,6 +34,7 @@ public class WallApproachTest extends LinearOpMode {
         LinearOpModeTimeOutFunc timer = new LinearOpModeTimeOutFunc(this, 2);
         while (timer.value() && Math.abs(hardware.getTurretGyro().getIntegratedZValue() - gyroHeading + 45) > 1) {
             telemetry.addData("Gyro Heading", hardware.getTurretGyro().getIntegratedZValue());
+            telemetry.addData("Gyro Target Error", hardware.getTurretGyro().getIntegratedZValue() - gyroHeading + 45);
         }
 
         hardware.stopDrive();

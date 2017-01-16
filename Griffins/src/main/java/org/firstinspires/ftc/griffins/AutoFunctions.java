@@ -52,8 +52,7 @@ public class AutoFunctions {
 
         //stop driving
         linearOpMode.idle();
-        hardware.getLeftDrive().setPower(0);
-        hardware.getRightDrive().setPower(0);
+        hardware.stopDrive();
 
         //send any late signals
 
@@ -76,8 +75,7 @@ public class AutoFunctions {
             if (Math.abs(drivePower) < minimumPower) {
                 drivePower = minimumPower * Math.signum(drivePower);
             }
-            hardware.getLeftDrive().setPower(drivePower);
-            hardware.getRightDrive().setPower(-drivePower);
+            hardware.setDrivePower(drivePower, -drivePower);
             drivePower = -headingError / (9 * Math.abs(angle));
             drivePower = Range.clip(drivePower, -1, 1);
             RobotLog.i("2w -----------------------");
@@ -93,8 +91,7 @@ public class AutoFunctions {
 
         //stop motors
         linearOpMode.idle();
-        hardware.getLeftDrive().setPower(0);
-        hardware.getRightDrive().setPower(0);
+        hardware.stopDrive();
 
         //send any late signals
         linearOpMode.waitForNextHardwareCycle();
@@ -160,8 +157,7 @@ public class AutoFunctions {
             linearOpMode.telemetry.addData("Encoder Counts to go", Math.abs(hardware.getLeftDrive().getCurrentPosition() - encoderTarget));
 
             linearOpMode.idle();
-            hardware.getLeftDrive().setPower(power - powerOffset);
-            hardware.getRightDrive().setPower(power + powerOffset);
+            hardware.setDrivePower(power - powerOffset, power + powerOffset);
 
             stopCondition = !(Math.abs(hardware.getLeftDrive().getCurrentPosition() - encoderTarget) < RobotHardware.ENCODER_COUNTS_PER_INCH);
 
@@ -170,8 +166,7 @@ public class AutoFunctions {
 
         //stop motors
         linearOpMode.idle();
-        hardware.getLeftDrive().setPower(0);
-        hardware.getRightDrive().setPower(0);
+        hardware.stopDrive();
 
         //send any late signals
         linearOpMode.waitForNextHardwareCycle();
@@ -202,12 +197,10 @@ public class AutoFunctions {
 
         ElapsedTime timeout = new ElapsedTime();
         while (linearOpMode.opModeIsActive() && (hardware.getLeftDrive().isBusy() && hardware.getRightDrive().isBusy()) && timeout.seconds() < 8) {
-            hardware.getLeftDrive().setPower(power);
-            hardware.getRightDrive().setPower(power);
+            hardware.setDrivePower(power, power);
         }
 
-        hardware.getLeftDrive().setPower(0);
-        hardware.getRightDrive().setPower(0);
+        hardware.stopDrive();
 
         hardware.getLeftDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         hardware.getRightDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -228,12 +221,10 @@ public class AutoFunctions {
 
         ElapsedTime timeout = new ElapsedTime();
         while (linearOpMode.opModeIsActive() && timeout.seconds() < 1) {
-            hardware.getLeftDrive().setPower(powerLeft);
-            hardware.getRightDrive().setPower(powerRight);
+            hardware.setDrivePower(powerLeft, powerRight);
         }
 
-        hardware.getLeftDrive().setPower(0);
-        hardware.getRightDrive().setPower(0);
+        hardware.stopDrive();
 
         hardware.getLeftDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         hardware.getRightDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -255,18 +246,13 @@ public class AutoFunctions {
 
         ElapsedTime timeout = new ElapsedTime();
         while (linearOpMode.opModeIsActive() && timeout.seconds() < 5) {
-            hardware.getLeftDrive().setPower(powerLeft);
-            hardware.getRightDrive().setPower(powerRight);
+            hardware.setDrivePower(powerLeft, powerRight);
         }
 
-        hardware.getLeftDrive().setPower(0);
-        hardware.getRightDrive().setPower(0);
+        hardware.stopDrive();
 
         hardware.getLeftDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         hardware.getRightDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-
-
     }
 
     public void twoWheelTurnSimple(long encoderCount, TurnDirection direction, double power) {
@@ -292,12 +278,10 @@ public class AutoFunctions {
 
         ElapsedTime timeout = new ElapsedTime();
         while (linearOpMode.opModeIsActive() && (hardware.getLeftDrive().isBusy() && hardware.getRightDrive().isBusy()) && timeout.seconds() < 8) {
-            hardware.getLeftDrive().setPower(power);
-            hardware.getRightDrive().setPower(power);
+            hardware.setDrivePower(power, power);
         }
 
-        hardware.getLeftDrive().setPower(0);
-        hardware.getRightDrive().setPower(0);
+        hardware.stopDrive();
 
         hardware.getLeftDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         hardware.getRightDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);

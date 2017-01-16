@@ -96,8 +96,7 @@ public class TeleOp extends OpMode {
             beaconPushState = RobotHardware.BeaconState.UNDEFINED_STATE;
         }
 
-        hardware.getLeftDrive().setPower(leftDrivePower);
-        hardware.getRightDrive().setPower(rightDrivePower);
+        hardware.setDrivePower(leftDrivePower, rightDrivePower);
         hardware.getShooter().setPower(shooterPower);
         hardware.getIntake().setPower(intakeSpeed);
         hardware.setLoaderPower(loaderPower);
