@@ -154,10 +154,12 @@ public class RobotHardware {
 
         leftButtonPusherColorSensor = hardwareMap.get(ColorSensor.class, LEFT_BUTTON_PUSHER_SENSOR);
         leftButtonPusherColorSensor.setI2cAddress(LEFT_COLOR_SENSOR_ADDRESS);
+        leftButtonPusherColorSensor.enableLed(true);
         leftButtonPusherColorSensor.enableLed(false);
 
         rightButtonPusherColorSensor = hardwareMap.get(ColorSensor.class, RIGHT_BUTTON_PUSHER_SENSOR);
         rightButtonPusherColorSensor.setI2cAddress(RIGHT_COLOR_SENSOR_ADDRESS);
+        rightButtonPusherColorSensor.enableLed(true);
         rightButtonPusherColorSensor.enableLed(false);
 
         /*beaconDistanceSensor = hardwareMap.get(ModernRoboticsAnalogOpticalDistanceSensor.class, BEACON_DISTANCE_SENSOR);
