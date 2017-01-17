@@ -21,29 +21,33 @@ public class WallApproachTest extends LinearOpMode {
 
         waitForStart();
 
-        int gyroHeading = hardware.getTurretGyro().getIntegratedZValue();
-
         while (opModeIsActive() && hardware.getTurretGyro().isCalibrating()) ;
 
-        hardware.getTurretGyro().resetZAxisIntegrator();
-
-        autoFunctions.twoWheelTurnPID(30, AutoFunctions.TurnDirection.RIGHT);
-
-        hardware.setDrivePower(-.3, -.4);
-
-        LinearOpModeTimeOutFunc timer = new LinearOpModeTimeOutFunc(this, 2);
-        while (timer.value() && Math.abs(hardware.getTurretGyro().getIntegratedZValue() - gyroHeading + 45) > 1) {
-            telemetry.addData("Gyro Heading", hardware.getTurretGyro().getIntegratedZValue());
-            telemetry.addData("Gyro Target Error", hardware.getTurretGyro().getIntegratedZValue() - gyroHeading + 45);
-        }
-
-        hardware.stopDrive();
+        redWallApproach(hardware, autoFunctions);
 
         sleep(500);
 
         hardware.setDrivePower(-.35, -.3);
 
         sleep(1000);
+
+        hardware.stopDrive();
+    }
+
+    public void redWallApproach(RobotHardware hardware, AutoFunctions autoFunctions) {
+        int gyroHeading = hardware.getTurretGyro().getIntegratedZValue();
+        autoFunctions.twoWheelTurnPID(30, AutoFunctions.TurnDirection.RIGHT);
+
+        autoFunctions.driveStraightPID(6, AutoFunctions.DriveStraightDirection.BACKWARD);
+
+        hardware.setDrivePower(-.3, -.35);
+
+        LinearOpModeTimeOutFunc timer = new LinearOpModeTimeOutFunc(this, 2);
+        while (timer.value() && Math.abs(hardware.getTurretGyro().getIntegratedZValue() - gyroHeading + 45) > 1) {
+            telemetry.addData("Gyro Heading", hardware.getTurretGyro().getIntegratedZValue());
+            telemetry.addData("Gyro Target Error", hardware.getTurretGyro().getIntegratedZValue() - gyroHeading + 45);
+            telemetry.update();
+        }
 
         hardware.stopDrive();
     }
