@@ -4,6 +4,9 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.griffins.RobotHardware;
 import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
+import static org.firstinspires.ftc.griffins.RobotHardware.ENCODER_COUNTS_PER_ROBOT_DEGREE;
 
 /**
  * Created by David on 12/19/2016.
@@ -33,14 +36,14 @@ public class PIDDrive {
             }
         }, null);
 
-        pidTurning = new PIDController(0.000176579, 0, 0, 1, new Func<Double>() {
+        pidTurning = new PIDController(0.0015 * ENCODER_COUNTS_PER_ROBOT_DEGREE, 0, 0.002 * ENCODER_COUNTS_PER_ROBOT_DEGREE, 1, new Func<Double>() {
             @Override
             public Double value() {
                 return (double) hardware.getTurretGyro().getIntegratedZValue();
             }
         }, null);
 
-        pidDrivingDifference = new PIDController(.001, 0, 0, 22.3, new Func<Double>() {
+        pidDrivingDifference = new PIDController(0.001, 0, 0, 22.3, new Func<Double>() {
             @Override
             public Double value() {
                 return (double) (hardware.getLeftDrive().getCurrentPosition() - hardware.getRightDrive().getCurrentPosition());
@@ -88,7 +91,7 @@ public class PIDDrive {
         isTurning = true;
     }
 
-    public void driveToTarget(Func<Boolean> earlyExitCheck){
+    public void driveToTarget(Func<Boolean> earlyExitCheck, Telemetry telemetry) {
         int exitCounter = 0;
         do {
             syncDrives();
@@ -105,8 +108,21 @@ public class PIDDrive {
                     exitCounter = 0;
                 }
             }
-        } while (exitCounter <= 10 && earlyExitCheck.value());
+
+            if (telemetry != null) {
+                telemetry.addData("exit counter", exitCounter);
+                telemetry.addData("exit condition value", exitCounter <= 10 && earlyExitCheck.value());
+                telemetry.addData("source value", isTurning ? pidTurning.getSourceVal() : pidDrive.getSourceVal());
+                telemetry.addData("target", isTurning ? pidTurning.getSetPoint() : pidDrive.getSetPoint());
+                telemetry.addData("error", isTurning ? pidTurning.getError() : pidDrive.getError());
+                telemetry.update();
+            }
+        } while (exitCounter <= 100 && earlyExitCheck.value());
 
         hardware.stopDrive();
+    }
+
+    public void driveToTarget(Func<Boolean> booleanFunc) {
+        driveToTarget(booleanFunc, null);
     }
 }
