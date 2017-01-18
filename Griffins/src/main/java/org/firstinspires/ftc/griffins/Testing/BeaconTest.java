@@ -34,7 +34,7 @@ public class BeaconTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         buttonPusherServo = hardwareMap.get(Servo.class, BUTTON_PUSHER_SERVO);
         buttonPusherServo.setDirection(Servo.Direction.FORWARD);
-        this.pushButton(RobotHardware.BeaconState.UNDEFINED_STATE);
+        this.pushButton(RobotHardware.BeaconState.UNDEFINED);
 
         leftButtonPusherColorSensor = hardwareMap.get(ColorSensor.class, LEFT_BUTTON_PUSHER_SENSOR);
         leftButtonPusherColorSensor.setI2cAddress(LEFT_COLOR_SENSOR_ADDRESS);
@@ -47,7 +47,7 @@ public class BeaconTest extends LinearOpMode {
         waitForStart();
 
         RobotHardware.BeaconState beaconState = findBeaconState();
-        if (beaconState == RobotHardware.BeaconState.UNDEFINED_STATE) {
+        if (beaconState == RobotHardware.BeaconState.UNDEFINED) {
             telemetry.log().add("Beacon state undefined, attempting active beacon state finder");
             sleep(1000);
             beaconState = activeBeaconStateFinder();
@@ -57,7 +57,7 @@ public class BeaconTest extends LinearOpMode {
         sleep(1000);
         pushButton(beaconState);
         sleep(3000);
-        pushButton(RobotHardware.BeaconState.UNDEFINED_STATE);
+        pushButton(RobotHardware.BeaconState.UNDEFINED);
         sleep(2000);
     }
 
@@ -84,7 +84,7 @@ public class BeaconTest extends LinearOpMode {
             }
         }
 
-        if (beaconState == RobotHardware.BeaconState.UNDEFINED_STATE) {
+        if (beaconState == RobotHardware.BeaconState.UNDEFINED) {
             buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
         }
 
@@ -92,7 +92,7 @@ public class BeaconTest extends LinearOpMode {
 
     /**
      * Will check the color sensors to determine the beacon state
-     * If either color sensor's state is UNDEFINED_STATE, then this method will return UNDEFINED_STATE.
+     * If either color sensor's state is UNDEFINED, then this method will return UNDEFINED.
      *
      * @return the state of the beacon, as a variable of BeaconState,
      */
@@ -104,7 +104,7 @@ public class BeaconTest extends LinearOpMode {
     }
 
     private RobotHardware.BeaconState mergeBeaconSideStates(RobotHardware.BeaconState leftSide, RobotHardware.BeaconState rightSide) {
-        RobotHardware.BeaconState beaconState = RobotHardware.BeaconState.UNDEFINED_STATE;
+        RobotHardware.BeaconState beaconState = RobotHardware.BeaconState.UNDEFINED;
 
         if (leftSide == RobotHardware.BeaconState.BLUE_BLUE) {
             if (rightSide == RobotHardware.BeaconState.BLUE_BLUE) {
@@ -127,7 +127,7 @@ public class BeaconTest extends LinearOpMode {
      * Checks the state of the color sensor to determine what color is being read
      *
      * @param colorSensor the color sensor that will be checked
-     * @return A BeaconState, which will be either RED_RED, BLUE_BLUE, or UNDEFINED_STATE.
+     * @return A BeaconState, which will be either RED_RED, BLUE_BLUE, or UNDEFINED.
      */
     private RobotHardware.BeaconState findColorSensorState(ColorSensor colorSensor) {
         RobotHardware.BeaconState colorState;
@@ -137,7 +137,7 @@ public class BeaconTest extends LinearOpMode {
         } else if (colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.green()) {
             colorState = RobotHardware.BeaconState.BLUE_BLUE;
         } else {
-            colorState = RobotHardware.BeaconState.UNDEFINED_STATE;
+            colorState = RobotHardware.BeaconState.UNDEFINED;
         }
 
         return colorState;
@@ -145,20 +145,20 @@ public class BeaconTest extends LinearOpMode {
 
     //blocking method
     RobotHardware.BeaconState activeBeaconStateFinder() {
-        RobotHardware.BeaconState colorState = RobotHardware.BeaconState.UNDEFINED_STATE;
-        RobotHardware.BeaconState leftColorState = RobotHardware.BeaconState.UNDEFINED_STATE;
-        RobotHardware.BeaconState rightColorState = RobotHardware.BeaconState.UNDEFINED_STATE;
+        RobotHardware.BeaconState colorState = RobotHardware.BeaconState.UNDEFINED;
+        RobotHardware.BeaconState leftColorState = RobotHardware.BeaconState.UNDEFINED;
+        RobotHardware.BeaconState rightColorState = RobotHardware.BeaconState.UNDEFINED;
         double beaconServoPosition = BUTTON_PUSHER_CENTER_POSITION;
 
         for (int i = 0; i < 3; i++) {
             colorState = findBeaconState();
-            if (colorState != RobotHardware.BeaconState.UNDEFINED_STATE)
+            if (colorState != RobotHardware.BeaconState.UNDEFINED)
                 return colorState;
         }
 
-        while (opModeIsActive() && leftColorState == RobotHardware.BeaconState.UNDEFINED_STATE) {
+        while (opModeIsActive() && leftColorState == RobotHardware.BeaconState.UNDEFINED) {
             if (beaconServoPosition < BUTTON_PUSHER_LEFT_FULL_EXTENSION) {
-                return RobotHardware.BeaconState.UNDEFINED_STATE;
+                return RobotHardware.BeaconState.UNDEFINED;
             }
 
             beaconServoPosition += BEACON_SERVO_INCREMENT;

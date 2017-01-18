@@ -39,7 +39,7 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
 
         Servo buttonPusherServo = hardwareMap.get(Servo.class, BUTTON_PUSHER_SERVO);
         buttonPusherServo.setDirection(Servo.Direction.FORWARD);
-        this.hardware.pushButton(RobotHardware.BeaconState.UNDEFINED_STATE);
+        this.hardware.pushButton(RobotHardware.BeaconState.UNDEFINED);
 
         ColorSensor leftButtonPusherColorSensor = hardwareMap.get(ColorSensor.class, LEFT_BUTTON_PUSHER_SENSOR);
         leftButtonPusherColorSensor.setI2cAddress(LEFT_COLOR_SENSOR_ADDRESS);

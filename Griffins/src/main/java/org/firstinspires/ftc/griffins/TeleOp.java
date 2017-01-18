@@ -93,7 +93,7 @@ public class TeleOp extends OpMode {
         if (gamepad2.right_trigger == 1.0) {
             beaconPushState = RobotHardware.BeaconState.BLUE_RED;
         } else {
-            beaconPushState = RobotHardware.BeaconState.UNDEFINED_STATE;
+            beaconPushState = RobotHardware.BeaconState.UNDEFINED;
         }
 
         hardware.setDrivePower(leftDrivePower, rightDrivePower);

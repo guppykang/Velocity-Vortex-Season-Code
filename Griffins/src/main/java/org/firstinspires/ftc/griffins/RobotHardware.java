@@ -13,6 +13,15 @@ import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.BLUE;
+import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.BLUE_BLUE;
+import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.BLUE_RED;
+import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.RED;
+import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.RED_BLUE;
+import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.RED_RED;
+import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.UNDEFINED;
+import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.guessBeaconState;
+
 /**
  * Created by David on 10/29/2016.
  * Stores the hardware for the robot.
@@ -129,7 +138,7 @@ public class RobotHardware {
 
         buttonPusherServo = hardwareMap.get(Servo.class, BUTTON_PUSHER_SERVO);
         buttonPusherServo.setDirection(Servo.Direction.FORWARD);
-        this.pushButton(BeaconState.UNDEFINED_STATE);
+        this.pushButton(UNDEFINED);
 
         leftTurretGuide = hardwareMap.get(Servo.class, LEFT_TURRET_GUIDE_SERVO);
         leftTurretGuide.setDirection(Servo.Direction.FORWARD);
@@ -275,82 +284,75 @@ public class RobotHardware {
         setDrivePower(0, 0);
     }
 
+    /**
+     * This method will operate the button pusher servo to push the beacon.
+     *
+     * @param beaconState encodes the state of the beacon.  If one side is undefined,
+     *                    it will assume that side is the opposite of the defined side.
+     *                    If UNDEFINED is passed, it will return to the center position
+     * @param alliance    stores what alliance we are, valid parameters are BLUE and RED
+     */
     public void pushButton(BeaconState beaconState, BeaconState alliance) {
-        if (alliance == BeaconState.BLUE_BLUE) {
-            if (beaconState == BeaconState.BLUE_RED) {
-                buttonPusherServo.setPosition(BUTTON_PUSHER_LEFT_POSITION);
-            } else if (beaconState == BeaconState.RED_BLUE) {
-                buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
-            } else if (beaconState == BeaconState.BLUE_BLUE) {
-                buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
-            } else if (beaconState == BeaconState.RED_RED) {
-                buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
-            }
-        } else if (alliance == BeaconState.RED_RED) {
-            if (beaconState == BeaconState.BLUE_RED) {
-                buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
-            } else if (beaconState == BeaconState.RED_BLUE) {
-                buttonPusherServo.setPosition(BUTTON_PUSHER_LEFT_POSITION);
-            } else if (beaconState == BeaconState.BLUE_BLUE) {
-                buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
-            } else if (beaconState == BeaconState.RED_RED) {
-                buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
-            }
-        }
-
-        if (beaconState == BeaconState.UNDEFINED_STATE) {
+        if (beaconState == UNDEFINED) {
             buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
+        } else {
+            beaconState = guessBeaconState(beaconState);
+            if (alliance == BLUE) {
+                if (beaconState == BLUE_RED) {
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_LEFT_POSITION);
+                } else if (beaconState == RED_BLUE) {
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
+                } else if (beaconState == BLUE_BLUE) {
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
+                } else if (beaconState == RED_RED) {
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
+                }
+            } else if (alliance == RED) {
+                if (beaconState == BLUE_RED) {
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
+                } else if (beaconState == RED_BLUE) {
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_LEFT_POSITION);
+                } else if (beaconState == BLUE_BLUE) {
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
+                } else if (beaconState == RED_RED) {
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
+                }
+            }
         }
-
     }
 
     @Deprecated
-    public void pushButton(BeaconState beaconState){
-        pushButton(beaconState, BeaconState.BLUE_BLUE);
+    public void pushButton(BeaconState beaconState) {
+        pushButton(beaconState, BLUE);
     }
 
     /**
      * Will check the color sensors to determine the beacon state
-     * If either color sensor's state is UNDEFINED_STATE, then this method will return UNDEFINED_STATE.
+     * If either color sensor's state is UNDEFINED, then this method will return UNDEFINED.
      *
      * @return the state of the beacon, as a variable of BeaconState,
      */
     public BeaconState findBeaconState() {
-        BeaconState beaconState = BeaconState.UNDEFINED_STATE;
         BeaconState leftSide = findColorSensorState(leftButtonPusherColorSensor);
         BeaconState rightSide = findColorSensorState(rightButtonPusherColorSensor);
 
-        if (leftSide == BeaconState.BLUE_BLUE) {
-            if (rightSide == BeaconState.BLUE_BLUE) {
-                beaconState = BeaconState.BLUE_BLUE;
-            } else if (rightSide == BeaconState.RED_RED) {
-                beaconState = BeaconState.BLUE_RED;
-            }
-        } else if (leftSide == BeaconState.RED_RED) {
-            if (rightSide == BeaconState.BLUE_BLUE) {
-                beaconState = BeaconState.RED_BLUE;
-            } else if (rightSide == BeaconState.RED_RED) {
-                beaconState = BeaconState.RED_RED;
-            }
-        }
-
-        return beaconState;
+        return BeaconState.mergeBeaconStates(leftSide, rightSide);
     }
 
     /**
      * Checks the state of the color sensor to determine what color is being read
      * @param colorSensor the color sensor that will be checked
-     * @return A BeaconState, which will be either RED_RED, BLUE_BLUE, or UNDEFINED_STATE.
+     * @return A BeaconState, which will be either RED, BLUE, or UNDEFINED.
      */
     private BeaconState findColorSensorState(ColorSensor colorSensor) {
         BeaconState colorState;
 
         if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.green()) {
-            colorState = BeaconState.RED_RED;
+            colorState = RED;
         } else if (colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.green()) {
-            colorState = BeaconState.BLUE_BLUE;
+            colorState = BLUE;
         } else {
-            colorState = BeaconState.UNDEFINED_STATE;
+            colorState = UNDEFINED;
         }
 
         return colorState;
@@ -371,10 +373,88 @@ public class RobotHardware {
     }
 
     public enum BeaconState {
-        BLUE_BLUE,
-        BLUE_RED,
-        RED_BLUE,
-        RED_RED,
-        UNDEFINED_STATE
+        BLUE(0b00_01), //0  0000
+        RED(0b00_10), //1  0001
+        UNDEFINED(0b00_11), //2  0010
+        BLUE_BLUE(0b01_01), //3  0011
+        BLUE_RED(0b01_10), //4  0100
+        BLUE_UNDEFINED(0b01_11), //5  0101
+        RED_BLUE(0b10_01), //6  0110
+        RED_RED(0b10_10), //7  0111
+        RED_UNDEFINED(0b10_11), //8  1000
+        UNDEFINED_BLUE(0b11_01), //9  1001
+        UNDEFINED_RED(0b11_10), //10 1010
+        UNDEFINED_UNDEFINED(0b11_11); //11 1011
+
+        private final int numberState;
+
+        BeaconState(int numberState) {
+            this.numberState = numberState;
+        }
+
+        public static BeaconState mergeBeaconStates(BeaconState left, BeaconState right) {
+            if (left.numberState >> 2 != 0 || right.numberState >> 2 != 0) {
+                throw new IllegalArgumentException("Valid arguments are BLUE, RED, UNDEFINED, all others are already merged");
+            }
+
+            return getFromNumberState(left.numberState << 2 + right.numberState);
+        }
+
+        public static BeaconState removeUndefined(BeaconState containsUndefined) {
+            if (containsUndefined.numberState >> 2 == UNDEFINED.numberState) {
+                return getFromNumberState(containsUndefined.numberState & 0b00_11);
+            } else {
+                return getFromNumberState((containsUndefined.numberState & 0b11_00) >> 2);
+            }
+        }
+
+        public static BeaconState guessBeaconState(BeaconState containsUndefined) {
+            if (containsUndefined.numberState <= 0b00_11 || containsUndefined == UNDEFINED_UNDEFINED) {
+                throw new IllegalArgumentException("Insufficient data");
+            }
+
+            if ((containsUndefined.numberState & 0b00_11) == UNDEFINED.numberState) {
+                return getFromNumberState(removeUndefined(containsUndefined).numberState << 2 + removeUndefined(containsUndefined).numberState ^ 0b11);
+            } else if ((containsUndefined.numberState & 0b11_00) == (UNDEFINED.numberState << 2)) {
+                return getFromNumberState((removeUndefined(containsUndefined).numberState ^ 0b11) << 2 + removeUndefined(containsUndefined).numberState);
+            } else {
+                return containsUndefined;
+            }
+        }
+
+        public static BeaconState getFromNumberState(int numberState) {
+            switch (numberState) {
+                case 0b00_01:
+                    return BLUE;
+                case 0b00_10:
+                    return RED;
+                case 0b00_11:
+                    return UNDEFINED;
+                case 0b01_01:
+                    return BLUE_BLUE;
+                case 0b01_10:
+                    return BLUE_RED;
+                case 0b01_11:
+                    return BLUE_UNDEFINED;
+                case 0b10_01:
+                    return RED_BLUE;
+                case 0b10_10:
+                    return RED_RED;
+                case 0b10_11:
+                    return RED_UNDEFINED;
+                case 0b11_01:
+                    return UNDEFINED_BLUE;
+                case 0b11_10:
+                    return UNDEFINED_RED;
+                case 0b11_11:
+                    return UNDEFINED_UNDEFINED;
+                default:
+                    throw new IllegalArgumentException("Not a valid number state.");
+            }
+        }
+
+        public int numberState() {
+            return numberState;
+        }
     }
 }
