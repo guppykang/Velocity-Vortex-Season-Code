@@ -2,17 +2,10 @@ package org.firstinspires.ftc.griffins;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.griffins.MenuPort.FtcMenu;
 import org.firstinspires.ftc.griffins.MenuPort.HalDashboard;
-
-import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_SERVO;
-import static org.firstinspires.ftc.griffins.RobotHardware.LEFT_BUTTON_PUSHER_SENSOR;
-import static org.firstinspires.ftc.griffins.RobotHardware.LEFT_COLOR_SENSOR_ADDRESS;
-import static org.firstinspires.ftc.griffins.RobotHardware.RIGHT_BUTTON_PUSHER_SENSOR;
-import static org.firstinspires.ftc.griffins.RobotHardware.RIGHT_COLOR_SENSOR_ADDRESS;
+import org.firstinspires.ftc.griffins.Testing.WallApproachTest;
 
 /**
  * Created by David on 12/7/2016.
@@ -36,19 +29,9 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
         Alliance alliance = Alliance.BLUE_ALLIANCE;
         telemetry.log().add("Alliance is " + alliance);
 
-        Servo buttonPusherServo = hardwareMap.get(Servo.class, BUTTON_PUSHER_SERVO);
-        buttonPusherServo.setDirection(Servo.Direction.FORWARD);
-        this.hardware.pushButton(RobotHardware.BeaconState.UNDEFINED_STATE);
-
-        ColorSensor leftButtonPusherColorSensor = hardwareMap.get(ColorSensor.class, LEFT_BUTTON_PUSHER_SENSOR);
-        leftButtonPusherColorSensor.setI2cAddress(LEFT_COLOR_SENSOR_ADDRESS);
-        leftButtonPusherColorSensor.enableLed(false);
-
-        ColorSensor rightButtonPusherColorSensor = hardwareMap.get(ColorSensor.class, RIGHT_BUTTON_PUSHER_SENSOR);
-        rightButtonPusherColorSensor.setI2cAddress(RIGHT_COLOR_SENSOR_ADDRESS);
-        rightButtonPusherColorSensor.enableLed(false);
-
         waitForStart();
+
+        while (opModeIsActive() && hardware.getTurretGyro().isCalibrating()) ;
 
         //shoot two particles
         autoFunctions.shoot();
@@ -56,26 +39,29 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
         telemetry.update();
 
         //drive straight a little to get off wall in order to turn
-        autoFunctions.driveStraight((long)(3/hardware.INCHES_PER_ENCODER_COUNT), AutoFunctions.DriveStraightDirection.FORWARD, .5);
+        autoFunctions.driveStraightPID(4.725, AutoFunctions.DriveStraightDirection.FORWARD, 5);
         telemetry.log().add("Off the Wall");
         telemetry.update();
 
         //turn so facing toward beacon
-        autoFunctions.twoWheelTurnSimple((long)(6.5/hardware.INCHES_PER_ENCODER_COUNT), AutoFunctions.TurnDirection.RIGHT, .25);
+        autoFunctions.twoWheelTurnPID(45, AutoFunctions.TurnDirection.RIGHT);
         telemetry.log().add("Turned towards beacon");
         telemetry.update();
 
+        //turn on intake
+        hardware.getIntake().setPower(0.5);
+
         //drive toward beacon wall
-        autoFunctions.driveStraight((long) (62.5 / hardware.INCHES_PER_ENCODER_COUNT), AutoFunctions.DriveStraightDirection.FORWARD, .5);
+        autoFunctions.driveStraightPID(67.5, AutoFunctions.DriveStraightDirection.FORWARD, 10);
         telemetry.log().add("Arrived at beacon wall");
         telemetry.update();
 
         //"parallel parking"
-        autoFunctions.curveDriveShort((long) (3 / hardware.INCHES_PER_ENCODER_COUNT), (long) (12 / hardware.INCHES_PER_ENCODER_COUNT), 0.1, 0.9);
+        WallApproachTest.blueWallApproach(hardware, autoFunctions, this);
         telemetry.log().add("Straightened out against wall");
         telemetry.update();
 
-        //drive back to first beacon
+        /*//drive back to first beacon
         autoFunctions.driveStraight((long)(34/hardware.INCHES_PER_ENCODER_COUNT), AutoFunctions.DriveStraightDirection.FORWARD, .5);
         telemetry.log().add("Arrived at first beacon");
         telemetry.update();
@@ -97,7 +83,7 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
             hardware.pushButton(hardware.findBeaconState(), RobotHardware.BeaconState.BLUE_BLUE);
         }
         telemetry.log().add("Pushed second button");
-        telemetry.update();
+        telemetry.update();*/
     }
 
     @Override
