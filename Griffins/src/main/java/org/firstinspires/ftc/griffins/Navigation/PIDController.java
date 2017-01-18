@@ -44,7 +44,7 @@ public class PIDController { //for upcoming comp, just use P and D controllers
 
     public boolean isOnTarget(){
         //TODO: replace encoder count with a parameter or something
-        return Math.abs(error) < tolerance;
+        return Math.abs(error) <= tolerance;
     }
 
     public double getSourceVal(){
