@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.griffins.MenuPort.FtcMenu;
 import org.firstinspires.ftc.griffins.MenuPort.HalDashboard;
+import org.firstinspires.ftc.griffins.Testing.WallApproachTest;
 
 import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_SERVO;
 import static org.firstinspires.ftc.griffins.RobotHardware.LEFT_BUTTON_PUSHER_SENSOR;
@@ -50,31 +51,29 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
 
         waitForStart();
 
+        while (opModeIsActive() && hardware.getTurretGyro().isCalibrating()) ;
+
         //shoot two particles
         autoFunctions.shoot();
         telemetry.log().add("Finished Shooting");
         telemetry.update();
 
         //drive straight a little to get off wall in order to turn
-        autoFunctions.driveStraight((long)(3/hardware.INCHES_PER_ENCODER_COUNT), AutoFunctions.DriveStraightDirection.FORWARD, .5);
+        autoFunctions.driveStraightPID(4.725, AutoFunctions.DriveStraightDirection.FORWARD, 5);
         telemetry.log().add("Off the Wall");
         telemetry.update();
 
         //turn so facing toward beacon
-        autoFunctions.twoWheelTurnSimple((long)(6.5/hardware.INCHES_PER_ENCODER_COUNT), AutoFunctions.TurnDirection.LEFT, .25);
+        autoFunctions.twoWheelTurnPID(135, AutoFunctions.TurnDirection.RIGHT);
         telemetry.log().add("Turned towards beacon");
         telemetry.update();
 
         //drive toward beacon wall
-        autoFunctions.driveStraight((long) (62 / hardware.INCHES_PER_ENCODER_COUNT), AutoFunctions.DriveStraightDirection.FORWARD, .5);
+        autoFunctions.driveStraightPID(67.5, AutoFunctions.DriveStraightDirection.BACKWARD, 10);
         telemetry.log().add("Arrived at beacon wall");
         telemetry.update();
 
-        //turn 180 degrees so beacon pusher is on wall side
-        autoFunctions.twoWheelTurn(180);
-        telemetry.log().add("Pusher on Beacon side");
-        telemetry.update();
-
+        WallApproachTest.redWallApproach(hardware, autoFunctions, this);
         /*//"parallel parking"
         autoFunctions.curveDriveShort(-(long) (3 / hardware.INCHES_PER_ENCODER_COUNT), -(long) (12.5 / hardware.INCHES_PER_ENCODER_COUNT), .1, .9);
         telemetry.log().add("Straightened out against wall");
