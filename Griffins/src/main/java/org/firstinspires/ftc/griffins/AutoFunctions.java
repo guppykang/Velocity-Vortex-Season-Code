@@ -60,6 +60,7 @@ public class AutoFunctions {
         linearOpMode.telemetry.update();
     }
 
+    @Deprecated
     public void twoWheelTurn(double angle) throws InterruptedException {
 
         //curve around to face the ramp
@@ -98,6 +99,7 @@ public class AutoFunctions {
         linearOpMode.telemetry.update();
     }
 
+    @Deprecated
     public void driveStraight(long encoderCount, DriveStraightDirection direction, double power) throws InterruptedException {
         double minimumPower = .05;
         double maximumPower = power;
@@ -174,6 +176,7 @@ public class AutoFunctions {
 
     }
 
+    @Deprecated
     public void driveStraightSimple(long encoderCount, DriveStraightDirection direction, double power) {
         if (power < 0) {
             throw new IllegalArgumentException("Power must be greater than 0");
@@ -289,7 +292,7 @@ public class AutoFunctions {
 
     public void shoot() {
         hardware.getShooter().setPower(0.8);
-        linearOpMode.sleep(1000);
+        linearOpMode.sleep(500);
         hardware.setLoaderPower(1.0);
         linearOpMode.sleep(5000);
         hardware.getShooter().setPower(0.0);

@@ -239,6 +239,7 @@ public class RobotHardware {
         telemetry.addData("Turret Counts", turretRotation.getCurrentPosition());*/
     }
 
+    @Deprecated
     public BNO055IMU getRobotTracker() {
         return robotTracker;
     }
@@ -255,10 +256,12 @@ public class RobotHardware {
         return rightButtonPusherColorSensor;
     }
 
+    @Deprecated
     public DigitalChannel getLoaderParticleLimitSwitch() {
         return loaderParticleLimitSwitch;
     }
 
+    @Deprecated
     public void setTurretGuidePosition(double position) {
         // TODO: 10/29/2016 create code for turret position
     }
@@ -301,6 +304,7 @@ public class RobotHardware {
 
     }
 
+    @Deprecated
     public void pushButton(BeaconState beaconState){
         pushButton(beaconState, BeaconState.BLUE_BLUE);
     }
