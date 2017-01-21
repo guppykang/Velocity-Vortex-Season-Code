@@ -3,10 +3,10 @@ package org.firstinspires.ftc.griffins;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 /**
- * Created by David on 11/26/2016.
+ * Created by David on 1/20/2017.
  */
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp
-public class TeleOp extends OpMode {
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Josh", group = "test")
+public class TeleOpJosh extends OpMode {
 
     private RobotHardware hardware;
     private boolean turretTrackingOn;
@@ -45,29 +45,29 @@ public class TeleOp extends OpMode {
         rightDrivePower = Math.pow(-gamepad1.right_stick_y, 3);
         leftDrivePower = Math.pow(-gamepad1.left_stick_y, 3);
 
-        intakeSpeed = gamepad1.left_trigger-gamepad1.right_trigger;
+        intakeSpeed = gamepad1.left_trigger - gamepad1.right_trigger;
 
         if (gamepad1.right_bumper) {
             rightDrivePower *= .40;
             leftDrivePower *= .40;
         }
 
-        if (gamepad1.left_bumper){
+        if (gamepad1.left_bumper) {
             rightDrivePower = .20;
             leftDrivePower = .20;
         }
 
-        if(gamepad2.left_bumper){
-            loaderPower = -1.0;
+        if (gamepad2.left_bumper) {
+            loaderPower = 1.0;
         } else if (gamepad2.left_trigger != 0) {
-            loaderPower = 1;
+            loaderPower = -1;
         } else {
             loaderPower = 0;
         }
 
         if (gamepad2.right_bumper) {
             shooterPower = 0.75;
-        } else if (gamepad2.left_bumper) {
+        } else if (gamepad2.left_trigger > 0.5) {
             shooterPower = -0.7;
         } else {
             shooterPower = 0;
@@ -105,7 +105,7 @@ public class TeleOp extends OpMode {
 
         telemetry.addData("Gyro Heading", hardware.getTurretGyro().getIntegratedZValue());
 
-        
+
         telemetry.addData("Left Drive Speed", leftDrivePower);
         telemetry.addData("Right Drive Speed", rightDrivePower);
         telemetry.addData("Intake Speed", intakeSpeed);

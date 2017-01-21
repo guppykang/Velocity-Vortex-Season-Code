@@ -29,14 +29,14 @@ public class PIDDrive {
     }
 
     public void init(){
-        pidDrive = new PIDController(0.001, 0, 0.003, 22.3, new Func<Double>() {
+        pidDrive = new PIDController(0.0015, 0, 0.003, 22.3, new Func<Double>() {
             @Override
             public Double value() {
                 return (double) (hardware.getLeftDrive().getCurrentPosition() + hardware.getRightDrive().getCurrentPosition()) / 2;
             }
         }, null);
 
-        pidTurning = new PIDController(0.0015 * ENCODER_COUNTS_PER_ROBOT_DEGREE, 0, 0.002 * ENCODER_COUNTS_PER_ROBOT_DEGREE, 1, new Func<Double>() {
+        pidTurning = new PIDController(0.0018 * ENCODER_COUNTS_PER_ROBOT_DEGREE, 0, 0.009 * ENCODER_COUNTS_PER_ROBOT_DEGREE, 1, new Func<Double>() {
             @Override
             public Double value() {
                 return (double) hardware.getTurretGyro().getIntegratedZValue();
@@ -46,7 +46,7 @@ public class PIDDrive {
         pidDrivingDifference = new PIDController(0.001 * ENCODER_COUNTS_PER_ROBOT_DEGREE, 0, 0, 0, new Func<Double>() {
             @Override
             public Double value() {
-                return (double) hardware.getTurretGyro().getIntegratedZValue();
+                return (double) -hardware.getTurretGyro().getIntegratedZValue();
             }
         }, null);
 

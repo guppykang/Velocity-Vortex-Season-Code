@@ -20,6 +20,7 @@ import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.RED;
 import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.RED_BLUE;
 import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.RED_RED;
 import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.UNDEFINED;
+import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.UNDEFINED_UNDEFINED;
 import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.guessBeaconState;
 
 /**
@@ -57,9 +58,9 @@ public class RobotHardware {
     public static final I2cAddr RIGHT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x3C);
     // The constants for the button pusher positions
     public static final double BUTTON_PUSHER_CENTER_POSITION = 107 / 255.0;
-    public static final double BUTTON_PUSHER_RATIO = 2 / 3.0;
-    public static final double BUTTON_PUSHER_LEFT_FULL_EXTENSION = 32 / 255.0;
-    public static final double BUTTON_PUSHER_RIGHT_FULL_EXTENSION = 182 / 255.0;
+    public static final double BUTTON_PUSHER_RATIO = 3 / 4.0;
+    public static final double BUTTON_PUSHER_LEFT_FULL_EXTENSION = 67 / 255.0;
+    public static final double BUTTON_PUSHER_RIGHT_FULL_EXTENSION = 147 / 255.0;
     public static final double BUTTON_PUSHER_LEFT_POSITION = (BUTTON_PUSHER_LEFT_FULL_EXTENSION - BUTTON_PUSHER_CENTER_POSITION) * BUTTON_PUSHER_RATIO + BUTTON_PUSHER_CENTER_POSITION;
     public static final double BUTTON_PUSHER_RIGHT_POSITION = (BUTTON_PUSHER_RIGHT_FULL_EXTENSION - BUTTON_PUSHER_CENTER_POSITION) * BUTTON_PUSHER_RATIO + BUTTON_PUSHER_CENTER_POSITION;
     // The constants for the loader speeds
@@ -293,7 +294,54 @@ public class RobotHardware {
      * @param alliance    stores what alliance we are, valid parameters are BLUE and RED
      */
     public void pushButton(BeaconState beaconState, BeaconState alliance) {
-        if (beaconState == UNDEFINED) {
+        double BUTTON_PUSHER_LEFT_POSITION = RobotHardware.BUTTON_PUSHER_LEFT_POSITION;
+        double BUTTON_PUSHER_CENTER_POSITION = RobotHardware.BUTTON_PUSHER_CENTER_POSITION;
+        double BUTTON_PUSHER_RIGHT_POSITION = RobotHardware.BUTTON_PUSHER_RIGHT_POSITION;
+
+
+        if (beaconState == UNDEFINED || beaconState == UNDEFINED_UNDEFINED) {
+            buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
+        } else {
+            beaconState = guessBeaconState(beaconState);
+            if (alliance == BLUE) {
+                if (beaconState == BLUE_RED) {
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_LEFT_POSITION);
+                } else if (beaconState == RED_BLUE) {
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
+                } else if (beaconState == BLUE_BLUE) {
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
+                } else if (beaconState == RED_RED) {
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
+                }
+            } else if (alliance == RED) {
+                if (beaconState == BLUE_RED) {
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
+                } else if (beaconState == RED_BLUE) {
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_LEFT_POSITION);
+                } else if (beaconState == BLUE_BLUE) {
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
+                } else if (beaconState == RED_RED) {
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
+                }
+            }
+        }
+    }
+
+    /**
+     * This method will operate the button pusher servo to push the beacon.
+     *
+     * @param beaconState encodes the state of the beacon.  If one side is undefined,
+     *                    it will assume that side is the opposite of the defined side.
+     *                    If UNDEFINED is passed, it will return to the center position
+     * @param alliance    stores what alliance we are, valid parameters are BLUE and RED
+     */
+    public void pushButtonFullExtension(BeaconState beaconState, BeaconState alliance) {
+        double BUTTON_PUSHER_LEFT_POSITION = RobotHardware.BUTTON_PUSHER_LEFT_FULL_EXTENSION;
+        double BUTTON_PUSHER_CENTER_POSITION = RobotHardware.BUTTON_PUSHER_CENTER_POSITION;
+        double BUTTON_PUSHER_RIGHT_POSITION = RobotHardware.BUTTON_PUSHER_RIGHT_FULL_EXTENSION;
+
+
+        if (beaconState == UNDEFINED || beaconState == UNDEFINED_UNDEFINED) {
             buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
         } else {
             beaconState = guessBeaconState(beaconState);
@@ -397,7 +445,11 @@ public class RobotHardware {
                 throw new IllegalArgumentException("Valid arguments are BLUE, RED, UNDEFINED, all others are already merged");
             }
 
-            return getFromNumberState(left.numberState << 2 + right.numberState);
+            return getFromNumberState((left.numberState << 2) + right.numberState);
+        }
+
+        public static boolean containsUndefined(BeaconState beaconState) {
+            return ((beaconState.numberState >> 2) ^ 0b11) == 0 || ((beaconState.numberState & 0b11) ^ 0b11) == 0;
         }
 
         public static BeaconState removeUndefined(BeaconState containsUndefined) {
@@ -414,9 +466,9 @@ public class RobotHardware {
             }
 
             if ((containsUndefined.numberState & 0b00_11) == UNDEFINED.numberState) {
-                return getFromNumberState(removeUndefined(containsUndefined).numberState << 2 + removeUndefined(containsUndefined).numberState ^ 0b11);
+                return getFromNumberState((removeUndefined(containsUndefined).numberState << 2) + (removeUndefined(containsUndefined).numberState ^ 0b11));
             } else if ((containsUndefined.numberState & 0b11_00) == (UNDEFINED.numberState << 2)) {
-                return getFromNumberState((removeUndefined(containsUndefined).numberState ^ 0b11) << 2 + removeUndefined(containsUndefined).numberState);
+                return getFromNumberState(((removeUndefined(containsUndefined).numberState ^ 0b11) << 2) + removeUndefined(containsUndefined).numberState);
             } else {
                 return containsUndefined;
             }
@@ -451,6 +503,10 @@ public class RobotHardware {
                 default:
                     throw new IllegalArgumentException("Not a valid number state.");
             }
+        }
+
+        public boolean containsUndefined() {
+            return containsUndefined(this);
         }
 
         public int numberState() {
