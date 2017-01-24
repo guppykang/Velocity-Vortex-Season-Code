@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  * Created by David on 11/26/2016.
  */
 
-@TeleOp
+@TeleOp(name = "Gamepad Data Display", group = "testing")
 //@Disabled
 public class GamePadTest extends OpMode {
     @Override

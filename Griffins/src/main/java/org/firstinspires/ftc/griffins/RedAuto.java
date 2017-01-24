@@ -2,18 +2,11 @@ package org.firstinspires.ftc.griffins;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.griffins.MenuPort.FtcMenu;
 import org.firstinspires.ftc.griffins.MenuPort.HalDashboard;
+import org.firstinspires.ftc.griffins.RobotHardware.BeaconState;
 import org.firstinspires.ftc.griffins.Testing.WallApproachTest;
-
-import static org.firstinspires.ftc.griffins.RobotHardware.BUTTON_PUSHER_SERVO;
-import static org.firstinspires.ftc.griffins.RobotHardware.LEFT_BUTTON_PUSHER_SENSOR;
-import static org.firstinspires.ftc.griffins.RobotHardware.LEFT_COLOR_SENSOR_ADDRESS;
-import static org.firstinspires.ftc.griffins.RobotHardware.RIGHT_BUTTON_PUSHER_SENSOR;
-import static org.firstinspires.ftc.griffins.RobotHardware.RIGHT_COLOR_SENSOR_ADDRESS;
 
 /**
  * Created by David on 12/7/2016.
@@ -37,18 +30,6 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
         Alliance alliance = Alliance.RED_ALLIANCE;
         telemetry.log().add("Alliance is " + alliance);
 
-        Servo buttonPusherServo = hardwareMap.get(Servo.class, BUTTON_PUSHER_SERVO);
-        buttonPusherServo.setDirection(Servo.Direction.FORWARD);
-        this.hardware.pushButton(RobotHardware.BeaconState.UNDEFINED);
-
-        ColorSensor leftButtonPusherColorSensor = hardwareMap.get(ColorSensor.class, LEFT_BUTTON_PUSHER_SENSOR);
-        leftButtonPusherColorSensor.setI2cAddress(LEFT_COLOR_SENSOR_ADDRESS);
-        leftButtonPusherColorSensor.enableLed(false);
-
-        ColorSensor rightButtonPusherColorSensor = hardwareMap.get(ColorSensor.class, RIGHT_BUTTON_PUSHER_SENSOR);
-        rightButtonPusherColorSensor.setI2cAddress(RIGHT_COLOR_SENSOR_ADDRESS);
-        rightButtonPusherColorSensor.enableLed(false);
-
         waitForStart();
 
         while (opModeIsActive() && hardware.getTurretGyro().isCalibrating()) ;
@@ -59,21 +40,65 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
         telemetry.update();
 
         //drive straight a little to get off wall in order to turn
-        autoFunctions.driveStraightPID(4.725, AutoFunctions.DriveStraightDirection.FORWARD, 5);
+        autoFunctions.driveStraightPID(10, AutoFunctions.DriveStraightDirection.FORWARD, 5);
         telemetry.log().add("Off the Wall");
         telemetry.update();
 
+        hardware.getIntake().setPower(1);
         //turn so facing toward beacon
-        autoFunctions.twoWheelTurnPID(135, AutoFunctions.TurnDirection.RIGHT);
+        autoFunctions.twoWheelTurnPID(120, AutoFunctions.TurnDirection.RIGHT, 7);
         telemetry.log().add("Turned towards beacon");
         telemetry.update();
+        hardware.getIntake().setPower(0);
 
         //drive toward beacon wall
-        autoFunctions.driveStraightPID(67.5, AutoFunctions.DriveStraightDirection.BACKWARD, 10);
+        autoFunctions.driveStraightPID(59, AutoFunctions.DriveStraightDirection.BACKWARD, 3);
         telemetry.log().add("Arrived at beacon wall");
         telemetry.update();
 
+        autoFunctions.driveStraightPID(3, AutoFunctions.DriveStraightDirection.FORWARD, 1);
+
         WallApproachTest.redWallApproach(hardware, autoFunctions, this);
+
+        hardware.pushButton(hardware.findBeaconState(), BeaconState.RED);
+
+        sleep(2000);
+
+        hardware.pushButton(BeaconState.UNDEFINED, BeaconState.RED);
+
+        BeaconState state = hardware.findBeaconState();
+        if (state != BeaconState.RED_RED) {
+            if (getRuntime() >= 28) {
+                hardware.pushButtonFullExtension(state, BeaconState.RED);
+            } else if (getRuntime() >= 20) {
+                sleep((long) ((28 - getRuntime()) * 1000));
+                hardware.pushButtonFullExtension(state, BeaconState.RED);
+            } else {
+                sleep(6000);
+                hardware.pushButtonFullExtension(state, BeaconState.RED);
+            }
+
+            sleep(2000);
+            hardware.pushButton(BeaconState.UNDEFINED, BeaconState.RED);
+        }
+
+        autoFunctions.twoWheelTurnPID(3, AutoFunctions.TurnDirection.RIGHT, 1.5);
+        autoFunctions.driveStraightPID(48, AutoFunctions.DriveStraightDirection.FORWARD, 3);
+
+        hardware.pushButton(hardware.findBeaconState(), BeaconState.RED);
+
+        sleep(2000);
+
+        hardware.pushButton(BeaconState.UNDEFINED, BeaconState.RED);
+
+        hardware.setDrivePower(.2, .4);
+        hardware.getIntake().setPower(1);
+
+        sleep(2000);
+
+        hardware.stopDrive();
+        hardware.getIntake().setPower(0);
+
         /*//"parallel parking"
         autoFunctions.curveDriveShort(-(long) (3 / hardware.INCHES_PER_ENCODER_COUNT), -(long) (12.5 / hardware.INCHES_PER_ENCODER_COUNT), .1, .9);
         telemetry.log().add("Straightened out against wall");

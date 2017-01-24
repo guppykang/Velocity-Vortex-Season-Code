@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.griffins.MenuPort.FtcMenu;
 import org.firstinspires.ftc.griffins.MenuPort.HalDashboard;
+import org.firstinspires.ftc.griffins.RobotHardware.BeaconState;
 import org.firstinspires.ftc.griffins.Testing.WallApproachTest;
 
 /**
@@ -39,27 +40,82 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
         telemetry.update();
 
         //drive straight a little to get off wall in order to turn
-        autoFunctions.driveStraightPID(4.725, AutoFunctions.DriveStraightDirection.FORWARD, 5);
+        autoFunctions.driveStraightPID(10, AutoFunctions.DriveStraightDirection.FORWARD, 2);
         telemetry.log().add("Off the Wall");
         telemetry.update();
 
         //turn so facing toward beacon
-        autoFunctions.twoWheelTurnPID(45, AutoFunctions.TurnDirection.RIGHT);
+        autoFunctions.twoWheelTurnPID(50, AutoFunctions.TurnDirection.RIGHT);
         telemetry.log().add("Turned towards beacon");
         telemetry.update();
 
         //turn on intake
-        hardware.getIntake().setPower(0.5);
+        hardware.getIntake().setPower(1);
 
         //drive toward beacon wall
-        autoFunctions.driveStraightPID(67.5, AutoFunctions.DriveStraightDirection.FORWARD, 10);
+        autoFunctions.driveStraightPID(60, AutoFunctions.DriveStraightDirection.FORWARD, 2.5);
         telemetry.log().add("Arrived at beacon wall");
         telemetry.update();
 
+        autoFunctions.driveStraightPID(3, AutoFunctions.DriveStraightDirection.BACKWARD, 1);
+
         //"parallel parking"
         WallApproachTest.blueWallApproach(hardware, autoFunctions, this);
-        telemetry.log().add("Straightened out against wall");
-        telemetry.update();
+
+        hardware.pushButton(hardware.findBeaconState(), BeaconState.BLUE);
+
+        sleep(2000);
+
+        hardware.pushButton(BeaconState.UNDEFINED, BeaconState.BLUE);
+
+        BeaconState state = hardware.findBeaconState();
+        if (state != BeaconState.BLUE_BLUE) {
+            if (getRuntime() >= 28) {
+                hardware.pushButtonFullExtension(state, BeaconState.BLUE);
+            } else if (getRuntime() >= 20) {
+                sleep((long) ((28 - getRuntime()) * 1000));
+                hardware.pushButtonFullExtension(state, BeaconState.BLUE);
+            } else {
+                sleep(6000);
+                hardware.pushButtonFullExtension(state, BeaconState.BLUE);
+            }
+
+            sleep(2000);
+            hardware.pushButton(BeaconState.UNDEFINED, BeaconState.BLUE);
+        }
+
+        autoFunctions.twoWheelTurnPID(5, AutoFunctions.TurnDirection.LEFT, 2);
+        autoFunctions.driveStraightPID(47, AutoFunctions.DriveStraightDirection.BACKWARD, 3);
+
+        hardware.pushButton(hardware.findBeaconState(), BeaconState.BLUE);
+
+        sleep(2000);
+
+        hardware.pushButton(BeaconState.UNDEFINED, BeaconState.BLUE);
+
+        state = hardware.findBeaconState();
+        if (state != BeaconState.BLUE_BLUE) {
+            if (getRuntime() >= 28) {
+                hardware.pushButtonFullExtension(state, BeaconState.BLUE);
+            } else if (getRuntime() >= 20) {
+                sleep((long) ((28 - getRuntime()) * 1000));
+                hardware.pushButtonFullExtension(state, BeaconState.BLUE);
+            } else {
+                sleep(6000);
+                hardware.pushButtonFullExtension(state, BeaconState.BLUE);
+            }
+
+            sleep(2000);
+            hardware.pushButton(BeaconState.UNDEFINED, BeaconState.BLUE);
+            sleep(1000);
+        }
+
+        hardware.setDrivePower(-.2, -.4);
+
+        sleep(2000);
+
+        hardware.stopDrive();
+        hardware.getIntake().setPower(0);
 
         /*//drive back to first beacon
         autoFunctions.driveStraight((long)(34/hardware.INCHES_PER_ENCODER_COUNT), AutoFunctions.DriveStraightDirection.FORWARD, .5);

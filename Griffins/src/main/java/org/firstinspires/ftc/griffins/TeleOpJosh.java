@@ -2,6 +2,8 @@ package org.firstinspires.ftc.griffins;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.griffins.RobotHardware.BeaconState;
+
 /**
  * Created by David on 1/20/2017.
  */
@@ -40,7 +42,7 @@ public class TeleOpJosh extends OpMode {
         double intakeSpeed;
         double loaderPower;
         double targetTurretSpeed;
-        RobotHardware.BeaconState beaconPushState;
+        BeaconState beaconPushState;
 
         rightDrivePower = Math.pow(-gamepad1.right_stick_y, 3);
         leftDrivePower = Math.pow(-gamepad1.left_stick_y, 3);
@@ -91,16 +93,16 @@ public class TeleOpJosh extends OpMode {
         targetTurretSpeed = Math.pow(targetTurretSpeed, 3);
 
         if (gamepad2.right_trigger == 1.0) {
-            beaconPushState = RobotHardware.BeaconState.BLUE_RED;
+            beaconPushState = BeaconState.BLUE_RED;
         } else {
-            beaconPushState = RobotHardware.BeaconState.UNDEFINED;
+            beaconPushState = BeaconState.UNDEFINED;
         }
 
         hardware.setDrivePower(leftDrivePower, rightDrivePower);
         hardware.getShooter().setPower(shooterPower);
         hardware.getIntake().setPower(intakeSpeed);
         hardware.setLoaderPower(loaderPower);
-        hardware.pushButton(beaconPushState);
+        hardware.pushButtonFullExtension(beaconPushState, BeaconState.BLUE);
         hardware.setTurretRotation(targetTurretSpeed, turretTrackingOn);
 
         telemetry.addData("Gyro Heading", hardware.getTurretGyro().getIntegratedZValue());

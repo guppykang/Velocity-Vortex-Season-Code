@@ -46,9 +46,15 @@ public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboar
 
         waitForStart();
         //autoFunctions.driveStraightSimple((int) (firstDriveDistance * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
-        autoFunctions.shoot();
+        hardware.getShooter().setPower(1);
+        sleep(1000);
+        hardware.setLoaderPower(8.0);
+        sleep(5000);
+        hardware.getShooter().setPower(0.0);
+        hardware.setLoaderPower(0.0);
+        sleep(1000);
         hardware.getIntake().setPower(-1.0);
-        autoFunctions.driveStraight((int) (10 * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
+        autoFunctions.driveStraight((int) (3.5 * 12 * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
         autoFunctions.driveStraight((int) ((secondDriveDistance - 10) * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
 
         if (alliance == Alliance.BLUE_ALLIANCE) {
