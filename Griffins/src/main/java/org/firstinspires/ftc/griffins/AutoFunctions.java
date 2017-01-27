@@ -317,13 +317,13 @@ public class AutoFunctions {
         driveStraightPID(inches, direction, 8);
     }
 
-    public void twoWheelTurnPID(double degrees, TurnDirection direction, double timeoutSeconds) {
+    public String twoWheelTurnPID(double degrees, TurnDirection direction, double timeoutSeconds) {
         drive.setTurnTarget(degrees * (direction == TurnDirection.LEFT ? 1 : -1));
-        drive.driveToTarget(new LinearOpModeTimeOutFunc(linearOpMode, timeoutSeconds), linearOpMode.telemetry);
+        return drive.driveToTarget(new LinearOpModeTimeOutFunc(linearOpMode, timeoutSeconds), linearOpMode.telemetry);
     }
 
-    public void twoWheelTurnPID(double degrees, TurnDirection direction) {
-        twoWheelTurnPID(degrees, direction, 5);
+    public String twoWheelTurnPID(double degrees, TurnDirection direction) {
+        return twoWheelTurnPID(degrees, direction, 5);
     }
 
     public enum DriveStraightDirection {FORWARD, BACKWARD}

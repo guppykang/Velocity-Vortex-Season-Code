@@ -91,23 +91,31 @@ public class PIDDrive {
         isTurning = true;
     }
 
-    public void driveToTarget(Func<Boolean> earlyExitCheck, Telemetry telemetry) {
+    public String driveToTarget(Func<Boolean> earlyExitCheck, Telemetry telemetry) {
+        StringBuilder builder = new StringBuilder();
+
         int exitCounter = 0;
         do {
             syncDrives();
+            String error;
             if (isTurning) {
                 if (pidTurning.isOnTarget()) {
                     exitCounter++;
                 } else {
                     exitCounter = 0;
                 }
+
+                error = pidTurning.getError() + " \n";
             } else {
                 if (pidDrive.isOnTarget()) {
                     exitCounter++;
                 } else {
                     exitCounter = 0;
                 }
+                error = pidDrive.getError() + " \n";
             }
+
+            builder.append(System.currentTimeMillis()).append(", ").append(error);
 
             if (telemetry != null) {
                 telemetry.addData("exit counter", exitCounter);
@@ -120,6 +128,8 @@ public class PIDDrive {
         } while (exitCounter <= 100 && earlyExitCheck.value());
 
         hardware.stopDrive();
+
+        return builder.toString();
     }
 
     public void driveToTarget(Func<Boolean> booleanFunc) {
