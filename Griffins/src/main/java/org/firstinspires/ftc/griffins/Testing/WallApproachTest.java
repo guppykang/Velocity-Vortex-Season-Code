@@ -20,7 +20,11 @@ public class WallApproachTest extends LinearOpMode {
 
         autoFunctions.twoWheelTurnPID(10, AutoFunctions.TurnDirection.RIGHT, 2);
 
-        autoFunctions.driveStraightPID(35, AutoFunctions.DriveStraightDirection.BACKWARD);
+        autoFunctions.driveStraightPID(15, AutoFunctions.DriveStraightDirection.BACKWARD, 3);
+
+        autoFunctions.twoWheelTurnPID(5, AutoFunctions.TurnDirection.RIGHT, 1);
+
+        autoFunctions.driveStraightPID(15, AutoFunctions.DriveStraightDirection.FORWARD, 4);
 
         /*hardware.setDrivePower(-.3, -.35);
 

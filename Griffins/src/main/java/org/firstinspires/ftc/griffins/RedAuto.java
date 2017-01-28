@@ -46,7 +46,7 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
 
         hardware.getIntake().setPower(1);
         //turn so facing toward beacon
-        autoFunctions.twoWheelTurnPID(120, AutoFunctions.TurnDirection.RIGHT, 7);
+        autoFunctions.twoWheelTurnPID(119, AutoFunctions.TurnDirection.RIGHT, 8);
         telemetry.log().add("Turned towards beacon");
         telemetry.update();
         hardware.getIntake().setPower(0);
@@ -82,8 +82,8 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
             hardware.pushButton(BeaconState.UNDEFINED, BeaconState.RED);
         }
 
-        autoFunctions.twoWheelTurnPID(3, AutoFunctions.TurnDirection.RIGHT, 1.5);
-        autoFunctions.driveStraightPID(48, AutoFunctions.DriveStraightDirection.FORWARD, 3);
+        autoFunctions.twoWheelTurnPID(3, AutoFunctions.TurnDirection.LEFT, 1.5);
+        autoFunctions.driveStraightPID(48, AutoFunctions.DriveStraightDirection.BACKWARD, 3);
 
         hardware.pushButton(hardware.findBeaconState(), BeaconState.RED);
 
