@@ -30,6 +30,7 @@ public class TeleOp extends OpMode {
     @Override
     public void start() {
         super.start();
+        this.resetStartTime();
         hardware.startTurretTracking();
         turretTrackingOn = false;
     }
@@ -43,23 +44,24 @@ public class TeleOp extends OpMode {
         double loaderPower;
         double targetTurretSpeed;
         BeaconState beaconPushState;
+        double beaconPushRatio;
 
         rightDrivePower = Math.pow(-gamepad1.right_stick_y, 3);
         leftDrivePower = Math.pow(-gamepad1.left_stick_y, 3);
 
-        intakeSpeed = gamepad1.left_trigger-gamepad1.right_trigger;
+        intakeSpeed = gamepad1.left_trigger - gamepad1.right_trigger;
 
         if (gamepad1.right_bumper) {
-            rightDrivePower *= .40;
-            leftDrivePower *= .40;
+            rightDrivePower = leftDrivePower * .4;
+            leftDrivePower *= .5;
         }
 
-        if (gamepad1.left_bumper){
+        if (gamepad1.left_bumper) {
             rightDrivePower = .20;
             leftDrivePower = .20;
         }
 
-        if(gamepad2.left_bumper){
+        if (gamepad2.left_bumper) {
             loaderPower = -1.0;
         } else if (gamepad2.left_trigger != 0) {
             loaderPower = 1;
@@ -68,6 +70,8 @@ public class TeleOp extends OpMode {
         }
 
         if (gamepad2.right_bumper) {
+            shooterPower = 1;
+        } else if (gamepad2.right_trigger >= 0.5) {
             shooterPower = 0.75;
         } else if (gamepad2.left_bumper) {
             shooterPower = -0.7;
@@ -90,24 +94,29 @@ public class TeleOp extends OpMode {
                 currentTurretSpeed = currentTurretSpeed + Math.signum(targetTurretSpeed - currentTurretSpeed) * 0.05;
             }
         }*/
-        targetTurretSpeed = Math.pow(targetTurretSpeed, 3);
+        targetTurretSpeed = Math.pow(targetTurretSpeed, 3) / 3;
 
-        if (gamepad2.right_trigger == 1.0) {
+        if (gamepad2.right_stick_x < -0.1) {
             beaconPushState = BeaconState.BLUE_RED;
+            beaconPushRatio = -gamepad2.right_stick_x;
+        } else if (gamepad2.right_stick_x > 0.1) {
+            beaconPushState = BeaconState.RED_BLUE;
+            beaconPushRatio = gamepad2.right_stick_x;
         } else {
             beaconPushState = BeaconState.UNDEFINED;
+            beaconPushRatio = RobotHardware.BUTTON_PUSHER_RATIO;
         }
 
         hardware.setDrivePower(leftDrivePower, rightDrivePower);
         hardware.getShooter().setPower(shooterPower);
         hardware.getIntake().setPower(intakeSpeed);
         hardware.setLoaderPower(loaderPower);
-        hardware.pushButtonFullExtension(beaconPushState, BeaconState.BLUE);
+        hardware.pushButton(beaconPushState, BeaconState.BLUE, beaconPushRatio);
         hardware.setTurretRotation(targetTurretSpeed, turretTrackingOn);
 
-        telemetry.addData("Gyro Heading", hardware.getTurretGyro().getIntegratedZValue());
+        int time = (int) getRuntime();
 
-        
+        telemetry.addData("Time(current:remaining)", time + ":" + (120 - time));
         telemetry.addData("Left Drive Speed", leftDrivePower);
         telemetry.addData("Right Drive Speed", rightDrivePower);
         telemetry.addData("Intake Speed", intakeSpeed);

@@ -61,8 +61,6 @@ public class RobotHardware {
     public static final double BUTTON_PUSHER_RATIO = 3 / 4.0;
     public static final double BUTTON_PUSHER_LEFT_FULL_EXTENSION = 67 / 255.0;
     public static final double BUTTON_PUSHER_RIGHT_FULL_EXTENSION = 147 / 255.0;
-    public static final double BUTTON_PUSHER_LEFT_POSITION = (BUTTON_PUSHER_LEFT_FULL_EXTENSION - BUTTON_PUSHER_CENTER_POSITION) * BUTTON_PUSHER_RATIO + BUTTON_PUSHER_CENTER_POSITION;
-    public static final double BUTTON_PUSHER_RIGHT_POSITION = (BUTTON_PUSHER_RIGHT_FULL_EXTENSION - BUTTON_PUSHER_CENTER_POSITION) * BUTTON_PUSHER_RATIO + BUTTON_PUSHER_CENTER_POSITION;
     // The constants for the loader speeds
     public static final double LOADER_ZERO_POWER = 0;
     public static final double LOADER_FULL_REVERSE_POWER = -2 / 3.0;
@@ -86,6 +84,8 @@ public class RobotHardware {
                                                      "KWHU8GVzgdz3NRBs0O7Dedd+cECw9dmXX0TutXkuMr9ykOstrDXM6" +
                                                      "1D1Hb2DuY+4LKERkLFwUm/TDv5+zR7A4eDoE92nmEIpVdSfR7kNYG" +
                                                      "QGeDbWK7/oHGjwVYOZvEvmTW9dMBDQNiCCeWCag6o4odFTMo5Tc8U6+grD2qVR";
+    private double BUTTON_PUSHER_LEFT_POSITION = (BUTTON_PUSHER_LEFT_FULL_EXTENSION - BUTTON_PUSHER_CENTER_POSITION) * BUTTON_PUSHER_RATIO + BUTTON_PUSHER_CENTER_POSITION;
+    private double BUTTON_PUSHER_RIGHT_POSITION = (BUTTON_PUSHER_RIGHT_FULL_EXTENSION - BUTTON_PUSHER_CENTER_POSITION) * BUTTON_PUSHER_RATIO + BUTTON_PUSHER_CENTER_POSITION;
     private BeaconState alliance;
     //motor variables
     private SyncedDcMotors leftDrive;
@@ -290,13 +290,15 @@ public class RobotHardware {
      *
      * @param beaconState encodes the state of the beacon.  If one side is undefined,
      *                    it will assume that side is the opposite of the defined side.
-     *                    If UNDEFINED is passed, it will return to the center position
+     *                    If UNDEFINED is passed, it will return to the center position.
      * @param alliance    stores what alliance we are, valid parameters are BLUE and RED
+     * @param percentExtension is what percent of the button pusher's range will be used.
      */
-    public void pushButton(BeaconState beaconState, BeaconState alliance) {
-        double BUTTON_PUSHER_LEFT_POSITION = RobotHardware.BUTTON_PUSHER_LEFT_POSITION;
+    public void pushButton(BeaconState beaconState, BeaconState alliance, double percentExtension) {
+        changeButtonPusherExtension(percentExtension);
+        double BUTTON_PUSHER_LEFT_POSITION = this.BUTTON_PUSHER_LEFT_POSITION;
         double BUTTON_PUSHER_CENTER_POSITION = RobotHardware.BUTTON_PUSHER_CENTER_POSITION;
-        double BUTTON_PUSHER_RIGHT_POSITION = RobotHardware.BUTTON_PUSHER_RIGHT_POSITION;
+        double BUTTON_PUSHER_RIGHT_POSITION = this.BUTTON_PUSHER_RIGHT_POSITION;
 
 
         if (beaconState == UNDEFINED || beaconState == UNDEFINED_UNDEFINED) {
@@ -336,37 +338,11 @@ public class RobotHardware {
      * @param alliance    stores what alliance we are, valid parameters are BLUE and RED
      */
     public void pushButtonFullExtension(BeaconState beaconState, BeaconState alliance) {
-        double BUTTON_PUSHER_LEFT_POSITION = RobotHardware.BUTTON_PUSHER_LEFT_FULL_EXTENSION;
-        double BUTTON_PUSHER_CENTER_POSITION = RobotHardware.BUTTON_PUSHER_CENTER_POSITION;
-        double BUTTON_PUSHER_RIGHT_POSITION = RobotHardware.BUTTON_PUSHER_RIGHT_FULL_EXTENSION;
+        pushButton(beaconState, alliance, 1);
+    }
 
-
-        if (beaconState == UNDEFINED || beaconState == UNDEFINED_UNDEFINED) {
-            buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
-        } else {
-            beaconState = guessBeaconState(beaconState);
-            if (alliance == BLUE) {
-                if (beaconState == BLUE_RED) {
-                    buttonPusherServo.setPosition(BUTTON_PUSHER_LEFT_POSITION);
-                } else if (beaconState == RED_BLUE) {
-                    buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
-                } else if (beaconState == BLUE_BLUE) {
-                    buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
-                } else if (beaconState == RED_RED) {
-                    buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
-                }
-            } else if (alliance == RED) {
-                if (beaconState == BLUE_RED) {
-                    buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
-                } else if (beaconState == RED_BLUE) {
-                    buttonPusherServo.setPosition(BUTTON_PUSHER_LEFT_POSITION);
-                } else if (beaconState == BLUE_BLUE) {
-                    buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
-                } else if (beaconState == RED_RED) {
-                    buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
-                }
-            }
-        }
+    public void pushButton(BeaconState beaconState, BeaconState alliance) {
+        pushButton(beaconState, alliance, BUTTON_PUSHER_RATIO);
     }
 
     @Deprecated
@@ -418,6 +394,15 @@ public class RobotHardware {
     public void startTurretTracking() {
         turretGyro.resetZAxisIntegrator();
         turretHeadingTarget = 0;
+    }
+
+    private void changeButtonPusherExtension(double newRatio) {
+        if (newRatio < 0 || newRatio > 1) {
+            throw new IllegalArgumentException("The Ratio must be between 0 and 1");
+        }
+
+        BUTTON_PUSHER_LEFT_POSITION = (BUTTON_PUSHER_LEFT_FULL_EXTENSION - BUTTON_PUSHER_CENTER_POSITION) * newRatio + BUTTON_PUSHER_CENTER_POSITION;
+        BUTTON_PUSHER_RIGHT_POSITION = (BUTTON_PUSHER_RIGHT_FULL_EXTENSION - BUTTON_PUSHER_CENTER_POSITION) * newRatio + BUTTON_PUSHER_CENTER_POSITION;
     }
 
     public enum BeaconState {
