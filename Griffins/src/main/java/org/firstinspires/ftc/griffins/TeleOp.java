@@ -11,7 +11,7 @@ import org.firstinspires.ftc.griffins.RobotHardware.BeaconState;
 public class TeleOp extends OpMode {
 
     private RobotHardware hardware;
-    private boolean turretTrackingOn;
+    private boolean buttonToggle;
 
     @Override
     public void init() {
@@ -32,7 +32,7 @@ public class TeleOp extends OpMode {
         super.start();
         this.resetStartTime();
         hardware.startTurretTracking();
-        turretTrackingOn = false;
+        buttonToggle = gamepad2.x;
     }
 
     @Override
@@ -45,6 +45,10 @@ public class TeleOp extends OpMode {
         double targetTurretSpeed;
         BeaconState beaconPushState;
         double beaconPushRatio;
+        boolean turretTracking;
+
+        turretTracking = !buttonToggle && gamepad2.x;
+        buttonToggle = gamepad2.x;
 
         rightDrivePower = Math.pow(-gamepad1.right_stick_y, 3);
         leftDrivePower = Math.pow(-gamepad1.left_stick_y, 3);
@@ -80,7 +84,7 @@ public class TeleOp extends OpMode {
         }
 
         double currentTurretSpeed = hardware.getTurretRotation().getPower();
-        targetTurretSpeed = -gamepad2.left_stick_x;
+        targetTurretSpeed = gamepad2.left_stick_x;
         /*if (Math.abs(targetTurretSpeed) < 0.2) {
             currentTurretSpeed = targetTurretSpeed;
         } else {
@@ -112,7 +116,7 @@ public class TeleOp extends OpMode {
         hardware.getIntake().setPower(intakeSpeed);
         hardware.setLoaderPower(loaderPower);
         hardware.pushButton(beaconPushState, BeaconState.BLUE, beaconPushRatio);
-        hardware.setTurretRotation(targetTurretSpeed, turretTrackingOn);
+        hardware.setTurretRotation(targetTurretSpeed, turretTracking);
 
         int time = (int) getRuntime();
 

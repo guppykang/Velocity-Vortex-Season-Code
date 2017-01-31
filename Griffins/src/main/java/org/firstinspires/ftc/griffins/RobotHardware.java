@@ -13,6 +13,9 @@ import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.griffins.Navigation.PIDController;
+import org.firstinspires.ftc.robotcore.external.Func;
+
 import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.BLUE;
 import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.BLUE_BLUE;
 import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.BLUE_RED;
@@ -59,8 +62,8 @@ public class RobotHardware {
     // The constants for the button pusher positions
     public static final double BUTTON_PUSHER_CENTER_POSITION = 107 / 255.0;
     public static final double BUTTON_PUSHER_RATIO = 3 / 4.0;
-    public static final double BUTTON_PUSHER_LEFT_FULL_EXTENSION = 67 / 255.0;
-    public static final double BUTTON_PUSHER_RIGHT_FULL_EXTENSION = 147 / 255.0;
+    public static final double BUTTON_PUSHER_LEFT_FULL_EXTENSION = 83 / 255.0;
+    public static final double BUTTON_PUSHER_RIGHT_FULL_EXTENSION = 133 / 255.0;
     // The constants for the loader speeds
     public static final double LOADER_ZERO_POWER = 0;
     public static final double LOADER_FULL_REVERSE_POWER = -2 / 3.0;
@@ -84,6 +87,7 @@ public class RobotHardware {
                                                      "KWHU8GVzgdz3NRBs0O7Dedd+cECw9dmXX0TutXkuMr9ykOstrDXM6" +
                                                      "1D1Hb2DuY+4LKERkLFwUm/TDv5+zR7A4eDoE92nmEIpVdSfR7kNYG" +
                                                      "QGeDbWK7/oHGjwVYOZvEvmTW9dMBDQNiCCeWCag6o4odFTMo5Tc8U6+grD2qVR";
+    PIDController turretController;
     private double BUTTON_PUSHER_LEFT_POSITION = (BUTTON_PUSHER_LEFT_FULL_EXTENSION - BUTTON_PUSHER_CENTER_POSITION) * BUTTON_PUSHER_RATIO + BUTTON_PUSHER_CENTER_POSITION;
     private double BUTTON_PUSHER_RIGHT_POSITION = (BUTTON_PUSHER_RIGHT_FULL_EXTENSION - BUTTON_PUSHER_CENTER_POSITION) * BUTTON_PUSHER_RATIO + BUTTON_PUSHER_CENTER_POSITION;
     private BeaconState alliance;
@@ -93,14 +97,12 @@ public class RobotHardware {
     private SyncedDcMotors shooter;
     private DcMotor intake;
     private DcMotor turretRotation;
-
     //servo variables
     private Servo leftTurretGuide;
     private Servo rightTurretGuide;
     private Servo buttonPusherServo;
-    private Servo loaderServoOne;
     //private CRServo loaderServoTwo;
-
+    private Servo loaderServoOne;
     //sensor variables
     private ModernRoboticsI2cGyro turretGyro;
     private ColorSensor leftButtonPusherColorSensor;
@@ -108,7 +110,6 @@ public class RobotHardware {
     private ModernRoboticsAnalogOpticalDistanceSensor beaconDistanceSensor;
     private DigitalChannel loaderParticleLimitSwitch;
     private BNO055IMU robotTracker;
-
     private double turretHeadingTarget;
 
     public RobotHardware() {
@@ -136,6 +137,7 @@ public class RobotHardware {
         turretRotation.setDirection(DcMotorSimple.Direction.REVERSE);
         turretRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretRotation.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         buttonPusherServo = hardwareMap.get(Servo.class, BUTTON_PUSHER_SERVO);
         buttonPusherServo.setDirection(Servo.Direction.FORWARD);
@@ -186,6 +188,14 @@ public class RobotHardware {
         parameters.loggingEnabled = false;
         robotTracker.initialize(parameters);
         robotTracker.startAccelerationIntegration(new Position(), new Velocity(), 10);*/
+        turretController = new PIDController(0.01, 0, 0, 0, new Func<Double>() {
+            @Override
+            public Double value() {
+                return (turretRotation.getCurrentPosition() / ENCODER_COUNTS_PER_TURRET_DEGREE) - turretGyro.getIntegratedZValue();
+            }
+        }, null);
+
+        turretController.setSetPoint(turretController.getSourceVal());
     }
 
     public SyncedDcMotors getLeftDrive() {
@@ -212,17 +222,15 @@ public class RobotHardware {
         if (this.getTurretGyro().isCalibrating()) {
             trackingOn = false;
         }
-
-        double turretSpeed = 0;
-        double turretError = 0;
+        double turretSpeed;
 
         if (trackingOn) {
-            turretHeadingTarget += joystickInput;
-            turretError = -((int) turretHeadingTarget - turretGyro.getIntegratedZValue());
-            turretSpeed = turretError / 100;
-            turretSpeed = Range.clip(turretSpeed, -.5, .5);
+
+            turretController.setSetPoint(turretController.getSetPoint() + joystickInput / 10);
+            turretSpeed = turretController.sendPIDOutput();
+
         } else {
-            turretSpeed = -joystickInput;
+            turretSpeed = joystickInput;
             turretHeadingTarget = turretGyro.getIntegratedZValue();
         }
 
@@ -392,8 +400,11 @@ public class RobotHardware {
     }
 
     public void startTurretTracking() {
+        turretRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretGyro.resetZAxisIntegrator();
+        turretController.setSetPoint(0);
         turretHeadingTarget = 0;
+        turretRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     private void changeButtonPusherExtension(double newRatio) {
