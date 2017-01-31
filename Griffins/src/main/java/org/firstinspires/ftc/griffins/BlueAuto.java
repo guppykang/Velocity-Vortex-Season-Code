@@ -35,32 +35,30 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
         while (opModeIsActive() && hardware.getTurretGyro().isCalibrating()) ;
 
         //shoot two particles
-        autoFunctions.shoot();
+        //autoFunctions.shoot();
         telemetry.log().add("Finished Shooting");
         telemetry.update();
 
         //drive straight a little to get off wall in order to turn
-        autoFunctions.driveStraightPID(10, AutoFunctions.DriveStraightDirection.FORWARD, 2);
+        autoFunctions.driveStraightPID(20, AutoFunctions.DriveStraightDirection.FORWARD, 3);
         telemetry.log().add("Off the Wall");
         telemetry.update();
 
         //turn so facing toward beacon
-        autoFunctions.twoWheelTurnPID(50, AutoFunctions.TurnDirection.RIGHT);
+        autoFunctions.twoWheelTurnPID(135, AutoFunctions.TurnDirection.LEFT);
         telemetry.log().add("Turned towards beacon");
         telemetry.update();
 
-        //turn on intake
-        hardware.getIntake().setPower(1);
 
         //drive toward beacon wall
-        autoFunctions.driveStraightPID(60, AutoFunctions.DriveStraightDirection.FORWARD, 2.5);
+        autoFunctions.driveStraightPID(67, AutoFunctions.DriveStraightDirection.BACKWARD, 3);
         telemetry.log().add("Arrived at beacon wall");
         telemetry.update();
 
-        autoFunctions.driveStraightPID(3, AutoFunctions.DriveStraightDirection.BACKWARD, 1);
+        autoFunctions.driveStraightPID(3, AutoFunctions.DriveStraightDirection.FORWARD, 1);
 
         //"parallel parking"
-        WallApproachTest.blueWallApproach(hardware, autoFunctions, this);
+        WallApproachTest.redWallApproach(hardware, autoFunctions, this);
 
         hardware.pushButton(hardware.findBeaconState(), BeaconState.BLUE);
 

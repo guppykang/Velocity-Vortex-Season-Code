@@ -35,7 +35,7 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
         while (opModeIsActive() && hardware.getTurretGyro().isCalibrating()) ;
 
         //shoot two particles
-        autoFunctions.shoot();
+        //autoFunctions.shoot();
         telemetry.log().add("Finished Shooting");
         telemetry.update();
 
@@ -56,7 +56,7 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
         telemetry.log().add("Arrived at beacon wall");
         telemetry.update();
 
-        autoFunctions.driveStraightPID(3, AutoFunctions.DriveStraightDirection.FORWARD, 1);
+        autoFunctions.driveStraightPID(2, AutoFunctions.DriveStraightDirection.FORWARD, 1);
 
         WallApproachTest.redWallApproach(hardware, autoFunctions, this);
 
@@ -64,7 +64,7 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
 
         sleep(2000);
 
-        hardware.pushButton(BeaconState.UNDEFINED, BeaconState.RED);
+        hardware.pushButtonFullExtension(BeaconState.UNDEFINED, BeaconState.RED);
 
         BeaconState state = hardware.findBeaconState();
         if (state != BeaconState.RED_RED) {
@@ -85,7 +85,7 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
         autoFunctions.twoWheelTurnPID(3, AutoFunctions.TurnDirection.LEFT, 1.5);
         autoFunctions.driveStraightPID(48, AutoFunctions.DriveStraightDirection.BACKWARD, 3);
 
-        hardware.pushButton(hardware.findBeaconState(), BeaconState.RED);
+        hardware.pushButtonFullExtension(hardware.findBeaconState(), BeaconState.RED);
 
         sleep(2000);
 
