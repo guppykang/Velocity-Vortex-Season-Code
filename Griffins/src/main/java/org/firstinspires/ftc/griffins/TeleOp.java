@@ -12,6 +12,7 @@ public class TeleOp extends OpMode {
 
     private RobotHardware hardware;
     private boolean buttonToggle;
+    private boolean turretState;
 
     @Override
     public void init() {
@@ -33,6 +34,7 @@ public class TeleOp extends OpMode {
         this.resetStartTime();
         hardware.startTurretTracking();
         buttonToggle = gamepad2.x;
+        turretState = false;
     }
 
     @Override
@@ -47,7 +49,8 @@ public class TeleOp extends OpMode {
         double beaconPushRatio;
         boolean turretTracking;
 
-        turretTracking = !buttonToggle && gamepad2.x;
+        if (!buttonToggle && gamepad2.x)
+            turretState = !turretState;
         buttonToggle = gamepad2.x;
 
         rightDrivePower = Math.pow(-gamepad1.right_stick_y, 3);
@@ -116,7 +119,7 @@ public class TeleOp extends OpMode {
         hardware.getIntake().setPower(intakeSpeed);
         hardware.setLoaderPower(loaderPower);
         hardware.pushButton(beaconPushState, BeaconState.BLUE, beaconPushRatio);
-        hardware.setTurretRotation(targetTurretSpeed, turretTracking);
+        hardware.setTurretRotation(targetTurretSpeed, turretState);
 
         int time = (int) getRuntime();
 

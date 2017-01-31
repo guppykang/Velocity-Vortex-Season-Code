@@ -191,7 +191,7 @@ public class RobotHardware {
         turretController = new PIDController(0.01, 0, 0, 0, new Func<Double>() {
             @Override
             public Double value() {
-                return (turretRotation.getCurrentPosition() / ENCODER_COUNTS_PER_TURRET_DEGREE) - turretGyro.getIntegratedZValue();
+                return (turretRotation.getCurrentPosition() / ENCODER_COUNTS_PER_TURRET_DEGREE) + turretGyro.getIntegratedZValue();
             }
         }, null);
 
@@ -231,7 +231,7 @@ public class RobotHardware {
 
         } else {
             turretSpeed = joystickInput;
-            turretHeadingTarget = turretGyro.getIntegratedZValue();
+            turretController.setSetPoint(turretController.getSourceVal());
         }
 
         /*if (turretRotation.getCurrentPosition() > RobotHardware.TURRET_ENCODER_COUNT_REVOLUTION_LIMIT) {
