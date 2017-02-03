@@ -14,17 +14,17 @@ import org.firstinspires.ftc.griffins.RobotHardware;
 public class WallApproachTest extends LinearOpMode {
     public static void redWallApproach(RobotHardware hardware, AutoFunctions autoFunctions, LinearOpMode opMode) {
         int gyroHeading = hardware.getTurretGyro().getIntegratedZValue();
-        autoFunctions.twoWheelTurnPID(32, AutoFunctions.TurnDirection.RIGHT, 3);
+        autoFunctions.twoWheelTurnPID(32, AutoFunctions.TurnDirection.RIGHT, 2.5);
 
-        autoFunctions.driveStraightPID(11, AutoFunctions.DriveStraightDirection.BACKWARD, 3);
+        autoFunctions.driveStraightPID(17, AutoFunctions.DriveStraightDirection.BACKWARD, 1.5);
 
-        autoFunctions.twoWheelTurnPID(10, AutoFunctions.TurnDirection.RIGHT, 2);
+        autoFunctions.twoWheelTurnPID(7, AutoFunctions.TurnDirection.RIGHT, 2);
 
-        autoFunctions.driveStraightPID(15, AutoFunctions.DriveStraightDirection.BACKWARD, 3);
+        autoFunctions.driveStraightPID(16, AutoFunctions.DriveStraightDirection.BACKWARD, 2);
 
-        autoFunctions.twoWheelTurnPID(10, AutoFunctions.TurnDirection.RIGHT, 1);
+        autoFunctions.twoWheelTurnPID(20, AutoFunctions.TurnDirection.RIGHT, .5); //timer out
 
-        autoFunctions.driveStraightPID(15, AutoFunctions.DriveStraightDirection.FORWARD, 4);
+        autoFunctions.driveStraightPID(20, AutoFunctions.DriveStraightDirection.FORWARD, 1.5);
 
         /*hardware.setDrivePower(-.3, -.35);
 

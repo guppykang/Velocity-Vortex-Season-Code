@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.griffins.MenuPort.FtcMenu;
 import org.firstinspires.ftc.griffins.MenuPort.HalDashboard;
 import org.firstinspires.ftc.griffins.RobotHardware.BeaconState;
+import org.firstinspires.ftc.griffins.Testing.BeaconScan;
 import org.firstinspires.ftc.griffins.Testing.WallApproachTest;
 
 /**
@@ -35,39 +36,45 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
         while (opModeIsActive() && hardware.getTurretGyro().isCalibrating()) ;
 
         //shoot two particles
-        //autoFunctions.shoot();
+        autoFunctions.shoot();
         telemetry.log().add("Finished Shooting");
         telemetry.update();
 
         //drive straight a little to get off wall in order to turn
-        autoFunctions.driveStraightPID(10, AutoFunctions.DriveStraightDirection.FORWARD, 5);
+        autoFunctions.driveStraightPID(10, AutoFunctions.DriveStraightDirection.FORWARD, 3);
         telemetry.log().add("Off the Wall");
         telemetry.update();
 
-        hardware.getIntake().setPower(1);
         //turn so facing toward beacon
         autoFunctions.twoWheelTurnPID(119, AutoFunctions.TurnDirection.RIGHT, 8);
         telemetry.log().add("Turned towards beacon");
         telemetry.update();
-        hardware.getIntake().setPower(0);
 
         //drive toward beacon wall
         autoFunctions.driveStraightPID(59, AutoFunctions.DriveStraightDirection.BACKWARD, 3);
         telemetry.log().add("Arrived at beacon wall");
         telemetry.update();
 
-        autoFunctions.driveStraightPID(2, AutoFunctions.DriveStraightDirection.FORWARD, 1);
+        autoFunctions.driveStraightPID(2, AutoFunctions.DriveStraightDirection.FORWARD, .5);
 
         WallApproachTest.redWallApproach(hardware, autoFunctions, this);
+
+        BeaconScan.scanForBeacon(AutoFunctions.DriveStraightDirection.FORWARD, hardware, this);
+
+        hardware.setDrivePower(-0.2, -0.1);
+
+        sleep(400);
+        hardware.stopDrive();
 
         hardware.pushButton(hardware.findBeaconState(), BeaconState.RED);
 
         sleep(2000);
 
         hardware.pushButtonFullExtension(BeaconState.UNDEFINED, BeaconState.RED);
+        sleep(1000);
 
         BeaconState state = hardware.findBeaconState();
-        if (state != BeaconState.RED_RED) {
+        if (state != BeaconState.RED_RED && !state.containsUndefined()) {
             if (getRuntime() >= 28) {
                 hardware.pushButtonFullExtension(state, BeaconState.RED);
             } else if (getRuntime() >= 20) {
@@ -80,24 +87,16 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
 
             sleep(2000);
             hardware.pushButton(BeaconState.UNDEFINED, BeaconState.RED);
+            sleep(1000);
         }
 
-        autoFunctions.twoWheelTurnPID(3, AutoFunctions.TurnDirection.LEFT, 1.5);
-        autoFunctions.driveStraightPID(48, AutoFunctions.DriveStraightDirection.BACKWARD, 3);
-
-        hardware.pushButtonFullExtension(hardware.findBeaconState(), BeaconState.RED);
-
+        hardware.setDrivePower(-0.2, -0.3);
+        sleep(700);
+        hardware.setDrivePower(0, .5);
+        sleep(700);
+        hardware.setDrivePower(.4, .5);
         sleep(2000);
-
-        hardware.pushButton(BeaconState.UNDEFINED, BeaconState.RED);
-
-        hardware.setDrivePower(.2, .4);
-        hardware.getIntake().setPower(1);
-
-        sleep(2000);
-
         hardware.stopDrive();
-        hardware.getIntake().setPower(0);
 
         /*//"parallel parking"
         autoFunctions.curveDriveShort(-(long) (3 / hardware.INCHES_PER_ENCODER_COUNT), -(long) (12.5 / hardware.INCHES_PER_ENCODER_COUNT), .1, .9);
