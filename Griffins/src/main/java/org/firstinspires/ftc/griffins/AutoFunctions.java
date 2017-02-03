@@ -296,9 +296,9 @@ public class AutoFunctions {
         hardware.setLoaderPower(1.0);
         linearOpMode.sleep(1000);
         hardware.setLoaderPower(0);
-        linearOpMode.sleep(1000);
+        linearOpMode.sleep(500);
         hardware.setLoaderPower(1);
-        linearOpMode.sleep(1500);
+        linearOpMode.sleep(1000);
         hardware.getShooter().setPower(0.0);
         hardware.setLoaderPower(0.0);
     }

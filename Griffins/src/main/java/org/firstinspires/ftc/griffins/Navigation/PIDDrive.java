@@ -36,7 +36,7 @@ public class PIDDrive {
             }
         }, null);
 
-        pidTurning = new PIDController(0.0018 * ENCODER_COUNTS_PER_ROBOT_DEGREE, 0, 0.009 * ENCODER_COUNTS_PER_ROBOT_DEGREE, 1, new Func<Double>() {
+        pidTurning = new PIDController(0.0019 * ENCODER_COUNTS_PER_ROBOT_DEGREE, 0, 0.010 * ENCODER_COUNTS_PER_ROBOT_DEGREE, 1, new Func<Double>() {
             @Override
             public Double value() {
                 return (double) hardware.getTurretGyro().getIntegratedZValue();
@@ -63,7 +63,7 @@ public class PIDDrive {
 
         if (isTurning) {
             power = pidTurning.sendPIDOutput();
-            power = Range.clip(power, -0.5, 0.5);
+            power = Range.clip(power, -0.4, 0.4);
             difference = pidTurningDifference.sendPIDOutput();
 
             hardware.setDrivePower(-power - difference, power + difference);
@@ -128,6 +128,10 @@ public class PIDDrive {
         } while (exitCounter <= 100 && earlyExitCheck.value());
 
         hardware.stopDrive();
+
+        if (telemetry != null) {
+            telemetry.log().add("exit pid " + (isTurning ? "turn" : "drive") + ", error:" + (isTurning ? pidTurning : pidDrive).getError());
+        }
 
         return builder.toString();
     }
