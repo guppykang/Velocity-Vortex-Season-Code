@@ -61,9 +61,9 @@ public class RobotHardware {
     public static final I2cAddr RIGHT_COLOR_SENSOR_ADDRESS = I2cAddr.create8bit(0x3C);
     // The constants for the button pusher positions
     public static final double BUTTON_PUSHER_CENTER_POSITION = 107 / 255.0;
-    public static final double BUTTON_PUSHER_RATIO = 3 / 4.0;
-    public static final double BUTTON_PUSHER_LEFT_FULL_EXTENSION = 83 / 255.0;
-    public static final double BUTTON_PUSHER_RIGHT_FULL_EXTENSION = 133 / 255.0;
+    public static final double BUTTON_PUSHER_RATIO = 4 / 4.0;
+    public static final double BUTTON_PUSHER_LEFT_FULL_EXTENSION = 82 / 255.0;
+    public static final double BUTTON_PUSHER_RIGHT_FULL_EXTENSION = 132 / 255.0;
     // The constants for the loader speeds
     public static final double LOADER_ZERO_POWER = 0;
     public static final double LOADER_FULL_REVERSE_POWER = -2 / 3.0;
@@ -191,7 +191,7 @@ public class RobotHardware {
         turretController = new PIDController(0.01, 0, 0, 0, new Func<Double>() {
             @Override
             public Double value() {
-                return (turretRotation.getCurrentPosition() / ENCODER_COUNTS_PER_TURRET_DEGREE) + turretGyro.getIntegratedZValue();
+                return (turretRotation.getCurrentPosition() / ENCODER_COUNTS_PER_TURRET_DEGREE) - turretGyro.getIntegratedZValue();
             }
         }, null);
 
@@ -227,7 +227,7 @@ public class RobotHardware {
         if (trackingOn) {
 
             turretController.setSetPoint(turretController.getSetPoint() + joystickInput / 10);
-            turretSpeed = turretController.sendPIDOutput();
+            turretSpeed = -turretController.sendPIDOutput();
 
         } else {
             turretSpeed = joystickInput;
@@ -377,14 +377,14 @@ public class RobotHardware {
      * @return A BeaconState, which will be either RED, BLUE, or UNDEFINED.
      */
     private BeaconState findColorSensorState(ColorSensor colorSensor) {
-        BeaconState colorState;
+        BeaconState colorState = UNDEFINED;
 
-        if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.green()) {
-            colorState = RED;
-        } else if (colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.green()) {
-            colorState = BLUE;
-        } else {
-            colorState = UNDEFINED;
+        if (colorSensor.alpha() > 1) {
+            if (colorSensor.red() > colorSensor.blue() + 1 && colorSensor.red() > colorSensor.green()) {
+                colorState = RED;
+            } else if (colorSensor.blue() > colorSensor.red() + 1 && colorSensor.blue() > colorSensor.green()) {
+                colorState = BLUE;
+            }
         }
 
         return colorState;

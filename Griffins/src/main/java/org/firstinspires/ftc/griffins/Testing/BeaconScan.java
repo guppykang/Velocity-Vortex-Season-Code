@@ -14,10 +14,10 @@ import org.firstinspires.ftc.griffins.RobotHardware.BeaconState;
 @Autonomous(name = "Beacon Scanning Test", group = "testing")
 public class BeaconScan extends LinearOpMode {
 
-    public static double[] scanningSpeeds = {0.2, 0.35};
+    public static double[] scanningSpeeds = {0.05, 0.15};
 
     public static void wallDrive(double signedPower, RobotHardware hardware) {
-        double powerRatio = 0.3 / 0.35;
+        double powerRatio = 0.2 / 0.25;
 
         hardware.setDrivePower(signedPower, signedPower * powerRatio);
     }
@@ -44,8 +44,10 @@ public class BeaconScan extends LinearOpMode {
 
     public static void scanForBeacon(DriveStraightDirection defaultDirection, RobotHardware hardware, LinearOpMode opMode) {
         double drivePower = determineDrivePower(defaultDirection, hardware);
+        double lastDrivePower = drivePower;
 
         while (opMode.opModeIsActive() && drivePower != 0) {
+            lastDrivePower = drivePower;
             wallDrive(drivePower, hardware);
             drivePower = determineDrivePower(defaultDirection, hardware);
         }
