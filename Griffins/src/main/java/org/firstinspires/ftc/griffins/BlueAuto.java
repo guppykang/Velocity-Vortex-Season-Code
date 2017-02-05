@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.griffins.MenuPort.FtcMenu;
 import org.firstinspires.ftc.griffins.MenuPort.HalDashboard;
 import org.firstinspires.ftc.griffins.RobotHardware.BeaconState;
+import org.firstinspires.ftc.griffins.Testing.BeaconScan;
 import org.firstinspires.ftc.griffins.Testing.WallApproachTest;
 
 /**
@@ -35,36 +36,45 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
         while (opModeIsActive() && hardware.getTurretGyro().isCalibrating()) ;
 
         //shoot two particles
-        //autoFunctions.shoot();
+        autoFunctions.shoot();
         telemetry.log().add("Finished Shooting");
         telemetry.update();
 
         //drive straight a little to get off wall in order to turn
-        autoFunctions.driveStraightPID(20, AutoFunctions.DriveStraightDirection.FORWARD, 3);
+        autoFunctions.driveStraightPID(30, AutoFunctions.DriveStraightDirection.FORWARD, 3);
         telemetry.log().add("Off the Wall");
         telemetry.update();
 
         //turn so facing toward beacon
-        autoFunctions.twoWheelTurnPID(135, AutoFunctions.TurnDirection.LEFT);
+        autoFunctions.twoWheelTurnPID(45, AutoFunctions.TurnDirection.RIGHT, 8);
         telemetry.log().add("Turned towards beacon");
         telemetry.update();
 
+        hardware.getIntake().setPower(1);
 
         //drive toward beacon wall
-        autoFunctions.driveStraightPID(67, AutoFunctions.DriveStraightDirection.BACKWARD, 3);
+        autoFunctions.driveStraightPID(90, AutoFunctions.DriveStraightDirection.FORWARD, 3);
         telemetry.log().add("Arrived at beacon wall");
         telemetry.update();
 
-        autoFunctions.driveStraightPID(3, AutoFunctions.DriveStraightDirection.FORWARD, 1);
+        autoFunctions.driveStraightPID(3, AutoFunctions.DriveStraightDirection.BACKWARD, 1);
 
         //"parallel parking"
-        WallApproachTest.redWallApproach(hardware, autoFunctions, this);
+        WallApproachTest.blueWallApproach(hardware, autoFunctions, this);
+
+        BeaconScan.scanForBeacon(AutoFunctions.DriveStraightDirection.FORWARD, hardware, this);
+
+        hardware.setDrivePower(-0.2, -0.1);
+
+        sleep(200);
+        hardware.stopDrive();
 
         hardware.pushButton(hardware.findBeaconState(), BeaconState.BLUE);
 
         sleep(2000);
 
         hardware.pushButton(BeaconState.UNDEFINED, BeaconState.BLUE);
+        sleep(1000);
 
         BeaconState state = hardware.findBeaconState();
         if (state != BeaconState.BLUE_BLUE) {
@@ -82,38 +92,13 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
             hardware.pushButton(BeaconState.UNDEFINED, BeaconState.BLUE);
         }
 
-        autoFunctions.twoWheelTurnPID(5, AutoFunctions.TurnDirection.LEFT, 2);
-        autoFunctions.driveStraightPID(47, AutoFunctions.DriveStraightDirection.BACKWARD, 3);
-
-        hardware.pushButton(hardware.findBeaconState(), BeaconState.BLUE);
-
+        hardware.setDrivePower(0.2, 0.3);
+        sleep(700);
+        hardware.setDrivePower(0, -0.5);
+        sleep(700);
+        hardware.setDrivePower(-0.5, -0.3);
         sleep(2000);
-
-        hardware.pushButton(BeaconState.UNDEFINED, BeaconState.BLUE);
-
-        state = hardware.findBeaconState();
-        if (state != BeaconState.BLUE_BLUE) {
-            if (getRuntime() >= 28) {
-                hardware.pushButtonFullExtension(state, BeaconState.BLUE);
-            } else if (getRuntime() >= 20) {
-                sleep((long) ((28 - getRuntime()) * 1000));
-                hardware.pushButtonFullExtension(state, BeaconState.BLUE);
-            } else {
-                sleep(6000);
-                hardware.pushButtonFullExtension(state, BeaconState.BLUE);
-            }
-
-            sleep(2000);
-            hardware.pushButton(BeaconState.UNDEFINED, BeaconState.BLUE);
-            sleep(1000);
-        }
-
-        hardware.setDrivePower(-.2, -.4);
-
-        sleep(2000);
-
         hardware.stopDrive();
-        hardware.getIntake().setPower(0);
 
         /*//drive back to first beacon
         autoFunctions.driveStraight((long)(34/hardware.INCHES_PER_ENCODER_COUNT), AutoFunctions.DriveStraightDirection.FORWARD, .5);

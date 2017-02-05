@@ -32,10 +32,7 @@ public class BeaconScan extends LinearOpMode {
                 drivePower = scanningSpeeds[1] * (defaultDirection == DriveStraightDirection.FORWARD ? 1 : -1);
 
             } else {
-                drivePower = scanningSpeeds[0];
-                if ((beaconState.numberState() & 0b11) != BeaconState.UNDEFINED.numberState()) {
-                    drivePower *= -1;
-                }
+                drivePower = scanningSpeeds[0] * (defaultDirection == DriveStraightDirection.FORWARD ? 1 : -1);
             }
         }
 

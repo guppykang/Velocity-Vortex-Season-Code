@@ -45,17 +45,17 @@ public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboar
         telemetry.log().add("Alliance is " + alliance);
 
         waitForStart();
+        sleep(15000);
         //autoFunctions.driveStraightSimple((int) (firstDriveDistance * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
         hardware.getShooter().setPower(1);
         sleep(1000);
-        hardware.setLoaderPower(8.0);
+        hardware.setLoaderPower(0.9);
         sleep(5000);
         hardware.getShooter().setPower(0.0);
         hardware.setLoaderPower(0.0);
         sleep(1000);
         hardware.getIntake().setPower(-1.0);
-        autoFunctions.driveStraight((int) (3.5 * 12 * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
-        autoFunctions.driveStraight((int) ((secondDriveDistance - 10) * ENCODER_COUNTS_PER_INCH), AutoFunctions.DriveStraightDirection.FORWARD, .5);
+        autoFunctions.driveStraightPID(50, AutoFunctions.DriveStraightDirection.FORWARD);
 
         if (alliance == Alliance.BLUE_ALLIANCE) {
             autoFunctions.twoWheelTurnSimple((int) (countsPerRobotRotation / 8), AutoFunctions.TurnDirection.RIGHT, 1);

@@ -41,7 +41,7 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
         telemetry.update();
 
         //drive straight a little to get off wall in order to turn
-        autoFunctions.driveStraightPID(10, AutoFunctions.DriveStraightDirection.FORWARD, 3);
+        autoFunctions.driveStraightPID(20, AutoFunctions.DriveStraightDirection.FORWARD, 3);
         telemetry.log().add("Off the Wall");
         telemetry.update();
 
@@ -59,11 +59,21 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
 
         WallApproachTest.redWallApproach(hardware, autoFunctions, this);
 
+
+        /*BeaconScan.scanForBeacon(AutoFunctions.DriveStraightDirection.BACKWARD, hardware, this);
+        hardware.pushButton(hardware.findBeaconState(), BeaconState.RED);
+
+        sleep(2000);
+
+        hardware.pushButtonFullExtension(BeaconState.UNDEFINED, BeaconState.RED);
+        sleep(1000);*/
+
+
         BeaconScan.scanForBeacon(AutoFunctions.DriveStraightDirection.FORWARD, hardware, this);
 
         hardware.setDrivePower(-0.2, -0.1);
 
-        sleep(400);
+        sleep(200);
         hardware.stopDrive();
 
         hardware.pushButton(hardware.findBeaconState(), BeaconState.RED);
@@ -92,9 +102,9 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
 
         hardware.setDrivePower(-0.2, -0.3);
         sleep(700);
-        hardware.setDrivePower(0, .5);
+        hardware.setDrivePower(0, 0.5);
         sleep(700);
-        hardware.setDrivePower(.4, .5);
+        hardware.setDrivePower(0.5, 0.3);
         sleep(2000);
         hardware.stopDrive();
 

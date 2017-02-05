@@ -291,7 +291,7 @@ public class AutoFunctions {
     }
 
     public void shoot() {
-        hardware.getShooter().setPower(0.75);
+        hardware.getShooter().setPower(0.8);
         linearOpMode.sleep(500);
         hardware.setLoaderPower(1.0);
         linearOpMode.sleep(1000);
