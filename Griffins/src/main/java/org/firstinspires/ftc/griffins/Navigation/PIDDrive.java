@@ -36,6 +36,11 @@ public class PIDDrive {
             }
         }, null);
 
+        //
+        //
+        //why is pidTurning's kP being multiplied by ENCODER_COUNTS_PER_ROBOT_DEGREE? actual value = .01076
+        //
+        //
         pidTurning = new PIDController(0.0019 * ENCODER_COUNTS_PER_ROBOT_DEGREE, 0, 0.010 * ENCODER_COUNTS_PER_ROBOT_DEGREE, 1, new Func<Double>() {
             @Override
             public Double value() {
@@ -57,6 +62,12 @@ public class PIDDrive {
             }
         }, null);
     }
+
+    //
+    //
+    //better system: use new gyro input instead of encoder counts to maintain
+    //
+    //
 
     public void syncDrives(){
         double power;
