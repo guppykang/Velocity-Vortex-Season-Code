@@ -2,6 +2,7 @@ package org.firstinspires.ftc.griffins;
 
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -105,8 +106,8 @@ public class RobotHardware {
     private Servo loaderServoOne;
     //sensor variables
     private ModernRoboticsI2cGyro turretGyro;
-    private ColorSensor leftButtonPusherColorSensor;
-    private ColorSensor rightButtonPusherColorSensor;
+    private ModernRoboticsI2cColorSensor leftButtonPusherColorSensor;
+    private ModernRoboticsI2cColorSensor rightButtonPusherColorSensor;
     private ModernRoboticsAnalogOpticalDistanceSensor beaconDistanceSensor;
     private DigitalChannel loaderParticleLimitSwitch;
     private BNO055IMU robotTracker;
@@ -164,12 +165,12 @@ public class RobotHardware {
         turretGyro.calibrate();  //look at z axis scaling coefficient when available
         turretGyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN); // verify that the angles have the correct sign
 
-        leftButtonPusherColorSensor = hardwareMap.get(ColorSensor.class, LEFT_BUTTON_PUSHER_SENSOR);
+        leftButtonPusherColorSensor = hardwareMap.get(ModernRoboticsI2cColorSensor.class, LEFT_BUTTON_PUSHER_SENSOR);
         leftButtonPusherColorSensor.setI2cAddress(LEFT_COLOR_SENSOR_ADDRESS);
         leftButtonPusherColorSensor.enableLed(true);
         leftButtonPusherColorSensor.enableLed(false);
 
-        rightButtonPusherColorSensor = hardwareMap.get(ColorSensor.class, RIGHT_BUTTON_PUSHER_SENSOR);
+        rightButtonPusherColorSensor = hardwareMap.get(ModernRoboticsI2cColorSensor.class, RIGHT_BUTTON_PUSHER_SENSOR);
         rightButtonPusherColorSensor.setI2cAddress(RIGHT_COLOR_SENSOR_ADDRESS);
         rightButtonPusherColorSensor.enableLed(true);
         rightButtonPusherColorSensor.enableLed(false);
@@ -356,6 +357,16 @@ public class RobotHardware {
     @Deprecated
     public void pushButton(BeaconState beaconState) {
         pushButton(beaconState, BLUE);
+    }
+
+    public void deregisterColorSensors() {
+        leftButtonPusherColorSensor.getI2cController().deregisterForPortReadyCallback(leftButtonPusherColorSensor.getPort());
+        rightButtonPusherColorSensor.getI2cController().deregisterForPortReadyCallback(rightButtonPusherColorSensor.getPort());
+    }
+
+    public void registerColorSensors() {
+        leftButtonPusherColorSensor.getI2cController().registerForI2cPortReadyCallback(leftButtonPusherColorSensor, leftButtonPusherColorSensor.getPort());
+        rightButtonPusherColorSensor.getI2cController().registerForI2cPortReadyCallback(rightButtonPusherColorSensor, rightButtonPusherColorSensor.getPort());
     }
 
     /**

@@ -91,8 +91,15 @@ public class PIDDrive {
         isTurning = true;
     }
 
-    public String driveToTarget(Func<Boolean> earlyExitCheck, Telemetry telemetry) {
+    public String driveToTarget(Func<Boolean> earlyExitCheck, Telemetry telemetry, boolean quickExit) {
         StringBuilder builder = new StringBuilder();
+
+        int exitValue;
+        if (quickExit) {
+            exitValue = 2;
+        } else {
+            exitValue = 100;
+        }
 
         int exitCounter = 0;
         do {
@@ -125,7 +132,7 @@ public class PIDDrive {
                 telemetry.addData("error", isTurning ? pidTurning.getError() : pidDrive.getError());
                 telemetry.update();
             }
-        } while (exitCounter <= 100 && earlyExitCheck.value());
+        } while (exitCounter <= exitValue && earlyExitCheck.value());
 
         hardware.stopDrive();
 
@@ -136,7 +143,15 @@ public class PIDDrive {
         return builder.toString();
     }
 
-    public void driveToTarget(Func<Boolean> booleanFunc) {
-        driveToTarget(booleanFunc, null);
+    public String driveToTarget(Func<Boolean> booleanFunc, boolean quickExit) {
+        return driveToTarget(booleanFunc, null, quickExit);
+    }
+
+    public String driveToTarget(Func<Boolean> booleanFunc, Telemetry telemetry) {
+        return driveToTarget(booleanFunc, telemetry, false);
+    }
+
+    public String driveToTarget(Func<Boolean> booleanFunc) {
+        return driveToTarget(booleanFunc, null, false);
     }
 }

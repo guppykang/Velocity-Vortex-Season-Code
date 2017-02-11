@@ -14,6 +14,7 @@ import org.firstinspires.ftc.griffins.Navigation.PIDDrive;
  */
 
 public class AutoFunctions {
+    public static double[] scanningSpeeds = {0.05, 0.15};
     private LinearOpMode linearOpMode;
     private RobotHardware hardware;
     private PIDDrive drive;
@@ -22,6 +23,42 @@ public class AutoFunctions {
         this.hardware = hardware;
         this.linearOpMode = linearOpMode;
         drive = new PIDDrive(hardware);
+    }
+
+    public void wallDrive(double signedPower) {
+        double powerRatio = 0.2 / 0.25;
+
+        hardware.setDrivePower(signedPower, signedPower * powerRatio);
+    }
+
+    private double determineDrivePower(DriveStraightDirection defaultDirection) {
+        RobotHardware.BeaconState beaconState = hardware.findBeaconState();
+
+        double drivePower = 0;
+
+        if (beaconState.containsUndefined()) {
+            if (beaconState == RobotHardware.BeaconState.UNDEFINED_UNDEFINED) {
+                drivePower = scanningSpeeds[1] * (defaultDirection == DriveStraightDirection.FORWARD ? 1 : -1);
+
+            } else {
+                drivePower = scanningSpeeds[0] * (defaultDirection == DriveStraightDirection.FORWARD ? 1 : -1);
+            }
+        }
+
+        return drivePower;
+    }
+
+    public void scanForBeacon(DriveStraightDirection defaultDirection) {
+        double drivePower = determineDrivePower(defaultDirection);
+        double lastDrivePower = drivePower;
+
+        while (linearOpMode.opModeIsActive() && drivePower != 0) {
+            lastDrivePower = drivePower;
+            wallDrive(drivePower);
+            drivePower = determineDrivePower(defaultDirection);
+        }
+
+        hardware.stopDrive();
     }
 
     public void oneWheelTurn(DcMotor turningMotor, double angle) throws InterruptedException {

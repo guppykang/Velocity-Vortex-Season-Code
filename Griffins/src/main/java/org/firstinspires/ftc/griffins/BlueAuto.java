@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.griffins.MenuPort.FtcMenu;
 import org.firstinspires.ftc.griffins.MenuPort.HalDashboard;
 import org.firstinspires.ftc.griffins.RobotHardware.BeaconState;
-import org.firstinspires.ftc.griffins.Testing.BeaconScan;
 import org.firstinspires.ftc.griffins.Testing.WallApproachTest;
 
 /**
@@ -62,7 +61,7 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
         //"parallel parking"
         WallApproachTest.blueWallApproach(hardware, autoFunctions, this);
 
-        BeaconScan.scanForBeacon(AutoFunctions.DriveStraightDirection.FORWARD, hardware, this);
+        autoFunctions.scanForBeacon(AutoFunctions.DriveStraightDirection.FORWARD);
 
         hardware.setDrivePower(-0.2, -0.1);
 
