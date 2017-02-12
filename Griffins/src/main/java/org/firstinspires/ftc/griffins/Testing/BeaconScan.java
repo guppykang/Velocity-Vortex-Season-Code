@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.griffins.Testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.griffins.AutoFunctions;
@@ -11,7 +12,8 @@ import org.firstinspires.ftc.griffins.RobotHardware.BeaconState;
 /**
  * Created by David on 1/19/2017.
  */
-@Autonomous(name = "Beacon Scanning Test", group = "testing")
+@Autonomous(name = "Beacon Scanning Test", group = "test")
+@Disabled
 public class BeaconScan extends LinearOpMode {
 
     @Override
@@ -19,6 +21,7 @@ public class BeaconScan extends LinearOpMode {
         RobotHardware hardware = new RobotHardware();
         hardware.initialize(hardwareMap);
         AutoFunctions autoFunctions = new AutoFunctions(hardware, this);
+        hardware.registerBeaconColorSensors();
 
         waitForStart();
 

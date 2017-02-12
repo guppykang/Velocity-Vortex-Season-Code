@@ -7,7 +7,7 @@ import org.firstinspires.ftc.griffins.RobotHardware.BeaconState;
 /**
  * Created by David on 11/26/2016.
  */
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Teleop", group = "Competition")
 public class TeleOp extends OpMode {
 
     private RobotHardware hardware;

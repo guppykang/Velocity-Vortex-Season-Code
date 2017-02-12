@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.griffins.Testing;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -17,6 +18,7 @@ import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.UNDEFINED
  */
 
 @TeleOp(group = "test")
+@Disabled
 public class IntakeColorSensorTest extends OpMode {
 
     ModernRoboticsI2cColorSensor colorSensor;
@@ -46,7 +48,7 @@ public class IntakeColorSensorTest extends OpMode {
             loaderPower = gamepad1.right_trigger;
         } else {
             loaderPower = -1;
-            intakePower = -0.5;
+            intakePower = -1;
         }
 
         robotHardware.getIntake().setPower(intakePower);

@@ -10,7 +10,7 @@ import org.firstinspires.ftc.griffins.RobotHardware;
  * Created by David on 1/14/2017.
  */
 
-@Autonomous(name = "Wall Approach Test", group = "testing")
+@Autonomous(name = "Wall Approach Test", group = "test")
 public class WallApproachTest extends LinearOpMode {
     public static void redWallApproach(RobotHardware hardware, AutoFunctions autoFunctions, LinearOpMode opMode) {
         int gyroHeading = hardware.getTurretGyro().getIntegratedZValue();

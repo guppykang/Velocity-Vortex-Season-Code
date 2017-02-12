@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.griffins.Testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.griffins.AutoFunctions;
@@ -11,7 +12,8 @@ import org.firstinspires.ftc.griffins.RobotHardware;
  * Created by David on 12/20/2016.
  */
 
-@Autonomous
+@Autonomous(group = "test")
+@Disabled
 public class PIDDriveTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

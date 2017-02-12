@@ -11,7 +11,7 @@ import org.firstinspires.ftc.griffins.Testing.WallApproachTest;
 /**
  * Created by David on 12/7/2016.
  */
-@Autonomous(name = "Blue Beacon Auto", group = "Auto")
+@Autonomous(name = "Blue Beacon Auto", group = "Competition")
 public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboard {
     HalDashboard halDashboard;
     private RobotHardware hardware;

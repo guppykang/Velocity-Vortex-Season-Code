@@ -13,7 +13,7 @@ import static org.firstinspires.ftc.griffins.RobotHardware.ENCODER_COUNTS_PER_IN
 /**
  * Created by David on 12/7/2016.
  */
-@Autonomous(name = "Cat Ball Auto", group = "Auto")
+@Autonomous(name = "Cat Ball Auto", group = "Competition")
 public class Auto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashboard {
     public static final double countsPerRobotRotation = ENCODER_COUNTS_PER_INCH * Math.PI * 14.5625;
     HalDashboard halDashboard;
