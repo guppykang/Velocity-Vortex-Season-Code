@@ -345,22 +345,38 @@ public class AutoFunctions {
         return hardware.getTurretGyro().getIntegratedZValue();
     }
 
-    public void driveStraightPID(double inches, DriveStraightDirection direction, double timeoutSeconds) {
+    public void driveStraightPID(double inches, DriveStraightDirection direction, double timeoutSeconds, boolean quickExit) {
         drive.setDriveTarget(inches * (direction == DriveStraightDirection.FORWARD ? 1 : -1));
         drive.driveToTarget(new LinearOpModeTimeOutFunc(linearOpMode, timeoutSeconds), linearOpMode.telemetry);
     }
 
-    public void driveStraightPID(double inches, DriveStraightDirection direction) {
-        driveStraightPID(inches, direction, 8);
+    public void driveStraightPID(double inches, DriveStraightDirection direction, boolean quickExit) {
+        driveStraightPID(inches, direction, 8, quickExit);
     }
 
-    public String twoWheelTurnPID(double degrees, TurnDirection direction, double timeoutSeconds) {
+    public void driveStraightPID(double inches, DriveStraightDirection direction) {
+        driveStraightPID(inches, direction, 8, false);
+    }
+
+    public void driveStraightPID(double inches, DriveStraightDirection direction, double timeoutSeconds) {
+        driveStraightPID(inches, direction, timeoutSeconds, false);
+    }
+
+    public String twoWheelTurnPID(double degrees, TurnDirection direction, double timeoutSeconds, boolean quickExit) {
         drive.setTurnTarget(degrees * (direction == TurnDirection.LEFT ? 1 : -1));
-        return drive.driveToTarget(new LinearOpModeTimeOutFunc(linearOpMode, timeoutSeconds), linearOpMode.telemetry);
+        return drive.driveToTarget(new LinearOpModeTimeOutFunc(linearOpMode, timeoutSeconds), linearOpMode.telemetry, quickExit);
+    }
+
+    public String twoWheelTurnPID(double degrees, TurnDirection direction, boolean quickExit) {
+        return twoWheelTurnPID(degrees, direction, 5, quickExit);
     }
 
     public String twoWheelTurnPID(double degrees, TurnDirection direction) {
-        return twoWheelTurnPID(degrees, direction, 5);
+        return twoWheelTurnPID(degrees, direction, 5, false);
+    }
+
+    public String twoWheelTurnPID(double degrees, TurnDirection direction, double timeoutSeconds) {
+        return twoWheelTurnPID(degrees, direction, timeoutSeconds, false);
     }
 
     public enum DriveStraightDirection {FORWARD, BACKWARD}

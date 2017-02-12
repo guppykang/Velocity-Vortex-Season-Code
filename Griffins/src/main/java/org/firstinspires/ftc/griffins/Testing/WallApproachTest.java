@@ -16,15 +16,15 @@ public class WallApproachTest extends LinearOpMode {
         int gyroHeading = hardware.getTurretGyro().getIntegratedZValue();
         autoFunctions.twoWheelTurnPID(32, AutoFunctions.TurnDirection.RIGHT, 2.5);
 
-        autoFunctions.driveStraightPID(17, AutoFunctions.DriveStraightDirection.BACKWARD, 1.5);
+        autoFunctions.driveStraightPID(15, AutoFunctions.DriveStraightDirection.BACKWARD, 1.5, true);
 
-        autoFunctions.twoWheelTurnPID(7, AutoFunctions.TurnDirection.RIGHT, 2);
+        autoFunctions.twoWheelTurnPID(7, AutoFunctions.TurnDirection.RIGHT, 2, true);
 
-        autoFunctions.driveStraightPID(16, AutoFunctions.DriveStraightDirection.BACKWARD, 2);
+        autoFunctions.driveStraightPID(16, AutoFunctions.DriveStraightDirection.BACKWARD, 2, true);
 
-        autoFunctions.twoWheelTurnPID(20, AutoFunctions.TurnDirection.RIGHT, .5); //timer out
+        autoFunctions.twoWheelTurnPID(20, AutoFunctions.TurnDirection.RIGHT, .5, true); //timer out
 
-        autoFunctions.driveStraightPID(25, AutoFunctions.DriveStraightDirection.FORWARD, 1.5);
+        autoFunctions.driveStraightPID(27, AutoFunctions.DriveStraightDirection.FORWARD, 1.5, true);
 
         /*hardware.setDrivePower(-.3, -.35);
 
@@ -42,13 +42,13 @@ public class WallApproachTest extends LinearOpMode {
         int gyroHeading = hardware.getTurretGyro().getIntegratedZValue();
         autoFunctions.twoWheelTurnPID(63, AutoFunctions.TurnDirection.LEFT, 3);
 
-        autoFunctions.driveStraightPID(25, AutoFunctions.DriveStraightDirection.BACKWARD, 1.5);
+        autoFunctions.driveStraightPID(25, AutoFunctions.DriveStraightDirection.BACKWARD, 1.5, true);
 
         /*autoFunctions.twoWheelTurnPID(10, AutoFunctions.TurnDirection.RIGHT, 2);
 
         autoFunctions.driveStraightPID(16, AutoFunctions.DriveStraightDirection.FORWARD, 2);
 */
-        autoFunctions.twoWheelTurnPID(20, AutoFunctions.TurnDirection.RIGHT, .3); //timer out
+        autoFunctions.twoWheelTurnPID(20, AutoFunctions.TurnDirection.RIGHT, .3, true); //timer out
 
         //autoFunctions.driveStraightPID(10, AutoFunctions.DriveStraightDirection.FORWARD, 1.5);
 
