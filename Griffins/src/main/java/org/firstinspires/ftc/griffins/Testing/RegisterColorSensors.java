@@ -21,7 +21,7 @@ public class RegisterColorSensors extends LinearOpMode {
 
         waitForStart();
 
-        hardware.registerColorSensors();
+        hardware.registerBeaconColorSensors();
 
         LinearOpModeTimeOutFunc timeOutFunc = new LinearOpModeTimeOutFunc(this, 2);
         while (timeOutFunc.value()) {
@@ -33,7 +33,7 @@ public class RegisterColorSensors extends LinearOpMode {
         telemetry.update();
         sleep(1000);
 
-        hardware.deregisterColorSensors();
+        hardware.deregisterBeaconColorSensors();
 
         timeOutFunc = new LinearOpModeTimeOutFunc(this, 2);
         while (timeOutFunc.value()) {
@@ -45,7 +45,7 @@ public class RegisterColorSensors extends LinearOpMode {
         telemetry.update();
         sleep(1000);
 
-        hardware.registerColorSensors();
+        hardware.registerBeaconColorSensors();
 
         timeOutFunc = new LinearOpModeTimeOutFunc(this, 5);
         while (timeOutFunc.value()) {

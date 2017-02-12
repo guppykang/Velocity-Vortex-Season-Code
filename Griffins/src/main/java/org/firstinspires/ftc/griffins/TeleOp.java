@@ -18,6 +18,9 @@ public class TeleOp extends OpMode {
         hardware = new RobotHardware();
         hardware.initialize(hardwareMap);
 
+        hardware.registerBeaconColorSensors();
+        hardware.registerLoaderColorSensor();
+
         gamepad1.setJoystickDeadzone(0.1f);
         gamepad2.setJoystickDeadzone(0.1f);
     }
