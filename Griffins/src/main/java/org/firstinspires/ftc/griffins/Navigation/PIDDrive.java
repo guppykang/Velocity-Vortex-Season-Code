@@ -93,6 +93,7 @@ public class PIDDrive {
 
     public String driveToTarget(Func<Boolean> earlyExitCheck, Telemetry telemetry, boolean quickExit) {
         StringBuilder builder = new StringBuilder();
+        long lastTime = System.currentTimeMillis();
 
         int exitValue;
         if (quickExit) {
@@ -122,7 +123,10 @@ public class PIDDrive {
                 error = pidDrive.getError() + " \n";
             }
 
-            builder.append(System.currentTimeMillis()).append(", ").append(error);
+            if (System.currentTimeMillis() != lastTime) {
+                lastTime = System.currentTimeMillis();
+                builder.append(lastTime).append(", ").append(error);
+            }
 
             if (telemetry != null) {
                 telemetry.addData("exit counter", exitCounter);
