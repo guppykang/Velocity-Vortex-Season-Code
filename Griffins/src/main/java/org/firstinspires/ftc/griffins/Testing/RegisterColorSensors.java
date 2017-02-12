@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.griffins.Testing;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.griffins.AutoFunctions;
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.griffins.RobotHardware;
  * Created by David on 2/11/2017.
  */
 
+@Autonomous(name = "Registering color sensors test", group = "test")
 public class RegisterColorSensors extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
