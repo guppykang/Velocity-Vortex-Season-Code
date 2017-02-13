@@ -385,12 +385,12 @@ public class RobotHardware {
         return BeaconState.mergeBeaconStates(leftSide, rightSide);
     }
 
-    public BeaconState findParticleColor() {
+    public BeaconState findParticleColor() { //unfortunately, a blue ball returns equal values for blue and green
         RobotHardware.BeaconState colorState = UNDEFINED;
 
-        if (loaderColorSensor.red() > loaderColorSensor.blue() && loaderColorSensor.alpha() > 10) {
+        if (loaderColorSensor.red() > loaderColorSensor.blue() + 5 && loaderColorSensor.alpha() > 10) {
             colorState = RED;
-        } else if (loaderColorSensor.alpha() > 10) {
+        } else if (loaderColorSensor.blue() > loaderColorSensor.red() + 5 && loaderColorSensor.alpha() > 10) {
             colorState = BLUE;
         }
 
