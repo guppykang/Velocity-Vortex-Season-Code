@@ -54,7 +54,7 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
         telemetry.log().add("Arrived at beacon wall");
         telemetry.update();
 
-        autoFunctions.driveStraightPID(2, AutoFunctions.DriveStraightDirection.FORWARD, .5);
+        autoFunctions.driveStraightPID(2, AutoFunctions.DriveStraightDirection.FORWARD, .5, true);
 
         WallApproachTest.redWallApproach(hardware, autoFunctions, this);
 
@@ -68,9 +68,9 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
         sleep(1000);*/
 
 
-        autoFunctions.scanForBeacon(AutoFunctions.DriveStraightDirection.FORWARD);
+        autoFunctions.scanForBeacon(AutoFunctions.DriveStraightDirection.BACKWARD);
 
-        hardware.setDrivePower(-0.2, -0.1);
+        hardware.setDrivePower(0.2, 0.1);
 
         sleep(200);
         hardware.stopDrive();
@@ -83,6 +83,36 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
         sleep(1000);
 
         BeaconState state = hardware.findBeaconState();
+        if (state != BeaconState.RED_RED && !state.containsUndefined()) {
+            if (getRuntime() >= 28) {
+                hardware.pushButtonFullExtension(state, BeaconState.RED);
+            } else if (getRuntime() >= 20) {
+                sleep((long) ((28 - getRuntime()) * 1000));
+                hardware.pushButtonFullExtension(state, BeaconState.RED);
+            } else {
+                sleep(6000);
+                hardware.pushButtonFullExtension(state, BeaconState.RED);
+            }
+
+            sleep(2000);
+            hardware.pushButton(BeaconState.UNDEFINED, BeaconState.RED);
+            sleep(1000);
+        }
+
+        autoFunctions.driveStraightPID(45, AutoFunctions.DriveStraightDirection.FORWARD, true);
+        hardware.setDrivePower(-0.2, -0.1);
+
+        sleep(200);
+        hardware.stopDrive();
+
+        hardware.pushButton(hardware.findBeaconState(), BeaconState.RED);
+
+        sleep(2000);
+
+        hardware.pushButtonFullExtension(BeaconState.UNDEFINED, BeaconState.RED);
+        sleep(1000);
+
+        state = hardware.findBeaconState();
         if (state != BeaconState.RED_RED && !state.containsUndefined()) {
             if (getRuntime() >= 28) {
                 hardware.pushButtonFullExtension(state, BeaconState.RED);
