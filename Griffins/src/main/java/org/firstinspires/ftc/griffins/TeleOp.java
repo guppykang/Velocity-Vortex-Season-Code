@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.griffins.RobotHardware.BeaconState;
 
+import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.UNDEFINED;
+
 /**
  * Created by David on 11/26/2016.
  */
@@ -68,12 +70,25 @@ public abstract class TeleOp extends OpMode {
 
 
         { //gamepad 2 controls
-            if (gamepad2.left_bumper) {
-                loaderPower = -1.0;
-            } else if (gamepad2.left_trigger != 0) {
-                loaderPower = 1;
+            if (gamepad2.a) {
+                RobotHardware.BeaconState ball = hardware.findParticleColor();
+
+                if (ball == alliance) {
+                    loaderPower = 1;
+                } else if (ball == UNDEFINED) {
+                    loaderPower = 0;
+                } else {
+                    loaderPower = -1;
+                    intakeSpeed = -1;
+                }
             } else {
-                loaderPower = 0;
+                if (gamepad2.left_bumper) {
+                    loaderPower = -1.0;
+                } else if (gamepad2.left_trigger != 0) {
+                    loaderPower = 1;
+                } else {
+                    loaderPower = 0;
+                }
             }
 
             if (gamepad2.right_bumper) {
@@ -90,10 +105,7 @@ public abstract class TeleOp extends OpMode {
             targetTurretSpeed = Math.pow(targetTurretSpeed, 3) / 2;
             turretState = !gamepad2.left_stick_button;
 
-            if (gamepad2.x) {
-                beaconPushState = hardware.findBeaconState();
-                beaconPushRatio = 1;
-            } else if (gamepad2.b) {
+            if (gamepad2.x || gamepad2.b || gamepad2.right_stick_button) {
                 beaconPushState = hardware.findBeaconState();
                 beaconPushRatio = 1;
             } else if (gamepad2.right_stick_x < -0.1) {

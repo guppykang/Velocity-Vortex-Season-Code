@@ -33,6 +33,7 @@ public class IntakeColorSensorTest extends OpMode {
         colorSensor.enableLed(true);
 
         robotHardware.initialize(hardwareMap);
+        robotHardware.registerLoaderColorSensor();
     }
 
     @Override
@@ -40,12 +41,12 @@ public class IntakeColorSensorTest extends OpMode {
         double loaderPower;
         double intakePower = gamepad1.left_trigger;
 
-        RobotHardware.BeaconState ball = findColorSensorState(colorSensor);
+        RobotHardware.BeaconState ball = robotHardware.findParticleColor();
 
         if (ball == alliance) {
             loaderPower = 1;
         } else if (ball == UNDEFINED) {
-            loaderPower = gamepad1.right_trigger;
+            loaderPower = 0;
         } else {
             loaderPower = -1;
             intakePower = -1;
