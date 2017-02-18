@@ -75,6 +75,7 @@ public abstract class TeleOp extends OpMode {
 
                 if (ball == alliance) {
                     loaderPower = 1;
+                    intakeSpeed = 1;
                 } else if (ball == UNDEFINED) {
                     loaderPower = 0;
                 } else {
@@ -103,7 +104,7 @@ public abstract class TeleOp extends OpMode {
 
             targetTurretSpeed = gamepad2.left_stick_x;
             targetTurretSpeed = Math.pow(targetTurretSpeed, 3) / 2;
-            turretState = !gamepad2.left_stick_button;
+            turretState = !gamepad2.left_stick_button && shooterPower == 0;
 
             if (gamepad2.x || gamepad2.b || gamepad2.right_stick_button) {
                 beaconPushState = hardware.findBeaconState();

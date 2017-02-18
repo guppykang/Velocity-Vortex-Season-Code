@@ -4,12 +4,9 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.I2cAddr;
 
 import org.firstinspires.ftc.griffins.RobotHardware;
 
-import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.BLUE;
 import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.RED;
 import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.UNDEFINED;
 
@@ -27,26 +24,23 @@ public class IntakeColorSensorTest extends OpMode {
 
     @Override
     public void init() {
-        colorSensor = hardwareMap.get(ModernRoboticsI2cColorSensor.class, "intake color");
-        colorSensor.setI2cAddress(I2cAddr.create8bit(0x32));
-        colorSensor.enableLed(false);
-        colorSensor.enableLed(true);
-
         robotHardware.initialize(hardwareMap);
         robotHardware.registerLoaderColorSensor();
+        colorSensor = robotHardware.getLoaderColorSensor();
     }
 
     @Override
     public void loop() {
         double loaderPower;
-        double intakePower = gamepad1.left_trigger;
+        double intakePower = gamepad1.left_bumper ? -1 : gamepad1.left_trigger;
 
         RobotHardware.BeaconState ball = robotHardware.findParticleColor();
 
         if (ball == alliance) {
             loaderPower = 1;
+            intakePower = 1;
         } else if (ball == UNDEFINED) {
-            loaderPower = 0;
+            loaderPower = gamepad1.right_bumper ? -1 : gamepad1.right_trigger;
         } else {
             loaderPower = -1;
             intakePower = -1;
@@ -56,20 +50,9 @@ public class IntakeColorSensorTest extends OpMode {
         robotHardware.setDrivePower(-gamepad1.left_stick_y, -gamepad1.right_stick_y);
         robotHardware.setLoaderPower(loaderPower);
 
-        telemetry.addData("color sensor sees", findColorSensorState(colorSensor));
+        telemetry.addData("color sensor sees", robotHardware.findParticleColor());
         telemetry.addData("Red, blue, green, alpha", colorSensor.red() + ", " + colorSensor.blue() + ", " + colorSensor.green()
                 + ", " + colorSensor.alpha());
-    }
-
-    private RobotHardware.BeaconState findColorSensorState(ColorSensor colorSensor) {
-        RobotHardware.BeaconState colorState = UNDEFINED;
-
-        if (colorSensor.red() > colorSensor.blue() && colorSensor.alpha() > 10) {
-            colorState = RED;
-        } else if (colorSensor.alpha() > 10) {
-            colorState = BLUE;
-        }
-
-        return colorState;
+        telemetry.addData("Color Number", robotHardware.getLoaderColorNumber());
     }
 }

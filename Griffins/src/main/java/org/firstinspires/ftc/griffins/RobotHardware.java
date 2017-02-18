@@ -11,11 +11,15 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.robotcore.hardware.I2cController;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.TypeConversion;
 
 import org.firstinspires.ftc.griffins.Navigation.PIDController;
 import org.firstinspires.ftc.robotcore.external.Func;
+
+import java.util.concurrent.locks.Lock;
 
 import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.BLUE;
 import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.BLUE_BLUE;
@@ -388,13 +392,41 @@ public class RobotHardware {
     public BeaconState findParticleColor() { //unfortunately, a blue ball returns equal values for blue and green
         RobotHardware.BeaconState colorState = UNDEFINED;
 
-        if (loaderColorSensor.red() > loaderColorSensor.blue() + 5 && loaderColorSensor.alpha() > 10) {
+        /*if (loaderColorSensor.red() > loaderColorSensor.blue() + 5 && loaderColorSensor.alpha() > 10) {
             colorState = RED;
         } else if (loaderColorSensor.blue() > loaderColorSensor.red() + 5 && loaderColorSensor.alpha() > 10) {
             colorState = BLUE;
+        }*/
+
+        int colorNumber = getLoaderColorNumber();
+
+        if (colorNumber > 0 && colorNumber < 16 && colorNumber != 14) { //reason tests
+            if (colorNumber < 7 || colorNumber == 15) {
+                colorState = BLUE;
+            } else if (colorNumber > 8 || colorNumber == 13) {
+                colorState = RED;
+            }
         }
 
         return colorState;
+    }
+
+    public int getLoaderColorNumber() {
+        I2cController controller = loaderColorSensor.getI2cController();
+
+        byte color = -1;
+        Lock readLock = controller.getI2cReadCacheLock(loaderColorSensor.getPort());
+        byte[] readBuffer = controller.getI2cReadCache(loaderColorSensor.getPort());
+        try {
+            readLock.lock();
+            color = readBuffer[ModernRoboticsI2cColorSensor.OFFSET_COLOR_NUMBER];
+        } finally {
+            readLock.unlock();
+        }
+
+        if (color == -1)
+            return color;
+        return TypeConversion.unsignedByteToInt(color);
     }
 
     /**
