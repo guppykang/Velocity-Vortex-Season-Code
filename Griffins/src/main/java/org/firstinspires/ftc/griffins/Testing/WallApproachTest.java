@@ -12,21 +12,20 @@ import org.firstinspires.ftc.griffins.RobotHardware;
 
 @Autonomous(name = "Wall Approach Test", group = "test")
 public class WallApproachTest extends LinearOpMode {
-    public static void redWallApproach(RobotHardware hardware, AutoFunctions autoFunctions, LinearOpMode opMode) {
-        int gyroHeading = hardware.getTurretGyro().getIntegratedZValue();
-        autoFunctions.twoWheelTurnPID(32, AutoFunctions.TurnDirection.RIGHT, 2.5);
-
-        autoFunctions.driveStraightPID(15, AutoFunctions.DriveStraightDirection.BACKWARD, 1.5, true);
-
-        autoFunctions.twoWheelTurnPID(7, AutoFunctions.TurnDirection.RIGHT, 2, true);
+    public static void redWallApproach(RobotHardware hardware, AutoFunctions autoFunctions, LinearOpMode opMode, int angleDifference) {
+        autoFunctions.twoWheelTurnPID(37 - angleDifference, AutoFunctions.TurnDirection.RIGHT, 2.5);
 
         hardware.registerBeaconColorSensors();
 
-        autoFunctions.driveStraightPID(16, AutoFunctions.DriveStraightDirection.BACKWARD, 2, true);
+        autoFunctions.driveStraightPID(25, AutoFunctions.DriveStraightDirection.BACKWARD, 1.5, true);
 
-        autoFunctions.twoWheelTurnPID(20, AutoFunctions.TurnDirection.RIGHT, .5, true); //timer out
+        //autoFunctions.twoWheelTurnPID(5, AutoFunctions.TurnDirection.RIGHT, 2, true);
 
-        autoFunctions.driveStraightPID(25, AutoFunctions.DriveStraightDirection.FORWARD, 1.5, true);
+        //autoFunctions.driveStraightPID(15, AutoFunctions.DriveStraightDirection.BACKWARD, 2, true);
+
+        /*autoFunctions.twoWheelTurnPID(20, AutoFunctions.TurnDirection.LEFT, .5, true); //timer out
+
+        autoFunctions.driveStraightPID(25, AutoFunctions.DriveStraightDirection.FORWARD, 1.5, true);*/
 
         /*hardware.setDrivePower(-.3, -.35);
 
@@ -40,13 +39,15 @@ public class WallApproachTest extends LinearOpMode {
         hardware.stopDrive();
     }
 
-    public static void blueWallApproach(RobotHardware hardware, AutoFunctions autoFunctions, LinearOpMode opMode) {
+    public static void blueWallApproach(RobotHardware hardware, AutoFunctions autoFunctions, LinearOpMode opMode, int angleDifference) {
         int gyroHeading = hardware.getTurretGyro().getIntegratedZValue();
-        autoFunctions.twoWheelTurnPID(30, AutoFunctions.TurnDirection.LEFT, 3);
+        autoFunctions.twoWheelTurnPID(30 + angleDifference, AutoFunctions.TurnDirection.LEFT, 3);
 
         hardware.registerBeaconColorSensors();
 
         autoFunctions.driveStraightPID(20, AutoFunctions.DriveStraightDirection.FORWARD, 1.5, true);
+
+        hardware.getIntake().setPower(0);
 
         /*autoFunctions.twoWheelTurnPID(10, AutoFunctions.TurnDirection.RIGHT, 2);
 
@@ -78,7 +79,7 @@ public class WallApproachTest extends LinearOpMode {
 
         while (opModeIsActive() && hardware.getTurretGyro().isCalibrating()) ;
 
-        blueWallApproach(hardware, autoFunctions, this);
+        blueWallApproach(hardware, autoFunctions, this, 0);
 
         sleep(500);
 

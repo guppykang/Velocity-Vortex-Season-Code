@@ -97,7 +97,7 @@ public class PIDDrive {
 
         int exitValue;
         if (quickExit) {
-            exitValue = 2;
+            exitValue = 1;
         } else {
             exitValue = 100;
         }
@@ -136,7 +136,7 @@ public class PIDDrive {
                 telemetry.addData("error", isTurning ? pidTurning.getError() : pidDrive.getError());
                 telemetry.update();
             }
-        } while (exitCounter <= exitValue && earlyExitCheck.value());
+        } while (exitCounter < exitValue && earlyExitCheck.value());
 
         hardware.stopDrive();
 

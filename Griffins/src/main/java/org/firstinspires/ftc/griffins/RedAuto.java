@@ -49,6 +49,8 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
         telemetry.log().add("Turned towards beacon");
         telemetry.update();
 
+        double angle = autoFunctions.getZAngle();
+
         //drive toward beacon wall
         autoFunctions.driveStraightPID(59, AutoFunctions.DriveStraightDirection.BACKWARD, 3);
         telemetry.log().add("Arrived at beacon wall");
@@ -56,8 +58,9 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
 
         autoFunctions.driveStraightPID(2, AutoFunctions.DriveStraightDirection.FORWARD, .5, true);
 
-        WallApproachTest.redWallApproach(hardware, autoFunctions, this);
+        angle -= autoFunctions.getZAngle();
 
+        WallApproachTest.redWallApproach(hardware, autoFunctions, this, (int) angle);
 
         /*BeaconScan.scanForBeacon(AutoFunctions.DriveStraightDirection.BACKWARD, hardware, this);
         hardware.pushButton(hardware.findBeaconState(), BeaconState.RED);
@@ -99,7 +102,10 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
             sleep(1000);
         }
 
-        autoFunctions.driveStraightPID(45, AutoFunctions.DriveStraightDirection.FORWARD, true);
+        autoFunctions.twoWheelTurnPID(90, AutoFunctions.TurnDirection.RIGHT, 0.5); //timer out
+        autoFunctions.driveStraightPID(43, AutoFunctions.DriveStraightDirection.FORWARD, true);
+
+        autoFunctions.scanForBeacon(AutoFunctions.DriveStraightDirection.FORWARD);
         hardware.setDrivePower(-0.2, -0.1);
 
         sleep(200);

@@ -182,7 +182,7 @@ public class RobotHardware {
         rightButtonPusherColorSensor.enableLed(true);
         rightButtonPusherColorSensor.enableLed(false);
 
-        deregisterBeaconColorSensors(); //// TODO: 2/12/2017 need to register the color sensors in relevant files!
+        deregisterBeaconColorSensors(); // TODO: 2/12/2017 need to register the color sensors in relevant files!
 
         loaderColorSensor = hardwareMap.get(ModernRoboticsI2cColorSensor.class, LOADER_COLOR_SENSOR);
         loaderColorSensor.setI2cAddress(LOADER_COLOR_SENSOR_ADDRESS);
@@ -321,7 +321,7 @@ public class RobotHardware {
                 } else if (beaconState == BLUE_BLUE) {
                     buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
                 } else if (beaconState == RED_RED) {
-                    buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_LEFT_POSITION);
                 }
             } else if (alliance == RED) {
                 if (beaconState == BLUE_RED) {
@@ -329,7 +329,7 @@ public class RobotHardware {
                 } else if (beaconState == RED_BLUE) {
                     buttonPusherServo.setPosition(BUTTON_PUSHER_LEFT_POSITION);
                 } else if (beaconState == BLUE_BLUE) {
-                    buttonPusherServo.setPosition(BUTTON_PUSHER_RIGHT_POSITION);
+                    buttonPusherServo.setPosition(BUTTON_PUSHER_LEFT_POSITION);
                 } else if (beaconState == RED_RED) {
                     buttonPusherServo.setPosition(BUTTON_PUSHER_CENTER_POSITION);
                 }

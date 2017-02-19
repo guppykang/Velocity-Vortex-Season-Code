@@ -49,6 +49,8 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
         telemetry.log().add("Turned towards beacon");
         telemetry.update();
 
+        double angle = autoFunctions.getZAngle();
+
         hardware.getIntake().setPower(1);
 
         //drive toward beacon wall
@@ -58,12 +60,18 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
 
         autoFunctions.driveStraightPID(3, AutoFunctions.DriveStraightDirection.BACKWARD, 1);
 
+        angle -= autoFunctions.getZAngle();
+
         //"parallel parking"
-        WallApproachTest.blueWallApproach(hardware, autoFunctions, this);
+        WallApproachTest.blueWallApproach(hardware, autoFunctions, this, (int) angle);
 
         autoFunctions.scanForBeacon(AutoFunctions.DriveStraightDirection.FORWARD);
 
         hardware.setDrivePower(-0.2, -0.1);
+
+        sleep(200);
+
+        hardware.setDrivePower(-0.3, 0.3);
 
         sleep(200);
         hardware.stopDrive();
@@ -91,8 +99,8 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
             hardware.pushButton(BeaconState.UNDEFINED, BeaconState.BLUE);
         }
 
-        autoFunctions.twoWheelTurnPID(5, AutoFunctions.TurnDirection.LEFT, 0.5, true);
-        autoFunctions.driveStraightPID(45, AutoFunctions.DriveStraightDirection.BACKWARD, true);
+        autoFunctions.twoWheelTurnPID(45, AutoFunctions.TurnDirection.LEFT, 0.5, true); //timer out
+        autoFunctions.driveStraightPID(43, AutoFunctions.DriveStraightDirection.BACKWARD, true);
 
         autoFunctions.scanForBeacon(AutoFunctions.DriveStraightDirection.BACKWARD);
 
