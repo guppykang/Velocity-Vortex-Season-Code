@@ -65,7 +65,15 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
         //"parallel parking"
         WallApproachTest.blueWallApproach(hardware, autoFunctions, this, (int) angle);
 
+        if (hardware.findParticleColor() == BeaconState.RED) {
+            hardware.setLoaderPower(-1);
+        }
+        hardware.getIntake().setPower(-1);
+
         autoFunctions.scanForBeacon(AutoFunctions.DriveStraightDirection.FORWARD);
+
+        hardware.setLoaderPower(0);
+        hardware.getIntake().setPower(0);
 
         hardware.setDrivePower(-0.2, -0.1);
 
@@ -78,13 +86,13 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
 
         hardware.pushButton(hardware.findBeaconState(), BeaconState.BLUE);
 
-        sleep(2000);
+        sleep(1900);
 
         hardware.pushButton(BeaconState.UNDEFINED, BeaconState.BLUE);
-        sleep(1000);
+        sleep(700);
 
         BeaconState state = hardware.findBeaconState();
-        if (state != BeaconState.BLUE_BLUE) {
+        if (state != BeaconState.BLUE_BLUE && !state.containsUndefined()) {
             if (getRuntime() >= 28) {
                 hardware.pushButtonFullExtension(state, BeaconState.BLUE);
             } else if (getRuntime() >= 20) {
@@ -99,25 +107,25 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
             hardware.pushButton(BeaconState.UNDEFINED, BeaconState.BLUE);
         }
 
-        autoFunctions.twoWheelTurnPID(45, AutoFunctions.TurnDirection.LEFT, 0.5, true); //timer out
-        autoFunctions.driveStraightPID(43, AutoFunctions.DriveStraightDirection.BACKWARD, true);
+        //autoFunctions.twoWheelTurnPID(45, AutoFunctions.TurnDirection.LEFT, 0.5, true); //timer out
+        autoFunctions.driveStraightPID(43, AutoFunctions.DriveStraightDirection.BACKWARD, 2, true);
 
         autoFunctions.scanForBeacon(AutoFunctions.DriveStraightDirection.BACKWARD);
 
-        hardware.setDrivePower(0.2, 0.1);
+        hardware.setDrivePower(-0.2, -0.1);
 
         sleep(200);
         hardware.stopDrive();
 
         hardware.pushButton(hardware.findBeaconState(), BeaconState.BLUE);
 
-        sleep(2000);
+        sleep(1900);
 
         hardware.pushButton(BeaconState.UNDEFINED, BeaconState.BLUE);
-        sleep(1000);
+        sleep(700);
 
         state = hardware.findBeaconState();
-        if (state != BeaconState.BLUE_BLUE) {
+        if (state != BeaconState.BLUE_BLUE && !state.containsUndefined()) {
             if (getRuntime() >= 28) {
                 hardware.pushButtonFullExtension(state, BeaconState.BLUE);
             } else if (getRuntime() >= 20) {

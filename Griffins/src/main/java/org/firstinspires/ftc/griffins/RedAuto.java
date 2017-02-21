@@ -80,10 +80,10 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
 
         hardware.pushButton(hardware.findBeaconState(), BeaconState.RED);
 
-        sleep(2000);
+        sleep(1900);
 
         hardware.pushButtonFullExtension(BeaconState.UNDEFINED, BeaconState.RED);
-        sleep(1000);
+        sleep(700);
 
         BeaconState state = hardware.findBeaconState();
         if (state != BeaconState.RED_RED && !state.containsUndefined()) {
@@ -102,21 +102,23 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
             sleep(1000);
         }
 
-        autoFunctions.twoWheelTurnPID(90, AutoFunctions.TurnDirection.RIGHT, 0.5); //timer out
-        autoFunctions.driveStraightPID(43, AutoFunctions.DriveStraightDirection.FORWARD, true);
+        autoFunctions.twoWheelTurnPID(90, AutoFunctions.TurnDirection.RIGHT, 0.3); //timer out
+        autoFunctions.driveStraightPID(43, AutoFunctions.DriveStraightDirection.FORWARD, 2, true);
 
         autoFunctions.scanForBeacon(AutoFunctions.DriveStraightDirection.FORWARD);
         hardware.setDrivePower(-0.2, -0.1);
 
         sleep(200);
+        hardware.setDrivePower(-0.2, 0.2);
+        sleep(200);
         hardware.stopDrive();
 
         hardware.pushButton(hardware.findBeaconState(), BeaconState.RED);
 
-        sleep(2000);
+        sleep(1900);
 
         hardware.pushButtonFullExtension(BeaconState.UNDEFINED, BeaconState.RED);
-        sleep(1000);
+        sleep(700);
 
         state = hardware.findBeaconState();
         if (state != BeaconState.RED_RED && !state.containsUndefined()) {

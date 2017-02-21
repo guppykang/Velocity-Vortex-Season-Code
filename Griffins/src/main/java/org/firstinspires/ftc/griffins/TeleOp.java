@@ -4,6 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.griffins.RobotHardware.BeaconState;
 
+import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.BLUE_RED;
+import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.RED;
+import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.RED_BLUE;
 import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.UNDEFINED;
 
 /**
@@ -104,16 +107,16 @@ public abstract class TeleOp extends OpMode {
 
             targetTurretSpeed = gamepad2.left_stick_x;
             targetTurretSpeed = Math.pow(targetTurretSpeed, 3) / 2;
-            turretState = !gamepad2.left_stick_button && shooterPower == 0;
+            turretState = false; //!gamepad2.left_stick_button && shooterPower == 0;
 
             if (gamepad2.x || gamepad2.b || gamepad2.right_stick_button) {
                 beaconPushState = hardware.findBeaconState();
                 beaconPushRatio = 1;
             } else if (gamepad2.right_stick_x < -0.1) {
-                beaconPushState = BeaconState.BLUE_RED;
+                beaconPushState = alliance == RED ? RED_BLUE : BLUE_RED;
                 beaconPushRatio = -gamepad2.right_stick_x;
             } else if (gamepad2.right_stick_x > 0.1) {
-                beaconPushState = BeaconState.RED_BLUE;
+                beaconPushState = alliance == RED ? BLUE_RED : RED_BLUE;
                 beaconPushRatio = gamepad2.right_stick_x;
             } else {
                 beaconPushState = BeaconState.UNDEFINED;
