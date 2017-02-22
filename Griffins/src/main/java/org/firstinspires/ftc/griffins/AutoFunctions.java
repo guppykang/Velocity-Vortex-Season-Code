@@ -327,9 +327,18 @@ public class AutoFunctions {
         hardware.getRightDrive().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    public void pushBeacon(RobotHardware.BeaconState alliance) {
+        if (linearOpMode.opModeIsActive()) {
+            hardware.pushButton(hardware.findBeaconState(), alliance);
+            linearOpMode.sleep(1900);
+            hardware.pushButton(RobotHardware.BeaconState.UNDEFINED, alliance);
+            linearOpMode.sleep(700);
+        }
+    }
+
     public void shoot() {
         if (linearOpMode.opModeIsActive()) {
-            hardware.getShooter().setPower(0.75);
+            hardware.getShooter().setPower(0.77);
             linearOpMode.sleep(500);
             hardware.setLoaderPower(1.0);
             linearOpMode.sleep(1000);
@@ -379,6 +388,11 @@ public class AutoFunctions {
 
     public String twoWheelTurnPID(double degrees, TurnDirection direction, double timeoutSeconds) {
         return twoWheelTurnPID(degrees, direction, timeoutSeconds, false);
+    }
+
+    public void wallPIDDrive(double inches, DriveStraightDirection direction, double timeoutSeconds) {
+        drive.setDriveTarget(inches * (direction == DriveStraightDirection.FORWARD ? 1 : -1));
+        drive.wallDriveToTarget(new LinearOpModeTimeOutFunc(linearOpMode, timeoutSeconds));
     }
 
     public enum DriveStraightDirection {FORWARD, BACKWARD}

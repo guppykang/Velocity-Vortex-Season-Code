@@ -51,8 +51,6 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
 
         double angle = autoFunctions.getZAngle();
 
-        hardware.getIntake().setPower(1);
-
         //drive toward beacon wall
         autoFunctions.driveStraightPID(88, AutoFunctions.DriveStraightDirection.FORWARD, 3, true);
         telemetry.log().add("Arrived at beacon wall");
@@ -68,12 +66,10 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
         if (hardware.findParticleColor() == BeaconState.RED) {
             hardware.setLoaderPower(-1);
         }
-        hardware.getIntake().setPower(-1);
 
         autoFunctions.scanForBeacon(AutoFunctions.DriveStraightDirection.FORWARD);
 
         hardware.setLoaderPower(0);
-        hardware.getIntake().setPower(0);
 
         hardware.setDrivePower(-0.2, -0.1);
 
@@ -84,12 +80,7 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
         sleep(200);
         hardware.stopDrive();
 
-        hardware.pushButton(hardware.findBeaconState(), BeaconState.BLUE);
-
-        sleep(1900);
-
-        hardware.pushButton(BeaconState.UNDEFINED, BeaconState.BLUE);
-        sleep(700);
+        autoFunctions.pushBeacon(BeaconState.BLUE);
 
         BeaconState state = hardware.findBeaconState();
         if (state != BeaconState.BLUE_BLUE && !state.containsUndefined()) {
@@ -108,21 +99,16 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
         }
 
         //autoFunctions.twoWheelTurnPID(45, AutoFunctions.TurnDirection.LEFT, 0.5, true); //timer out
-        autoFunctions.driveStraightPID(43, AutoFunctions.DriveStraightDirection.BACKWARD, 2, true);
+        autoFunctions.wallPIDDrive(43, AutoFunctions.DriveStraightDirection.BACKWARD, 2);
 
         autoFunctions.scanForBeacon(AutoFunctions.DriveStraightDirection.BACKWARD);
 
         hardware.setDrivePower(-0.2, -0.1);
 
-        sleep(200);
+        sleep(300);
         hardware.stopDrive();
 
-        hardware.pushButton(hardware.findBeaconState(), BeaconState.BLUE);
-
-        sleep(1900);
-
-        hardware.pushButton(BeaconState.UNDEFINED, BeaconState.BLUE);
-        sleep(700);
+        autoFunctions.pushBeacon(BeaconState.BLUE);
 
         state = hardware.findBeaconState();
         if (state != BeaconState.BLUE_BLUE && !state.containsUndefined()) {

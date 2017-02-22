@@ -74,8 +74,17 @@ public class PIDDrive {
 
             hardware.setDrivePower(power + difference, power - difference);
         }
+    }
 
+    public void biasedSyncDrives() {
+        if (!isTurning) {
+            double power;
+            power = pidDrive.sendPIDOutput();
+            power = Range.clip(power, -0.5, 0.5);
+            difference = Range.clip(pidDrivingDifference.sendPIDOutput(), 0, 0.5);
 
+            hardware.setDrivePower(power + difference, power * 0.90 - difference);
+        }
     }
 
     public void setDriveTarget(double inches){
@@ -89,6 +98,15 @@ public class PIDDrive {
         pidTurning.setSetPoint(pidTurning.getSourceVal() + degrees);
         pidTurningDifference.setSetPoint(pidTurningDifference.getSourceVal());
         isTurning = true;
+    }
+
+    public void wallDriveToTarget(Func<Boolean> earlyExitCheck) {
+        if (!isTurning) {
+            do {
+                biasedSyncDrives();
+            } while (earlyExitCheck.value() && !pidDrive.isOnTarget());
+        }
+
     }
 
     public String driveToTarget(Func<Boolean> earlyExitCheck, Telemetry telemetry, boolean quickExit) {

@@ -73,17 +73,12 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
 
         autoFunctions.scanForBeacon(AutoFunctions.DriveStraightDirection.BACKWARD);
 
-        hardware.setDrivePower(0.2, 0.1);
+        hardware.setDrivePower(-0.2, -0.1);
 
         sleep(200);
         hardware.stopDrive();
 
-        hardware.pushButton(hardware.findBeaconState(), BeaconState.RED);
-
-        sleep(1900);
-
-        hardware.pushButtonFullExtension(BeaconState.UNDEFINED, BeaconState.RED);
-        sleep(700);
+        autoFunctions.pushBeacon(BeaconState.RED);
 
         BeaconState state = hardware.findBeaconState();
         if (state != BeaconState.RED_RED && !state.containsUndefined()) {
@@ -102,23 +97,18 @@ public class RedAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDashb
             sleep(1000);
         }
 
-        autoFunctions.twoWheelTurnPID(90, AutoFunctions.TurnDirection.RIGHT, 0.3); //timer out
-        autoFunctions.driveStraightPID(43, AutoFunctions.DriveStraightDirection.FORWARD, 2, true);
+        //autoFunctions.twoWheelTurnPID(90, AutoFunctions.TurnDirection.RIGHT, 0.3); //timer out
+        autoFunctions.wallPIDDrive(43, AutoFunctions.DriveStraightDirection.FORWARD, 2);
 
         autoFunctions.scanForBeacon(AutoFunctions.DriveStraightDirection.FORWARD);
         hardware.setDrivePower(-0.2, -0.1);
 
         sleep(200);
-        hardware.setDrivePower(-0.2, 0.2);
-        sleep(200);
+        hardware.setDrivePower(-0.3, 0.3);
+        sleep(300);
         hardware.stopDrive();
 
-        hardware.pushButton(hardware.findBeaconState(), BeaconState.RED);
-
-        sleep(1900);
-
-        hardware.pushButtonFullExtension(BeaconState.UNDEFINED, BeaconState.RED);
-        sleep(700);
+        autoFunctions.pushBeacon(BeaconState.RED);
 
         state = hardware.findBeaconState();
         if (state != BeaconState.RED_RED && !state.containsUndefined()) {
