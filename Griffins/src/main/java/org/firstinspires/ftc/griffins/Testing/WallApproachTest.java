@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.griffins.Testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.griffins.AutoFunctions;
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.griffins.RobotHardware;
  */
 
 @Autonomous(name = "Wall Approach Test", group = "test")
+@Disabled
 public class WallApproachTest extends LinearOpMode {
     public static void redWallApproach(RobotHardware hardware, AutoFunctions autoFunctions, LinearOpMode opMode, int angleDifference) {
         autoFunctions.twoWheelTurnPID(38 - angleDifference, AutoFunctions.TurnDirection.RIGHT, 2.5);

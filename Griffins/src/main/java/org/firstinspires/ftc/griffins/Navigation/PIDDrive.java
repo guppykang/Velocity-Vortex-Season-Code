@@ -36,7 +36,7 @@ public class PIDDrive {
             }
         }, null);
 
-        pidTurning = new PIDController(0.01, 0.000015, 0.05, 1, new Func<Double>() { //i = .0025
+        pidTurning = new PIDController(0.01, 0.0000075, 0.05, 1, new Func<Double>() { //i = .0025
             @Override
             public Double value() {
                 return (double) hardware.getTurretGyro().getIntegratedZValue();
@@ -83,7 +83,7 @@ public class PIDDrive {
             power = Range.clip(power, -0.5, 0.5);
             difference = Range.clip(pidDrivingDifference.sendPIDOutput(), 0, 0.5);
 
-            hardware.setDrivePower(power + difference, power * 0.90 - difference);
+            hardware.setDrivePower(power, power * 0.90);
         }
     }
 

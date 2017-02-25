@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.griffins.RobotHardware.BeaconState;
 
+import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.BLUE;
 import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.BLUE_RED;
 import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.RED;
 import static org.firstinspires.ftc.griffins.RobotHardware.BeaconState.RED_BLUE;
@@ -52,6 +53,7 @@ public abstract class TeleOp extends OpMode {
         BeaconState beaconPushState;
         double beaconPushRatio;
         boolean turretState;
+        String particle;
 
 
         { //gamepad 1 controls
@@ -60,22 +62,17 @@ public abstract class TeleOp extends OpMode {
 
             intakeSpeed = gamepad1.left_trigger - gamepad1.right_trigger;
 
-            if (gamepad1.right_bumper) {
-                rightDrivePower = leftDrivePower * .4;
-                leftDrivePower *= .5;
+            if (gamepad1.right_bumper || gamepad1.left_bumper) {
+                leftDrivePower *= .7;
+                rightDrivePower = leftDrivePower * 0.9;
             }
 
-            if (gamepad1.left_bumper) {
-                rightDrivePower = .20;
-                leftDrivePower = .20;
-            }
         } //end gamepad 1 controls
 
 
         { //gamepad 2 controls
+            RobotHardware.BeaconState ball = hardware.findParticleColor();
             if (gamepad2.a) {
-                RobotHardware.BeaconState ball = hardware.findParticleColor();
-
                 if (ball == alliance) {
                     loaderPower = 1;
                     intakeSpeed = 1;
@@ -95,8 +92,16 @@ public abstract class TeleOp extends OpMode {
                 }
             }
 
+            if (ball == RED) {
+                particle = "Red Particle";
+            } else if (ball == BLUE) {
+                particle = "Blue Particle";
+            } else {
+                particle = "No Particle";
+            }
+
             if (gamepad2.right_bumper) {
-                shooterPower = 1;
+                shooterPower = 0.60;
             } else if (gamepad2.right_trigger >= 0.5) {
                 shooterPower = 0.75;
             } else if (gamepad2.left_bumper) {
@@ -106,7 +111,10 @@ public abstract class TeleOp extends OpMode {
             }
 
             targetTurretSpeed = gamepad2.left_stick_x;
-            targetTurretSpeed = Math.pow(targetTurretSpeed, 3) / 2;
+            targetTurretSpeed = Math.pow(targetTurretSpeed, 3);
+            if (!gamepad2.left_stick_button) {
+                targetTurretSpeed /= 3;
+            }
             turretState = false; //!gamepad2.left_stick_button && shooterPower == 0;
 
             if (gamepad2.x || gamepad2.b || gamepad2.right_stick_button) {
@@ -138,6 +146,7 @@ public abstract class TeleOp extends OpMode {
         { //send telemetry commands
             int time = (int) getRuntime();
             telemetry.addData("Time(current:remaining)", time + ":" + (120 - time));
+            telemetry.addData("Particle Being Loaded", particle);
             telemetry.addData("Left Drive Speed", leftDrivePower);
             telemetry.addData("Right Drive Speed", rightDrivePower);
             telemetry.addData("Intake Speed", intakeSpeed);
