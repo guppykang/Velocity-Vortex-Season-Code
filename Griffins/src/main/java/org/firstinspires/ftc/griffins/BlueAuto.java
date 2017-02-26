@@ -105,7 +105,7 @@ public class BlueAuto extends LinearOpMode implements FtcMenu.MenuButtonsAndDash
 
         hardware.setDrivePower(-0.2, -0.1);
 
-        sleep(300);
+        sleep(400);
         hardware.stopDrive();
 
         autoFunctions.pushBeacon(BeaconState.BLUE);
